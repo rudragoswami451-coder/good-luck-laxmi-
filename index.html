@@ -545,7 +545,8 @@
             "9130047135": { name: "सह-एडमिन (विकास/राहुल)", pass: "9130047135", isLocked: false, isSuperAdmin: true }
         };
 
-        let activeUserPhone = sessionStorage.getItem('gll_active_user') || "";
+        // यूज़र को बार-बार लॉगिन न करना पड़े, इसलिए localStorage का उपयोग किया गया है
+        let activeUserPhone = localStorage.getItem('gll_active_user') || "";
         let loggedInAdminId = "";
 
         let paymentGateways = {
@@ -677,6 +678,11 @@
         }
 
         window.onload = function() {
+            // URL से कोई भी संवेदनशील डेटा या कचरा साफ करना
+            if (window.location.search.length > 0 || window.location.hash.length > 0) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
             initializeFirebaseListeners();
             startRealTimeSystem();
 
@@ -785,7 +791,8 @@
             }
             
             activeUserPhone = inputId;
-            sessionStorage.setItem('gll_active_user', inputId);
+            // यूज़र को बार-बार लॉगिन न करना पड़े, इसलिए localStorage में सेव कर रहे हैं
+            localStorage.setItem('gll_active_user', inputId);
             
             if(userWallets[inputId] === undefined) {
                 userWallets[inputId] = 100;
@@ -809,7 +816,7 @@
         }
 
         function performLogout() {
-            sessionStorage.removeItem('gll_active_user');
+            localStorage.removeItem('gll_active_user');
             activeUserPhone = "";
             location.reload();
         }
@@ -896,6 +903,17 @@
 
             let activeInfo = getCurrentActiveSlotObject();
             let slot = activeInfo.slot;
+            let slotIdx = activeInfo.index;
+            let currentData = currentType === 'shubh' ? shubhSlotData : dhanSlotData;
+
+            let slotDisplay = currentData[slotIdx].display || "";
+            let isOpenDeclared = slotDisplay !== "—" && !slotDisplay.includes("lunch");
+
+            if(isOpenDeclared) {
+                alert(`⚠️ ${slot.start} स्लॉट का ओपेन परिणाम आ चुका है, इसलिए इस स्लॉट की बुकिंग बंद कर दी गई है। कृपया अगले स्लॉट का इंतज़ार करें!`);
+                return;
+            }
+
             let startMins = timeStrToMins(slot.start);
             let endMins = timeStrToMins(slot.end);
             let closeLimitMins = endMins - 2;
@@ -974,6 +992,16 @@
         function submitBoardBet() {
             let activeInfo = getCurrentActiveSlotObject();
             let slot = activeInfo.slot;
+            let slotIdx = activeInfo.index;
+            let currentData = currentType === 'shubh' ? shubhSlotData : dhanSlotData;
+            let slotDisplay = currentData[slotIdx].display || "";
+
+            if(slotDisplay !== "—" && !slotDisplay.includes("lunch")) {
+                alert('⚠️ इस स्लॉट का ओपेन आ चुका है, दांव स्वीकार नहीं होगा!');
+                closeGameScreen();
+                return;
+            }
+
             let now = new Date();
             let currentMins = now.getHours() * 60 + now.getMinutes();
             let endMins = timeStrToMins(slot.end);
@@ -1134,8 +1162,56 @@
                 if(currentType === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
                 else db.ref('dhanSlots').set(dhanSlotData);
                 renderResults();
-                alert('चार्ट अपडेट हो गया!');
+                checkAndPayoutWinners(currentType, index, newVal);
+                alert('चार्ट अपडेट हो गया और विनर्स का भुगतान चेक कर लिया गया!');
             }
+        }
+
+        function checkAndPayoutWinners(lotteryType, slotIndex, resultStr) {
+            let slotData = lotteryType === 'shubh' ? shubhSlotData : dhanSlotData;
+            let slot = slotData[slotIndex];
+            let slotTimeStr = `${slot.start} - ${slot.end}`;
+            let betsList = lotteryType === 'shubh' ? shubhBets : dhanBets;
+            if(!betsList) return;
+
+            let parts = resultStr.split('-');
+            let openPatti = parts[0] || "";
+            let jodi = parts[1] || "";
+            let closePatti = parts[2] || "";
+            let openDigit = openPatti.length >= 3 ? String(Number(openPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10) : "";
+            let closeDigit = closePatti.length >= 3 ? String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10) : "";
+
+            betsList.forEach(bet => {
+                if(bet.slotTime.includes(slot.start) || bet.slotTime === slotTimeStr) {
+                    let winMultiplier = 0;
+                    let num = bet.number;
+
+                    if(bet.gameMode === 'Single Digit') {
+                        if(bet.gameType === 'OPEN' && num === openDigit) winMultiplier = 10;
+                        if(bet.gameType === 'CLOSE' && num === closeDigit) winMultiplier = 10;
+                    } else if(bet.gameMode === 'Jodi Digit') {
+                        if(jodi && num === jodi) winMultiplier = 100;
+                    } else if(bet.gameMode === 'Single Pana') {
+                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 150;
+                        if(bet.gameType === 'CLOSE' && num === closePatti) winMultiplier = 150;
+                    } else if(bet.gameMode === 'Double Pana') {
+                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 300;
+                        if(bet.gameType === 'CLOSE' && num === closePatti) winMultiplier = 300;
+                    } else if(bet.gameMode === 'Triple Pana') {
+                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 700;
+                        if(bet.gameType === 'CLOSE' && num === closePatti) winMultiplier = 700;
+                    }
+
+                    if(winMultiplier > 0) {
+                        let wonAmount = bet.points * winMultiplier;
+                        let u = bet.user;
+                        if(userWallets[u] !== undefined) {
+                            userWallets[u] += wonAmount;
+                            db.ref('userWallets').set(userWallets);
+                        }
+                    }
+                }
+            });
         }
 
         function populateAdminSlots() {
@@ -1245,7 +1321,7 @@
             }
 
             renderResults();
-            alert(`✅ ओपन (${openDisplayStr}) लाइव पब्लिश हो गया! क्लोज का समय आने पर क्लोज डालकर "पूरी जोड़ी पब्लिश करें" बटन दबाएं।`);
+            alert(`✅ ओपन (${openDisplayStr}) लाइव पब्लिश हो गया! अब इस स्लॉट की बुकिंग ऑटोमैटिक बंद हो चुकी है।`);
         }
 
         function updateAdminResult() {
@@ -1292,7 +1368,8 @@
             document.getElementById('admin-close-digit').value = '';
 
             renderResults();
-            alert('🚀 सफलतापूर्वक पूरा परिणाम और जोड़ी पब्लिश हो गई!');
+            checkAndPayoutWinners(gameSelector, index, finalResultStr);
+            alert('🚀 सफलतापूर्वक पूरा परिणाम और जोड़ी पब्लिश हो गई, और विनर्स के पॉइंट्स उनके वॉलेट में जोड़ दिए गए हैं!');
             closeAdmin();
         }
 
@@ -1308,7 +1385,8 @@
                 if(gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
                 else db.ref('dhanSlots').set(dhanSlotData);
                 renderResults();
-                alert('परिणाम अपडेट हो गया!');
+                checkAndPayoutWinners(gameSelector, index, currentVal);
+                alert('परिणाम अपडेट हो गया और विनर्स का भुगतान चेक कर लिया गया!');
             }
         }
 
@@ -1705,4 +1783,4 @@
         }
     </script>
 </body>
-                    </html>
+    </html>
