@@ -85,7 +85,7 @@
         .lunch-row { background: rgba(212,175,55,0.1); text-align: center; font-weight: bold; color: var(--accent); padding: 10px; border-bottom: 1px solid var(--secondary); }
         .start-time { color: var(--secondary); font-weight: bold; width: 95px; text-align: left; }
         .end-time { color: var(--secondary); font-weight: bold; width: 95px; text-align: right; }
-        .result-data { color: #fff; letter-spacing: 1px; text-align: center; flex-grow: 1; }
+        .result-data { color: #fff; letter-spacing: 1px; text-align: center; flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
         
         .unique-result-badge { 
             background: linear-gradient(135deg, #2c1600, #4d2600); 
@@ -98,6 +98,9 @@
             display: inline-block;
             letter-spacing: 1.5px;
         }
+
+        .chart-edit-btn { background: #800020; color: var(--accent); border: 1px solid var(--secondary); padding: 2px 6px; font-size: 0.7rem; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .chart-edit-btn:hover { background: var(--secondary); color: #000; }
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 200; }
         .modal-content { background: #222; border: 2px solid var(--secondary); padding: 20px; border-radius: 10px; width: 95%; max-width: 520px; text-align: center; max-height: 90vh; overflow-y: auto; position: relative; }
@@ -309,7 +312,7 @@
                 <option value="dhan">💰 धन लक्ष्मी (30 मि. टाइमर)</option>
             </select>
 
-            <label style="font-size:0.9rem; display:block; text-align:left; margin-top:8px;">समय स्लॉट चुनें (Open / Close):</label>
+            <label style="font-size:0.9rem; display:block; text-align:left; margin-top:8px;">समय स्लॉट चुनें (लाइव या पुराना छूटा हुआ):</label>
             <select id="admin-slot-index" onchange="updateAdminSlotInfo()"></select>
             <div id="admin-current-slot-time-hint" style="font-size:0.75rem; color:var(--accent); margin-top:3px; text-align:left;">चयनित स्लॉट समय: -</div>
 
@@ -317,7 +320,7 @@
                 <label style="font-size:0.85rem; color:var(--secondary); font-weight:bold;">1. ओपन बॉक्स (Step 1):</label>
                 <input type="text" id="admin-open-patti" placeholder="पत्ती (उदा. 228)" style="margin:5px 0;">
                 <input type="text" id="admin-open-digit" placeholder="अंक (उदा. 5)" style="margin:5px 0;">
-                <button class="btn" style="background:#28a745; color:#fff; padding:8px; font-size:0.85rem;" onclick="saveAdminOpen()">✅ ओपन सेव करें (OK)</button>
+                <button class="btn" style="background:#28a745; color:#fff; padding:8px; font-size:0.85rem;" onclick="saveAdminOpen()">✅ ओपन सेव & लाइव करें (Step 1)</button>
             </div>
             
             <div class="admin-input-group">
@@ -326,8 +329,8 @@
                 <input type="text" id="admin-close-digit" placeholder="अंक (उदा. 0)" style="margin:5px 0;">
             </div>
             
-            <button class="btn" style="background:#ff4444; color:#fff;" onclick="updateAdminResult()">🚀 चार्ट में पब्लिश करें & जोड़ी बनाएं (OK)</button>
-            <button class="btn" style="background:#25D366; color:#fff;" onclick="enableAdminEditMode()">✏️ लाइव चार्ट एडिट (सुधार करें)</button>
+            <button class="btn" style="background:#ff4444; color:#fff;" onclick="updateAdminResult()">🚀 पूरी जोड़ी बनाकर पब्लिश करें (Step 2)</button>
+            <button class="btn" style="background:#25D366; color:#fff;" onclick="enableAdminEditMode()">✏️ छूटा/पुराना रिजल्ट सीधे एडिट करें</button>
         </div>
 
         <div id="adm-sec-users" class="hidden">
@@ -542,7 +545,7 @@
             "9130047135": { name: "सह-एडमिन (विकास/राहुल)", pass: "9130047135", isLocked: false, isSuperAdmin: true }
         };
 
-        let activeUserPhone = localStorage.getItem('gll_active_user') || "";
+        let activeUserPhone = sessionStorage.getItem('gll_active_user') || "";
         let loggedInAdminId = "";
 
         let paymentGateways = {
@@ -618,13 +621,13 @@
             db.ref('shubhSlots').on('value', (snap) => {
                 if(snap.exists()) shubhSlotData = snap.val();
                 else db.ref('shubhSlots').set(defaultShubhSlots);
-                if(currentType === 'shubh') renderResults();
+                renderResults();
             });
 
             db.ref('dhanSlots').on('value', (snap) => {
                 if(snap.exists()) dhanSlotData = snap.val();
                 else db.ref('dhanSlots').set(defaultDhanSlots);
-                if(currentType === 'dhan') renderResults();
+                renderResults();
             });
 
             db.ref('shubhBets').on('value', (snap) => {
@@ -675,7 +678,7 @@
 
         window.onload = function() {
             initializeFirebaseListeners();
-            startRealTimeSystem(); // तुरंत टाइमर चालू करें
+            startRealTimeSystem();
 
             setTimeout(() => {
                 if(activeUserPhone && usersDB[activeUserPhone]) {
@@ -702,6 +705,9 @@
                         document.getElementById('admin-panel-trigger-btn').classList.remove('hidden');
                     }
                     switchLottery('shubh');
+                } else {
+                    document.getElementById('auth-section').classList.remove('hidden');
+                    document.getElementById('main-section').classList.add('hidden');
                 }
             }, 600);
         }
@@ -779,7 +785,7 @@
             }
             
             activeUserPhone = inputId;
-            localStorage.setItem('gll_active_user', inputId);
+            sessionStorage.setItem('gll_active_user', inputId);
             
             if(userWallets[inputId] === undefined) {
                 userWallets[inputId] = 100;
@@ -803,7 +809,7 @@
         }
 
         function performLogout() {
-            localStorage.removeItem('gll_active_user');
+            sessionStorage.removeItem('gll_active_user');
             activeUserPhone = "";
             location.reload();
         }
@@ -1102,17 +1108,34 @@
             let currentData = currentType === 'shubh' ? shubhSlotData : dhanSlotData;
             if(!currentData) return;
 
-            currentData.forEach(item => {
+            let isAdminLoggedIn = activeUserPhone && usersDB[activeUserPhone] && usersDB[activeUserPhone].isSuperAdmin;
+
+            currentData.forEach((item, index) => {
                 const row = document.createElement('div');
                 if(item.type === 'lunch') {
                     row.className = 'lunch-row';
                     row.innerHTML = `<span style="width:100%; text-align:center; display:block;">${item.display}</span>`;
                 } else {
                     row.className = 'result-row';
-                    row.innerHTML = `<span class="start-time">${item.start}</span> <span class="result-data">${item.display}</span> <span class="end-time">${item.end}</span>`;
+                    let editBtnHtml = (isAdminLoggedIn && item.display !== "—") ? `<button class="chart-edit-btn" onclick="quickEditSlotResult(${index})">✏️ Edit</button>` : '';
+                    row.innerHTML = `<span class="start-time">${item.start}</span> <span class="result-data">${item.display} ${editBtnHtml}</span> <span class="end-time">${item.end}</span>`;
                 }
                 container.appendChild(row);
             });
+        }
+
+        function quickEditSlotResult(index) {
+            let currentData = currentType === 'shubh' ? shubhSlotData : dhanSlotData;
+            let slot = currentData[index];
+            let newVal = prompt(`स्लॉट (${slot.start} - ${slot.end}) का रिजल्ट दर्ज करें\n(उदा. 238-50-235 या 228-5):`, "");
+            if(newVal !== null) {
+                const formattedDisplay = `<span class='unique-result-badge'>${newVal}</span>`;
+                currentData[index].display = formattedDisplay;
+                if(currentType === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
+                else db.ref('dhanSlots').set(dhanSlotData);
+                renderResults();
+                alert('चार्ट अपडेट हो गया!');
+            }
         }
 
         function populateAdminSlots() {
@@ -1130,12 +1153,12 @@
                 if(item.type !== 'lunch') {
                     const opt = document.createElement('option');
                     opt.value = index;
-                    opt.innerText = `[${currentType.toUpperCase()}] Open: ${item.start} ➔ Close: ${item.end}`;
+                    opt.innerText = `[${currentType.toUpperCase()}] ${item.start} ➔ ${item.end}`;
                     select.appendChild(opt);
 
                     let startM = timeStrToMins(item.start);
                     let endM = timeStrToMins(item.end);
-                    if(currentMins >= startMins && currentMins <= endMins) {
+                    if(currentMins >= startM && currentMins <= endM) {
                         autoSelectIndex = index;
                     }
                 }
@@ -1155,11 +1178,9 @@
             }
         }
 
-        // ================= पक्का फिक्स किया हुआ लाइव टाइमर =================
         function startRealTimeSystem() {
             setInterval(() => {
                 let now = new Date();
-                let currentTotalSecs = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
                 let limitMins = timeStrToMins("08:00 PM");
                 let currentMins = now.getHours() * 60 + now.getMinutes();
 
@@ -1170,14 +1191,9 @@
                 let startMins = timeStrToMins(activeSlot.start);
                 let endMins = timeStrToMins(activeSlot.end);
 
-                // यदि वर्तमान समय ओपन से पहले है, तो ओपन का टाइमर दिखाओ; वरना क्लोज का टाइमर
                 let targetMins = currentMins < startMins ? startMins : endMins;
                 let stageName = currentMins < startMins ? "Open" : "Close";
 
-                let targetTotalSecs = targetMins * 3600; // सही सेकंड्स कैलकुलेशन
-                let timeDiffSecs = (targetMins * 60) - currentMins; 
-                
-                // शुद्ध सेकंड्स के हिसाब से काउंटडाउन
                 let exactTargetSecs = targetMins * 60;
                 let exactCurrentSecs = (now.getHours() * 60 + now.getMinutes()) * 60 + now.getSeconds();
                 let diffSecs = exactTargetSecs - exactCurrentSecs;
@@ -1200,12 +1216,13 @@
                 if(admCountdown) admCountdown.innerText = timerStr;
             }, 1000);
         }
-        // ===================================================================
 
-        // ================= ADMIN OPEN & CLOSE STEP-BY-STEP FUNCTIONS =================
         let tempAdminOpenData = {};
 
         function saveAdminOpen() {
+            const gameSelector = document.getElementById('admin-game-selector').value;
+            const index = document.getElementById('admin-slot-index').value;
+
             let opPatti = cleanToEnglish(document.getElementById('admin-open-patti').value);
             let opDigit = cleanToEnglish(document.getElementById('admin-open-digit').value);
 
@@ -1214,8 +1231,21 @@
                 return;
             }
 
-            tempAdminOpenData = { patti: opPatti, digit: opDigit };
-            alert(`✅ ओपन (पत्ती: ${opPatti}, अंक: ${opDigit}) सुरक्षित कर लिया गया है। अब क्लोज का समय होने पर क्लोज डालकर 'पब्लिश करें' दबाएं।`);
+            tempAdminOpenData[index] = { patti: opPatti, digit: opDigit };
+
+            let openDisplayStr = `${opPatti}-${opDigit}`;
+            const formattedDisplay = `<span class='unique-result-badge'>${openDisplayStr}</span>`;
+
+            if(gameSelector === 'shubh') {
+                shubhSlotData[index].display = formattedDisplay;
+                db.ref('shubhSlots').set(shubhSlotData);
+            } else {
+                dhanSlotData[index].display = formattedDisplay;
+                db.ref('dhanSlots').set(dhanSlotData);
+            }
+
+            renderResults();
+            alert(`✅ ओपन (${openDisplayStr}) लाइव पब्लिश हो गया! क्लोज का समय आने पर क्लोज डालकर "पूरी जोड़ी पब्लिश करें" बटन दबाएं।`);
         }
 
         function updateAdminResult() {
@@ -1225,9 +1255,15 @@
             let clPatti = cleanToEnglish(document.getElementById('admin-close-patti').value);
             let clDigit = cleanToEnglish(document.getElementById('admin-close-digit').value);
 
-            if(!tempAdminOpenData.digit) {
-                alert('कृपया पहले ऊपर "ओपन सेव करें" बटन दबाएं!');
-                return;
+            if(!tempAdminOpenData[index] || !tempAdminOpenData[index].digit) {
+                let manualOpen = prompt("ओपन की जानकारी नहीं मिली। ओपन पत्ती और अंक दर्ज करें (उदा. 228-5):");
+                if(manualOpen) {
+                    let parts = manualOpen.split('-');
+                    tempAdminOpenData[index] = { patti: parts[0] || "", digit: parts[1] || "" };
+                } else {
+                    alert('कृपया पहले ओपन दर्ज करें!');
+                    return;
+                }
             }
 
             if(!clPatti || !clDigit) {
@@ -1235,8 +1271,9 @@
                 return;
             }
 
-            let jodiVal = tempAdminOpenData.digit + clDigit;
-            let finalResultStr = `${tempAdminOpenData.patti}-${jodiVal}-${clPatti}`;
+            let opData = tempAdminOpenData[index];
+            let jodiVal = opData.digit + clDigit;
+            let finalResultStr = `${opData.patti}-${jodiVal}-${clPatti}`;
             
             const formattedDisplay = `<span class='unique-result-badge'>${finalResultStr}</span>`;
             
@@ -1248,21 +1285,14 @@
                 db.ref('dhanSlots').set(dhanSlotData);
             }
             
-            tempAdminOpenData = {};
+            delete tempAdminOpenData[index];
             document.getElementById('admin-open-patti').value = '';
             document.getElementById('admin-open-digit').value = '';
             document.getElementById('admin-close-patti').value = '';
             document.getElementById('admin-close-digit').value = '';
 
             renderResults();
-            alert('🚀 सफलतापूर्व जोड़ी बनकर चार्ट में पब्लिश हो गया! अगला स्लॉट ऑटोमैटिक एक्टिव हो गया है।');
-            
-            let nextIdx = parseInt(index) + 1;
-            const select = document.getElementById('admin-slot-index');
-            if(select && select.options[nextIdx]) {
-                select.selectedIndex = nextIdx;
-                updateAdminSlotInfo();
-            }
+            alert('🚀 सफलतापूर्वक पूरा परिणाम और जोड़ी पब्लिश हो गई!');
             closeAdmin();
         }
 
@@ -1271,17 +1301,16 @@
             const gameSelector = document.getElementById('admin-game-selector').value;
             let currentData = gameSelector === 'shubh' ? shubhSlotData : dhanSlotData;
             
-            let currentVal = prompt("मौजूदा रिजल्ट एडिट करें (उदा. 228-50-235):", "");
+            let currentVal = prompt("छूटा हुआ या पुराना रिजल्ट दर्ज/एडिट करें (उदा. 228-50-235):", "");
             if(currentVal) {
                 const formattedDisplay = `<span class='unique-result-badge'>${currentVal}</span>`;
                 currentData[index].display = formattedDisplay;
                 if(gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
                 else db.ref('dhanSlots').set(dhanSlotData);
                 renderResults();
-                alert('चार्ट सफलतापूर्वक सुधार दिया गया है!');
+                alert('परिणाम अपडेट हो गया!');
             }
         }
-        // ============================================================================
 
         function openDeposit() {
             document.getElementById('deposit-modal').classList.remove('hidden');
@@ -1487,6 +1516,7 @@
         }
 
         function closeAdmin() {
+            document.getElementById('admin-section').classList.hidden = false;
             document.getElementById('admin-section').classList.add('hidden');
             document.getElementById('main-section').classList.remove('hidden');
         }
@@ -1675,4 +1705,4 @@
         }
     </script>
 </body>
-</html>
+                                                                                                                                            </html>
