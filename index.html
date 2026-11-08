@@ -906,7 +906,7 @@
             let slotDisplay = currentData[slotIdx].display || "";
             let isOpenDeclared = slotDisplay !== "—" && !slotDisplay.includes("lunch");
 
-            // नियम: यदि जोड़ी गेम (Jodi Digit) है और ओपेन आ चुका है, तो जोड़ी पूरी तरह बंद रहेगी
+            // नियम: यदि जोड़ी गेम (Jodi Digit) है और ओपेन आ चुका है, तो दोनों गेमों (शुभ और धन) में जोड़ी बंद रहेगी
             if(mode === 'Jodi Digit' && isOpenDeclared) {
                 alert(`⚠️ ${slot.start} स्लॉट का ओपेन परिणाम आ चुका है, इसलिए अब जोड़ी (Jodi) की बुकिंग बंद कर दी गई है!`);
                 return;
@@ -938,7 +938,7 @@
                 typeSelect.appendChild(opt);
             } else {
                 typeLabel.innerText = "GAME TYPE / SLOT TIME:";
-                // यदि ओपेन आ चुका है, तो यूज़र केवल CLOSE के लिए ही दांव लगा सकता है (ओपन विकल्प छिप जाएगा)
+                // यदि ओपेन आ चुका है, तो ओपन विकल्प छिप जाएगा और केवल क्लोज के लिए खुला रहेगा
                 if(allowOpen && !isOpenDeclared) {
                     let opt1 = document.createElement('option');
                     opt1.value = 'OPEN';
@@ -1322,7 +1322,7 @@
             }
 
             renderResults();
-            alert(`✅ ओपन (${openDisplayStr}) लाइव पब्लिश हो गया! अब जोड़ी की बुकिंग बंद हो गई है, और सिंगल/पत्ती में क्लोज (CLOSE) के लिए बुकिंग चालू है।`);
+            alert(`✅ ओपन (${openDisplayStr}) लाइव पब्लिश हो गया! अब दोनों गेमों (शुभ और धन) में जोड़ी की बुकिंग बंद हो गई है।`);
         }
 
         function updateAdminResult() {
