@@ -545,7 +545,6 @@
             "9130047135": { name: "सह-एडमिन (विकास/राहुल)", pass: "9130047135", isLocked: false, isSuperAdmin: true }
         };
 
-        // यूज़र को बार-बार लॉगिन न करना पड़े, इसलिए localStorage का उपयोग किया गया है
         let activeUserPhone = localStorage.getItem('gll_active_user') || "";
         let loggedInAdminId = "";
 
@@ -678,7 +677,6 @@
         }
 
         window.onload = function() {
-            // URL से कोई भी संवेदनशील डेटा या कचरा साफ करना
             if (window.location.search.length > 0 || window.location.hash.length > 0) {
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
@@ -791,7 +789,6 @@
             }
             
             activeUserPhone = inputId;
-            // यूज़र को बार-बार लॉगिन न करना पड़े, इसलिए localStorage में सेव कर रहे हैं
             localStorage.setItem('gll_active_user', inputId);
             
             if(userWallets[inputId] === undefined) {
@@ -909,8 +906,9 @@
             let slotDisplay = currentData[slotIdx].display || "";
             let isOpenDeclared = slotDisplay !== "—" && !slotDisplay.includes("lunch");
 
-            if(isOpenDeclared) {
-                alert(`⚠️ ${slot.start} स्लॉट का ओपेन परिणाम आ चुका है, इसलिए इस स्लॉट की बुकिंग बंद कर दी गई है। कृपया अगले स्लॉट का इंतज़ार करें!`);
+            // नियम: यदि जोड़ी गेम (Jodi Digit) है और ओपेन आ चुका है, तो जोड़ी पूरी तरह बंद रहेगी
+            if(mode === 'Jodi Digit' && isOpenDeclared) {
+                alert(`⚠️ ${slot.start} स्लॉट का ओपेन परिणाम आ चुका है, इसलिए अब जोड़ी (Jodi) की बुकिंग बंद कर दी गई है!`);
                 return;
             }
 
@@ -940,7 +938,8 @@
                 typeSelect.appendChild(opt);
             } else {
                 typeLabel.innerText = "GAME TYPE / SLOT TIME:";
-                if(allowOpen) {
+                // यदि ओपेन आ चुका है, तो यूज़र केवल CLOSE के लिए ही दांव लगा सकता है (ओपन विकल्प छिप जाएगा)
+                if(allowOpen && !isOpenDeclared) {
                     let opt1 = document.createElement('option');
                     opt1.value = 'OPEN';
                     opt1.innerText = `OPEN (${slot.start})`;
@@ -995,9 +994,12 @@
             let slotIdx = activeInfo.index;
             let currentData = currentType === 'shubh' ? shubhSlotData : dhanSlotData;
             let slotDisplay = currentData[slotIdx].display || "";
+            let isOpenDeclared = slotDisplay !== "—" && !slotDisplay.includes("lunch");
 
-            if(slotDisplay !== "—" && !slotDisplay.includes("lunch")) {
-                alert('⚠️ इस स्लॉट का ओपेन आ चुका है, दांव स्वीकार नहीं होगा!');
+            const gameType = document.getElementById('board-game-type').value;
+
+            if(currentGameMode === 'Jodi Digit' && isOpenDeclared) {
+                alert('⚠️ ओपेन आ चुका है, जोड़ी का दांव स्वीकार नहीं होगा!');
                 closeGameScreen();
                 return;
             }
@@ -1012,7 +1014,6 @@
                 return;
             }
 
-            const gameType = document.getElementById('board-game-type').value;
             const val = document.getElementById('board-input-val').value.trim();
             const points = parseInt(document.getElementById('board-points').value);
             
@@ -1321,7 +1322,7 @@
             }
 
             renderResults();
-            alert(`✅ ओपन (${openDisplayStr}) लाइव पब्लिश हो गया! अब इस स्लॉट की बुकिंग ऑटोमैटिक बंद हो चुकी है।`);
+            alert(`✅ ओपन (${openDisplayStr}) लाइव पब्लिश हो गया! अब जोड़ी की बुकिंग बंद हो गई है, और सिंगल/पत्ती में क्लोज (CLOSE) के लिए बुकिंग चालू है।`);
         }
 
         function updateAdminResult() {
@@ -1783,4 +1784,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
