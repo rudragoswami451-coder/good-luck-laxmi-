@@ -710,36 +710,37 @@
             initializeFirebaseListeners();
             startRealTimeSystem();
 
-            setTimeout(() => {
-                if(activeUserPhone && usersDB[activeUserPhone]) {
-                    if(usersDB[activeUserPhone].isLocked) {
-                        alert('आपका अकाउंट एडमिन द्वारा लॉक कर दिया गया है!');
-                        performLogout();
-                        return;
-                    }
-                    document.getElementById('auth-section').classList.add('hidden');
-                    document.getElementById('main-section').classList.remove('hidden');
-                    document.getElementById('user-phone-display').innerText = activeUserPhone;
-                    document.getElementById('prof-phone').innerText = activeUserPhone;
-                    
-                    if(userWallets[activeUserPhone] !== undefined) {
-                        currentWallet = userWallets[activeUserPhone];
-                    } else {
-                        currentWallet = 0;
-                        userWallets[activeUserPhone] = 0;
-                        db.ref('userWallets').set(userWallets);
-                    }
-                    updateWalletUI();
-
-                    if(usersDB[activeUserPhone].isSuperAdmin) {
-                        document.getElementById('admin-panel-trigger-btn').classList.remove('hidden');
-                    }
-                    switchLottery('shubh');
-                } else {
-                    document.getElementById('auth-section').classList.remove('hidden');
-                    document.getElementById('main-section').classList.add('hidden');
+            // FIXED: Immediate Session Restore without delay to prevent refresh redirect bug
+            if(activeUserPhone && usersDB[activeUserPhone]) {
+                if(usersDB[activeUserPhone].isLocked) {
+                    alert('आपका अकाउंट एडमिन द्वारा लॉक कर दिया गया है!');
+                    performLogout();
+                    return;
                 }
-            }, 600);
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('main-section').classList.remove('hidden');
+                document.getElementById('user-phone-display').innerText = activeUserPhone;
+                document.getElementById('prof-phone').innerText = activeUserPhone;
+                
+                if(userWallets[activeUserPhone] !== undefined) {
+                    currentWallet = userWallets[activeUserPhone];
+                } else {
+                    currentWallet = 0;
+                    userWallets[activeUserPhone] = 0;
+                    db.ref('userWallets').set(userWallets);
+                }
+                updateWalletUI();
+
+                if(usersDB[activeUserPhone].isSuperAdmin) {
+                    loggedInAdminId = activeUserPhone;
+                    document.getElementById('admin-panel-trigger-btn').classList.remove('hidden');
+                    document.getElementById('logged-admin-info').innerText = `सक्रिय एडमिन: ${usersDB[activeUserPhone].name} (${activeUserPhone})`;
+                }
+                switchLottery('shubh');
+            } else {
+                document.getElementById('auth-section').classList.remove('hidden');
+                document.getElementById('main-section').classList.add('hidden');
+            }
         }
 
         function togglePasswordVisibility(inputId, btn) {
@@ -791,7 +792,7 @@
             }
             usersDB[mob] = { name: name, pass: pass, isLocked: false, isSuperAdmin: false };
             db.ref('usersDB').set(usersDB);
-            userWallets[mob] = 100; // Registration Bonus 100 Points
+            userWallets[mob] = 100; // Registration Bonus 100 Points (Only once on register)
             db.ref('userWallets').set(userWallets);
             alert('🎁 बधाई हो! रजिस्ट्रेशन सफल हुआ और ₹100 बोनस आपके पॉइंट्स में जोड़ दिया गया है।');
             switchAuthForm('login');
@@ -1181,7 +1182,7 @@
         function quickEditSlotResult(index) {
             let currentData = currentType === 'shubh' ? shubhSlotData : dhanSlotData;
             let slot = currentData[index];
-            let newVal = prompt(`स्लॉट (${slot.start} - ${slot.end}) का रिजल्ट दर्ज करें\n(उदा. 238-50-235):`, "");
+            let newVal = prompt(`स्लॉट (${slot.start} - ${slot.end}) का रिजल्ट दर्ज करें\n(उदा. 228-50-235):`, "");
             if(newVal !== null) {
                 const formattedDisplay = `<span class='unique-result-badge'>${newVal}</span>`;
                 currentData[index].display = formattedDisplay;
@@ -1193,6 +1194,7 @@
             }
         }
 
+        // FIXED ROBUST WINNER PAYOUT & CALCULATION ENGINE
         function checkAndPayoutWinners(lotteryType, slotIndex, resultStr) {
             let slotData = lotteryType === 'shubh' ? shubhSlotData : dhanSlotData;
             let slot = slotData[slotIndex];
@@ -1204,16 +1206,17 @@
             let parts = cleanResult.split('-');
             if(parts.length < 3) return;
 
-            let openPatti = parts[0] || "";
-            let jodi = parts[1] || "";
-            let closePatti = parts[2] || "";
+            let openPatti = parts[0].trim();
+            let jodi = parts[1].trim();
+            let closePatti = parts[2].trim();
+            
             let openDigit = openPatti.length >= 3 ? String(Number(openPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10) : "";
             let closeDigit = closePatti.length >= 3 ? String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10) : "";
 
             betsList.forEach(bet => {
                 if(bet.slotTime === slotTimeStr) {
                     let winMultiplier = 0;
-                    let num = bet.number;
+                    let num = String(bet.number).trim();
 
                     if(bet.gameMode === 'Single Digit') {
                         if(bet.gameType === 'OPEN' && num === openDigit) winMultiplier = 10;
@@ -1248,7 +1251,6 @@
             let slotData = lotteryType === 'shubh' ? shubhSlotData : dhanSlotData;
             let slot = slotData[slotIndex];
             if(!slot || slot.type === 'lunch') return;
-            let slotTimeStr = `${slot.start} - ${slot.end}`;
             
             let currentDisplay = slot.display || "";
             if(currentDisplay !== "—") return; 
@@ -1354,8 +1356,7 @@
 
                 if(diffSecs < 0) diffSecs = 0;
 
-                // 13 Min / 2 Min Logic Rule:
-                // अगर Admin ने 13 मिनट के अंदर STOP नहीं किया, तो बचे 2 मिनट (diffSecs <= 120) में Auto-Random चालू हो जाएगा
+                // 13 Min / 2 Min Rule: If Admin hasn't stopped within 13 mins, last 2 mins triggers auto random
                 if(diffSecs <= 120 && isAutoRandomActive && diffSecs === 0) {
                     triggerSmartAutoRandomForSlot(currentType, activeIdx);
                 }
@@ -1686,7 +1687,6 @@
         }
 
         function closeAdmin() {
-            document.getElementById('admin-section').classList.hidden = false;
             document.getElementById('admin-section').classList.add('hidden');
             document.getElementById('main-section').classList.remove('hidden');
         }
