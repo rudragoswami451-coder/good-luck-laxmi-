@@ -133,9 +133,6 @@
         .admin-input-group { background: #181818; border: 1px dashed var(--secondary); padding: 10px; border-radius: 6px; margin: 8px 0; text-align: left; }
         .input-hint { font-size: 0.75rem; color: var(--accent); margin-top: -5px; margin-bottom: 8px; text-align: left; }
 
-        .pay-options { display: flex; gap: 8px; margin: 10px 0; }
-        .pay-app-btn { flex: 1; padding: 10px; background: #333; border: 1px solid var(--secondary); color: #fff; font-size: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; }
-        .pay-app-btn.active { background: var(--secondary); color: #000; }
         .qr-timer-display { font-size: 1.2rem; color: #ff4444; font-weight: bold; font-family: monospace; margin: 8px 0; }
 
         .auth-switch { font-size: 0.85rem; color: var(--accent); margin-top: 12px; cursor: pointer; text-decoration: underline; display: inline-block; }
@@ -351,18 +348,15 @@
             <div id="admin-users-list"></div>
         </div>
 
+        <!-- एकलौता और साफ़ QR कंट्रोल बॉक्स -->
         <div id="adm-sec-qr" class="hidden">
-            <h4 style="color:var(--secondary); margin-bottom:8px;">💳 QR कोड मास्टर कंट्रोल</h4>
-            <label style="font-size:0.85rem; display:block; text-align:left;">एप चुनें:</label>
-            <select id="admin-qr-app" onchange="loadCurrentQRSettings()">
-                <option value="gpay">Google Pay</option>
-                <option value="phonepe">PhonePe</option>
-                <option value="paytm">Paytm</option>
-            </select>
+            <h4 style="color:var(--secondary); margin-bottom:8px;">💳 सिंगल QR कोड मास्टर कंट्रोल</h4>
             <label style="font-size:0.85rem; display:block; text-align:left; margin-top:8px;">नया UPI ID दर्ज करें:</label>
             <input type="text" id="admin-upi-input" placeholder="उदा. goodluck@upi">
+            
             <label style="font-size:0.85rem; display:block; text-align:left; margin-top:8px;">QR कोड का सीधा इमेज लिंक (URL) डालें:</label>
             <input type="text" id="admin-qr-url-input" placeholder="उदा. https://i.ibb.co/xyz/qr.jpg" style="padding: 10px; background:#222; border:1px solid var(--secondary); border-radius:6px; color:#fff; width:100%; margin:5px 0;">
+            
             <button class="btn" style="background:#ff4444; color:#fff;" onclick="saveNewQRSettings()">QR अपडेट सेव करें</button>
         </div>
 
@@ -398,22 +392,17 @@
         <button class="btn" style="background:#555; color:#fff; margin-top:15px;" onclick="closeAdmin()">वापस जाएँ</button>
     </div>
 
-    <!-- डिपॉजिट मॉडल -->
+    <!-- डिपॉजिट मॉडल (बिना किसी फालतू ऐप बटन के सीधा QR) -->
     <div class="modal hidden" id="deposit-modal">
         <div class="modal-content">
-            <h3 style="color: var(--secondary); margin-bottom: 5px;">💳 पेमेंट गेटवे 👍</h3>
-            <div class="pay-options">
-                <button class="pay-app-btn active" id="btn-gpay" onclick="selectPayApp('Google Pay', 'gpay')">Google Pay</button>
-                <button class="pay-app-btn" id="btn-phonepe" onclick="selectPayApp('PhonePe', 'phonepe')">PhonePe</button>
-                <button class="pay-app-btn" id="btn-paytm" onclick="selectPayApp('Paytm', 'paytm')">Paytm</button>
-            </div>
+            <h3 style="color: var(--secondary); margin-bottom: 8px;">💳 भुगतान करें (QR Scan) 👍</h3>
             <div style="background: #181818; border: 2px solid var(--secondary); padding: 12px; border-radius: 8px; margin: 10px 0;">
-                <p style="font-size: 0.8rem; color: #d4af37;" id="selected-app-text">Google Pay QR Code:</p>
+                <p style="font-size: 0.8rem; color: #d4af37;">अपना QR कोड स्कैन करें:</p>
                 <div class="qr-timer-display" id="qr-timer">05:00</div>
-                <div id="qr-display-box" style="width: 140px; height: 140px; background: #fff; margin: 5px auto; border-radius: 6px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#000; font-weight:bold; font-size:0.75rem; border:2px solid var(--secondary); overflow:hidden;">
+                <div id="qr-display-box" style="width: 150px; height: 150px; background: #fff; margin: 5px auto; border-radius: 6px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#000; font-weight:bold; font-size:0.75rem; border:2px solid var(--secondary); overflow:hidden;">
                     <span id="qr-placeholder-text">[ QR CODE ]</span>
                 </div>
-                <p style="font-size: 0.7rem; color: #aaa; margin-top: 5px;">UPI ID: <b id="display-upi-id" style="color:var(--accent)">goodluck@paytm</b></p>
+                <p style="font-size: 0.75rem; color: #aaa; margin-top: 5px;">UPI ID: <b id="display-upi-id" style="color:var(--accent)">goodluck@paytm</b></p>
             </div>
             
             <input type="number" id="dep-amount" placeholder="राशि (₹) दर्ज करें" value="500">
@@ -562,12 +551,8 @@
         let activeUserPhone = localStorage.getItem('gll_active_user') || "";
         let loggedInAdminId = "";
 
-        let paymentGateways = {
-            gpay: { upi: "goodluck.gpay@paytm", imageSrc: "" },
-            phonepe: { upi: "goodluck.phonepe@ybl", imageSrc: "" },
-            paytm: { upi: "goodluck.paytm@paytm", imageSrc: "" }
-        };
-        let currentSelectedGateway = 'gpay';
+        // Single QR Gateway structure
+        let masterQR = { upi: "goodluck@paytm", imageSrc: "" };
         let qrTimerInterval = null;
         let qrTimeRemaining = 300;
 
@@ -676,8 +661,8 @@
                 if(activeUserPhone) renderUserTransactionHistory();
             });
 
-            db.ref('paymentGateways').on('value', (snap) => {
-                if(snap.exists()) paymentGateways = snap.val();
+            db.ref('masterQR').on('value', (snap) => {
+                if(snap.exists()) masterQR = snap.val();
                 loadCurrentQRSettings();
             });
 
@@ -1502,7 +1487,7 @@
 
         function openDeposit() {
             document.getElementById('deposit-modal').classList.remove('hidden');
-            selectPayApp('Google Pay', 'gpay');
+            loadDepositQRUI();
             startQRTimer();
             renderUserTransactionHistory();
         }
@@ -1512,30 +1497,19 @@
             clearInterval(qrTimerInterval);
         }
 
-        function selectPayApp(appName, key) {
-            currentSelectedGateway = key;
-            document.getElementById('btn-gpay').classList.remove('active');
-            document.getElementById('btn-phonepe').classList.remove('active');
-            document.getElementById('btn-paytm').classList.remove('active');
-            
-            if(key === 'gpay') document.getElementById('btn-gpay').classList.add('active');
-            if(key === 'phonepe') document.getElementById('btn-phonepe').classList.add('active');
-            if(key === 'paytm') document.getElementById('btn-paytm').classList.add('active');
-            
-            document.getElementById('selected-app-text').innerText = `${appName} QR Code:`;
-            let currentUpi = paymentGateways[key] ? paymentGateways[key].upi : "goodluck@paytm";
+        function loadDepositQRUI() {
+            let currentUpi = masterQR.upi || "goodluck@paytm";
             document.getElementById('display-upi-id').innerText = currentUpi;
             
             let amountVal = document.getElementById('dep-amount').value || 500;
             document.getElementById('direct-upi-pay-btn').href = `upi://pay?pa=${currentUpi}&pn=GoodLuckLaxmi&am=${amountVal}&cu=INR`;
             
             const displayBox = document.getElementById('qr-display-box');
-            if(paymentGateways[key] && paymentGateways[key].imageSrc) {
-                displayBox.innerHTML = `<img src="${paymentGateways[key].imageSrc}" style="width:100%; height:100%; object-fit:contain;" crossorigin="anonymous">`;
+            if(masterQR.imageSrc) {
+                displayBox.innerHTML = `<img src="${masterQR.imageSrc}" style="width:100%; height:100%; object-fit:contain;" crossorigin="anonymous">`;
             } else {
-                displayBox.innerHTML = `<span id="qr-placeholder-text">[ ${appName.toUpperCase()} QR ]</span>`;
+                displayBox.innerHTML = `<span id="qr-placeholder-text">[ QR CODE ]</span>`;
             }
-            startQRTimer();
         }
 
         function startQRTimer() {
@@ -1559,29 +1533,21 @@
         }
 
         function loadCurrentQRSettings() {
-            const appKey = document.getElementById('admin-qr-app').value;
-            if(paymentGateways[appKey]) {
-                document.getElementById('admin-upi-input').value = paymentGateways[appKey].upi || "";
-                document.getElementById('admin-qr-url-input').value = paymentGateways[appKey].imageSrc || "";
-            }
+            document.getElementById('admin-upi-input').value = masterQR.upi || "";
+            document.getElementById('admin-qr-url-input').value = masterQR.imageSrc || "";
         }
 
         function saveNewQRSettings() {
-            const appKey = document.getElementById('admin-qr-app').value;
             const newUpi = document.getElementById('admin-upi-input').value.trim();
-            let newUrl = document.getElementById('admin-qr-url-input').value.trim();
+            const newUrl = document.getElementById('admin-qr-url-input').value.trim();
             
-            // Fix direct link formatting if needed
-            if(newUrl.includes('kommodo.ai') || newUrl.includes('postimg.cc') || newUrl.includes('ibb.co')) {
-                // Keep direct link safe
-            }
-
-            if(!paymentGateways[appKey]) paymentGateways[appKey] = {};
-            if(newUpi) paymentGateways[appKey].upi = newUpi;
-            if(newUrl) paymentGateways[appKey].imageSrc = newUrl;
+            masterQR = {
+                upi: newUpi || "goodluck@paytm",
+                imageSrc: newUrl || ""
+            };
             
-            db.ref('paymentGateways').set(paymentGateways);
-            alert('QR इमेज लिंक और UPI सफलतापूर्वक अपडेट हो गए हैं!');
+            db.ref('masterQR').set(masterQR);
+            alert('सिंगल QR और UPI सफलतापूर्वक अपडेट हो गए हैं!');
         }
 
         function renderUserTransactionHistory() {
@@ -1815,9 +1781,6 @@
                 details = `Acc: ${acc} | IFSC: ${ifsc}`;
             }
             
-            // =======================================================================
-            // CRITICAL FIX: INSTANT POINT DEDUCTION ON WITHDRAW REQUEST SUBMISSION
-            // =======================================================================
             currentWallet -= amt;
             userWallets[activeUserPhone] = currentWallet;
             db.ref('userWallets/' + activeUserPhone).set(currentWallet);
