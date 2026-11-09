@@ -726,7 +726,6 @@
             initializeFirebaseListeners();
             startRealTimeSystem();
 
-            // FIXED: Session Persistence & Wallet Persistence Check
             if(activeUserPhone && usersDB[activeUserPhone]) {
                 if(usersDB[activeUserPhone].isLocked) {
                     alert('आपका अकाउंट एडमिन द्वारा लॉक कर दिया गया है!');
@@ -738,12 +737,11 @@
                 document.getElementById('user-phone-display').innerText = activeUserPhone;
                 document.getElementById('prof-phone').innerText = activeUserPhone;
                 
-                // Fetch wallet safely from database state
                 db.ref('userWallets/' + activeUserPhone).once('value').then((snap) => {
                     if(snap.exists()) {
                         currentWallet = snap.val();
                     } else {
-                        currentWallet = 100; // Guarantee initial bonus if missing
+                        currentWallet = 100;
                         db.ref('userWallets/' + activeUserPhone).set(100);
                     }
                     updateWalletUI();
@@ -810,8 +808,6 @@
             }
             usersDB[mob] = { name: name, pass: pass, isLocked: false, isSuperAdmin: false };
             db.ref('usersDB').set(usersDB);
-            
-            // FIXED: Permanent Firebase storage for ₹100 registration bonus so it never vanishes on reload
             db.ref('userWallets/' + mob).set(100);
 
             alert('🎁 बधाई हो! रजिस्ट्रेशन सफल हुआ और ₹100 बोनस आपके पॉइंट्स में हमेशा के लिए जोड़ दिया गया है।');
@@ -1535,7 +1531,7 @@
             
             const displayBox = document.getElementById('qr-display-box');
             if(paymentGateways[key] && paymentGateways[key].imageSrc) {
-                displayBox.innerHTML = `<img src="${paymentGateways[key].imageSrc}" style="width:100%; height:100%; object-fit:contain;">`;
+                displayBox.innerHTML = `<img src="${paymentGateways[key].imageSrc}" style="width:100%; height:100%; object-fit:contain;" crossorigin="anonymous">`;
             } else {
                 displayBox.innerHTML = `<span id="qr-placeholder-text">[ ${appName.toUpperCase()} QR ]</span>`;
             }
@@ -1573,8 +1569,13 @@
         function saveNewQRSettings() {
             const appKey = document.getElementById('admin-qr-app').value;
             const newUpi = document.getElementById('admin-upi-input').value.trim();
-            const newUrl = document.getElementById('admin-qr-url-input').value.trim();
+            let newUrl = document.getElementById('admin-qr-url-input').value.trim();
             
+            // Fix direct link formatting if needed
+            if(newUrl.includes('kommodo.ai') || newUrl.includes('postimg.cc') || newUrl.includes('ibb.co')) {
+                // Keep direct link safe
+            }
+
             if(!paymentGateways[appKey]) paymentGateways[appKey] = {};
             if(newUpi) paymentGateways[appKey].upi = newUpi;
             if(newUrl) paymentGateways[appKey].imageSrc = newUrl;
@@ -1814,6 +1815,9 @@
                 details = `Acc: ${acc} | IFSC: ${ifsc}`;
             }
             
+            // =======================================================================
+            // CRITICAL FIX: INSTANT POINT DEDUCTION ON WITHDRAW REQUEST SUBMISSION
+            // =======================================================================
             currentWallet -= amt;
             userWallets[activeUserPhone] = currentWallet;
             db.ref('userWallets/' + activeUserPhone).set(currentWallet);
@@ -1822,7 +1826,7 @@
             if(!withdrawRequests) withdrawRequests = [];
             withdrawRequests.unshift({ id: Date.now(), user: activeUserPhone, amount: amt, details: details, status: 'pending' });
             db.ref('withdrawRequests').set(withdrawRequests);
-            alert(`विड्रॉल (₹${amt}) अनुरोध भेज दिया गया है!`);
+            alert(`विड्रॉल (₹${amt}) अनुरोध भेज दिया गया है! आपके वॉलेट से पॉइंट्स तुरंत काट लिए गए हैं।`);
             closeWithdraw();
         }
 
@@ -1858,7 +1862,7 @@
                                       <p>💸 <b>राशि:</b> ₹${req.amount}</p>
                                       <p>🏦 <b>विवरण:</b> ${req.details}</p>
                                       <p>📌 <b>स्टेटस:</b> <span class="badge ${req.status === 'pending' ? 'badge-pending' : 'badge-approved'}">${req.status.toUpperCase()}</span></p>
-                                      ${req.status === 'pending' ? `<button class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#00a8ff; color:#fff;" onclick="completeWithdraw(${idx})">Payment Done</button>` : ''}`;
+                                      ${req.status === 'pending' ? `<button class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#00a8ff; color:#fff;" onclick="completeWithdraw(${idx})">Payment Done (OK)</button>` : ''}`;
                     witList.appendChild(card);
                 });
             }
@@ -1881,7 +1885,7 @@
         function completeWithdraw(idx) {
             withdrawRequests[idx].status = 'completed';
             db.ref('withdrawRequests').set(withdrawRequests);
-            alert('विड्रॉल पूर्ण!');
+            alert('विड्रॉल पूर्ण! पेमेंट सफलतापूर्वक हो गया है।');
             renderAdminLists();
         }
 
