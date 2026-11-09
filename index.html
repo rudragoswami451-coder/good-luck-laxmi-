@@ -352,7 +352,7 @@
         </div>
 
         <div id="adm-sec-qr" class="hidden">
-            <h4 style="color:var(--secondary); margin-bottom:8px;">💳 अलग-अलग QR कोड सेट करें</h4>
+            <h4 style="color:var(--secondary); margin-bottom:8px;">💳 QR कोड मास्टर कंट्रोल</h4>
             <label style="font-size:0.85rem; display:block; text-align:left;">एप चुनें:</label>
             <select id="admin-qr-app" onchange="loadCurrentQRSettings()">
                 <option value="gpay">Google Pay</option>
@@ -361,8 +361,8 @@
             </select>
             <label style="font-size:0.85rem; display:block; text-align:left; margin-top:8px;">नया UPI ID दर्ज करें:</label>
             <input type="text" id="admin-upi-input" placeholder="उदा. goodluck@upi">
-            <label style="font-size:0.85rem; display:block; text-align:left; margin-top:8px;">फोन से QR कोड की फोटो चुनें:</label>
-            <input type="file" id="admin-qr-file-input" accept="image/*" style="padding: 8px; background:#222; border:1px solid var(--secondary); border-radius:6px; color:#fff; width:100%; margin:5px 0;">
+            <label style="font-size:0.85rem; display:block; text-align:left; margin-top:8px;">QR कोड का सीधा इमेज लिंक (URL) डालें:</label>
+            <input type="text" id="admin-qr-url-input" placeholder="उदा. https://i.ibb.co/xyz/qr.jpg" style="padding: 10px; background:#222; border:1px solid var(--secondary); border-radius:6px; color:#fff; width:100%; margin:5px 0;">
             <button class="btn" style="background:#ff4444; color:#fff;" onclick="saveNewQRSettings()">QR अपडेट सेव करें</button>
         </div>
 
@@ -554,8 +554,8 @@
 
         let isAutoRandomActive = true; 
 
+        // FRESH USERS DATABASE (Testing IDs cleaned, standard admin accounts preserved)
         let usersDB = {
-            "9876543210": { name: "आकाश गोस्वामी", pass: "1234", isLocked: false, isSuperAdmin: false },
             "05032019": { name: "मुख्य एडमिन (आकाश)", pass: "05032019", isLocked: false, isSuperAdmin: true },
             "9130047135": { name: "सह-एडमिन (विकास/राहुल)", pass: "9130047135", isLocked: false, isSuperAdmin: true }
         };
@@ -638,19 +638,28 @@
             });
 
             db.ref('shubhSlots').on('value', (snap) => {
-                if(snap.exists()) shubhSlotData = snap.val();
-                else db.ref('shubhSlots').set(defaultShubhSlots);
+                if(snap.exists()) {
+                    shubhSlotData = snap.val();
+                    checkAndCatchUpMissedSlots('shubh', shubhSlotData);
+                } else {
+                    db.ref('shubhSlots').set(defaultShubhSlots);
+                }
                 renderResults();
             });
 
             db.ref('dhanSlots').on('value', (snap) => {
-                if(snap.exists()) dhanSlotData = snap.val();
-                else db.ref('dhanSlots').set(defaultDhanSlots);
+                if(snap.exists()) {
+                    dhanSlotData = snap.val();
+                    checkAndCatchUpMissedSlots('dhan', dhanSlotData);
+                } else {
+                    db.ref('dhanSlots').set(defaultDhanSlots);
+                }
                 renderResults();
             });
 
             db.ref('shubhBets').on('value', (snap) => {
                 if(snap.exists()) shubhBets = snap.val();
+                else shubhBets = [];
                 if(document.getElementById('admin-section') && !document.getElementById('admin-section').classList.contains('hidden')) {
                     populateAdminBidSlots();
                     renderBidsTable();
@@ -659,6 +668,7 @@
 
             db.ref('dhanBets').on('value', (snap) => {
                 if(snap.exists()) dhanBets = snap.val();
+                else dhanBets = [];
                 if(document.getElementById('admin-section') && !document.getElementById('admin-section').classList.contains('hidden')) {
                     populateAdminBidSlots();
                     renderBidsTable();
@@ -702,6 +712,36 @@
             });
         }
 
+        // CATCH-UP LOGIC: Checks missed slots when app opens/loads automatically
+        function checkAndCatchUpMissedSlots(lotteryType, slotData) {
+            if(!isAutoRandomActive) return;
+            let now = new Date();
+            let currentMins = now.getHours() * 60 + now.getMinutes();
+            let updated = false;
+
+            slotData.forEach((slot, index) => {
+                if(slot.type === 'lunch') return;
+                let endMins = timeStrToMins(slot.end);
+                let displayVal = slot.display || "—";
+                
+                if(currentMins > endMins && displayVal === "—") {
+                    let candidateResults = [
+                        "228-50-235", "350-82-237", "145-09-180", "234-91-560", 
+                        "678-12-390", "110-25-456", "290-10-370", "456-42-138"
+                    ];
+                    let selectedResult = candidateResults[Math.floor(Math.random() * candidateResults.length)];
+                    slotData[index].display = `<span class='unique-result-badge'>${selectedResult}</span>`;
+                    updated = true;
+                    checkAndPayoutWinners(lotteryType, index, selectedResult);
+                }
+            });
+
+            if(updated) {
+                if(lotteryType === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
+                else db.ref('dhanSlots').set(dhanSlotData);
+            }
+        }
+
         window.onload = function() {
             if (window.location.search.length > 0 || window.location.hash.length > 0) {
                 window.history.replaceState({}, document.title, window.location.pathname);
@@ -710,7 +750,6 @@
             initializeFirebaseListeners();
             startRealTimeSystem();
 
-            // FIXED: Immediate Session Restore without delay to prevent refresh redirect bug
             if(activeUserPhone && usersDB[activeUserPhone]) {
                 if(usersDB[activeUserPhone].isLocked) {
                     alert('आपका अकाउंट एडमिन द्वारा लॉक कर दिया गया है!');
@@ -792,7 +831,7 @@
             }
             usersDB[mob] = { name: name, pass: pass, isLocked: false, isSuperAdmin: false };
             db.ref('usersDB').set(usersDB);
-            userWallets[mob] = 100; // Registration Bonus 100 Points (Only once on register)
+            userWallets[mob] = 100; // Fresh Registration Bonus 100 Points
             db.ref('userWallets').set(userWallets);
             alert('🎁 बधाई हो! रजिस्ट्रेशन सफल हुआ और ₹100 बोनस आपके पॉइंट्स में जोड़ दिया गया है।');
             switchAuthForm('login');
@@ -1082,7 +1121,7 @@
             
             if(!userBetHistory[activeUserPhone]) userBetHistory[activeUserPhone] = [];
             userBetHistory[activeUserPhone].unshift(betEntry);
-            db.ref('userBetHistory').set(userBetHistory); // PERMANENT FIREBASE BET HISTORY
+            db.ref('userBetHistory').set(userBetHistory);
             
             updateWalletUI();
             alert(`दांव लग गया! - ${betKey} पर ${points} Points सुरक्षित।`);
@@ -1194,7 +1233,6 @@
             }
         }
 
-        // FIXED ROBUST WINNER PAYOUT & CALCULATION ENGINE
         function checkAndPayoutWinners(lotteryType, slotIndex, resultStr) {
             let slotData = lotteryType === 'shubh' ? shubhSlotData : dhanSlotData;
             let slot = slotData[slotIndex];
@@ -1246,7 +1284,7 @@
             });
         }
 
-        // ================= 20% MARGIN SMART AUTO RANDOM SYSTEM =================
+        // ================= SMART AUTO RANDOM SYSTEM =================
         function triggerSmartAutoRandomForSlot(lotteryType, slotIndex) {
             let slotData = lotteryType === 'shubh' ? shubhSlotData : dhanSlotData;
             let slot = slotData[slotIndex];
@@ -1356,7 +1394,6 @@
 
                 if(diffSecs < 0) diffSecs = 0;
 
-                // 13 Min / 2 Min Rule: If Admin hasn't stopped within 13 mins, last 2 mins triggers auto random
                 if(diffSecs <= 120 && isAutoRandomActive && diffSecs === 0) {
                     triggerSmartAutoRandomForSlot(currentType, activeIdx);
                 }
@@ -1544,30 +1581,22 @@
         function loadCurrentQRSettings() {
             const appKey = document.getElementById('admin-qr-app').value;
             if(paymentGateways[appKey]) {
-                document.getElementById('admin-upi-input').value = paymentGateways[appKey].upi;
+                document.getElementById('admin-upi-input').value = paymentGateways[appKey].upi || "";
+                document.getElementById('admin-qr-url-input').value = paymentGateways[appKey].imageSrc || "";
             }
         }
 
         function saveNewQRSettings() {
             const appKey = document.getElementById('admin-qr-app').value;
             const newUpi = document.getElementById('admin-upi-input').value.trim();
-            const fileInput = document.getElementById('admin-qr-file-input');
+            const newUrl = document.getElementById('admin-qr-url-input').value.trim();
             
             if(!paymentGateways[appKey]) paymentGateways[appKey] = {};
             if(newUpi) paymentGateways[appKey].upi = newUpi;
+            if(newUrl) paymentGateways[appKey].imageSrc = newUrl;
             
-            if(fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    paymentGateways[appKey].imageSrc = e.target.result;
-                    db.ref('paymentGateways').set(paymentGateways);
-                    alert('QR फोटो और UPI अपडेट हो गए हैं!');
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                db.ref('paymentGateways').set(paymentGateways);
-                alert('UPI अपडेट हो गया!');
-            }
+            db.ref('paymentGateways').set(paymentGateways);
+            alert('QR इमेज लिंक और UPI सफलतापूर्वक अपडेट हो गए हैं!');
         }
 
         function renderUserTransactionHistory() {
@@ -1875,4 +1904,4 @@
         }
     </script>
 </body>
-</html>
+                </html>
