@@ -554,7 +554,6 @@
 
         let isAutoRandomActive = true; 
 
-        // FRESH USERS DATABASE (Testing IDs cleaned, standard admin accounts preserved)
         let usersDB = {
             "05032019": { name: "मुख्य एडमिन (आकाश)", pass: "05032019", isLocked: false, isSuperAdmin: true },
             "9130047135": { name: "सह-एडमिन (विकास/राहुल)", pass: "9130047135", isLocked: false, isSuperAdmin: true }
@@ -660,47 +659,25 @@
             db.ref('shubhBets').on('value', (snap) => {
                 if(snap.exists()) shubhBets = snap.val();
                 else shubhBets = [];
-                if(document.getElementById('admin-section') && !document.getElementById('admin-section').classList.contains('hidden')) {
-                    populateAdminBidSlots();
-                    renderBidsTable();
-                }
             });
 
             db.ref('dhanBets').on('value', (snap) => {
                 if(snap.exists()) dhanBets = snap.val();
                 else dhanBets = [];
-                if(document.getElementById('admin-section') && !document.getElementById('admin-section').classList.contains('hidden')) {
-                    populateAdminBidSlots();
-                    renderBidsTable();
-                }
             });
 
             db.ref('depositRequests').on('value', (snap) => {
                 if(snap.exists()) depositRequests = snap.val();
-                if(document.getElementById('admin-section') && !document.getElementById('admin-section').classList.contains('hidden')) {
-                    renderAdminLists();
-                }
                 if(activeUserPhone) renderUserTransactionHistory();
             });
 
             db.ref('withdrawRequests').on('value', (snap) => {
                 if(snap.exists()) withdrawRequests = snap.val();
-                if(document.getElementById('admin-section') && !document.getElementById('admin-section').classList.contains('hidden')) {
-                    renderAdminLists();
-                }
                 if(activeUserPhone) renderUserTransactionHistory();
-            });
-
-            db.ref('helpRequests').on('value', (snap) => {
-                if(snap.exists()) helpRequests = snap.val();
-                if(document.getElementById('admin-section') && !document.getElementById('admin-section').classList.contains('hidden')) {
-                    renderAdminHelpRequests();
-                }
             });
 
             db.ref('paymentGateways').on('value', (snap) => {
                 if(snap.exists()) paymentGateways = snap.val();
-                else db.ref('paymentGateways').set(paymentGateways);
                 loadCurrentQRSettings();
             });
 
@@ -712,7 +689,6 @@
             });
         }
 
-        // CATCH-UP LOGIC: Checks missed slots when app opens/loads automatically
         function checkAndCatchUpMissedSlots(lotteryType, slotData) {
             if(!isAutoRandomActive) return;
             let now = new Date();
@@ -750,6 +726,7 @@
             initializeFirebaseListeners();
             startRealTimeSystem();
 
+            // FIXED: Session Persistence & Wallet Persistence Check
             if(activeUserPhone && usersDB[activeUserPhone]) {
                 if(usersDB[activeUserPhone].isLocked) {
                     alert('आपका अकाउंट एडमिन द्वारा लॉक कर दिया गया है!');
@@ -761,14 +738,16 @@
                 document.getElementById('user-phone-display').innerText = activeUserPhone;
                 document.getElementById('prof-phone').innerText = activeUserPhone;
                 
-                if(userWallets[activeUserPhone] !== undefined) {
-                    currentWallet = userWallets[activeUserPhone];
-                } else {
-                    currentWallet = 0;
-                    userWallets[activeUserPhone] = 0;
-                    db.ref('userWallets').set(userWallets);
-                }
-                updateWalletUI();
+                // Fetch wallet safely from database state
+                db.ref('userWallets/' + activeUserPhone).once('value').then((snap) => {
+                    if(snap.exists()) {
+                        currentWallet = snap.val();
+                    } else {
+                        currentWallet = 100; // Guarantee initial bonus if missing
+                        db.ref('userWallets/' + activeUserPhone).set(100);
+                    }
+                    updateWalletUI();
+                });
 
                 if(usersDB[activeUserPhone].isSuperAdmin) {
                     loggedInAdminId = activeUserPhone;
@@ -831,9 +810,11 @@
             }
             usersDB[mob] = { name: name, pass: pass, isLocked: false, isSuperAdmin: false };
             db.ref('usersDB').set(usersDB);
-            userWallets[mob] = 100; // Fresh Registration Bonus 100 Points
-            db.ref('userWallets').set(userWallets);
-            alert('🎁 बधाई हो! रजिस्ट्रेशन सफल हुआ और ₹100 बोनस आपके पॉइंट्स में जोड़ दिया गया है।');
+            
+            // FIXED: Permanent Firebase storage for ₹100 registration bonus so it never vanishes on reload
+            db.ref('userWallets/' + mob).set(100);
+
+            alert('🎁 बधाई हो! रजिस्ट्रेशन सफल हुआ और ₹100 बोनस आपके पॉइंट्स में हमेशा के लिए जोड़ दिया गया है।');
             switchAuthForm('login');
         }
 
@@ -857,25 +838,27 @@
             activeUserPhone = inputId;
             localStorage.setItem('gll_active_user', inputId);
             
-            if(userWallets[inputId] === undefined) {
-                userWallets[inputId] = 0;
-                db.ref('userWallets').set(userWallets);
-            }
-            currentWallet = userWallets[inputId];
-            
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('main-section').classList.remove('hidden');
-            document.getElementById('user-phone-display').innerText = inputId;
-            document.getElementById('prof-phone').innerText = inputId;
-            updateWalletUI();
+            db.ref('userWallets/' + inputId).once('value').then((snap) => {
+                if(!snap.exists()) {
+                    db.ref('userWallets/' + inputId).set(100);
+                    currentWallet = 100;
+                } else {
+                    currentWallet = snap.val();
+                }
+                updateWalletUI();
 
-            if(usersDB[inputId].isSuperAdmin) {
-                loggedInAdminId = inputId;
-                document.getElementById('admin-panel-trigger-btn').classList.remove('hidden');
-                document.getElementById('logged-admin-info').innerText = `सक्रिय एडमिन: ${usersDB[inputId].name} (${inputId})`;
-            }
-            
-            switchLottery('shubh');
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('main-section').classList.remove('hidden');
+                document.getElementById('user-phone-display').innerText = inputId;
+                document.getElementById('prof-phone').innerText = inputId;
+
+                if(usersDB[inputId].isSuperAdmin) {
+                    loggedInAdminId = inputId;
+                    document.getElementById('admin-panel-trigger-btn').classList.remove('hidden');
+                    document.getElementById('logged-admin-info').innerText = `सक्रिय एडमिन: ${usersDB[inputId].name} (${inputId})`;
+                }
+                switchLottery('shubh');
+            });
         }
 
         function performLogout() {
@@ -1094,7 +1077,7 @@
             const betKey = `[${currentGameMode}] (${gameType} - ${slot.end}): ${val}`;
             currentWallet -= points;
             userWallets[activeUserPhone] = currentWallet;
-            db.ref('userWallets').set(userWallets);
+            db.ref('userWallets/' + activeUserPhone).set(currentWallet);
 
             let betEntry = {
                 id: Date.now(),
@@ -1121,7 +1104,7 @@
             
             if(!userBetHistory[activeUserPhone]) userBetHistory[activeUserPhone] = [];
             userBetHistory[activeUserPhone].unshift(betEntry);
-            db.ref('userBetHistory').set(userBetHistory);
+            db.ref('userBetHistory/' + activeUserPhone).set(userBetHistory[activeUserPhone]);
             
             updateWalletUI();
             alert(`दांव लग गया! - ${betKey} पर ${points} Points सुरक्षित।`);
@@ -1275,10 +1258,11 @@
                     if(winMultiplier > 0) {
                         let wonAmount = bet.points * winMultiplier;
                         let u = bet.user;
-                        if(userWallets[u] !== undefined) {
-                            userWallets[u] += wonAmount;
-                            db.ref('userWallets').set(userWallets);
-                        }
+                        db.ref('userWallets/' + u).once('value').then((snap) => {
+                            let currentBal = snap.exists() ? snap.val() : 0;
+                            let newBal = currentBal + wonAmount;
+                            db.ref('userWallets/' + u).set(newBal);
+                        });
                     }
                 }
             });
@@ -1832,7 +1816,7 @@
             
             currentWallet -= amt;
             userWallets[activeUserPhone] = currentWallet;
-            db.ref('userWallets').set(userWallets);
+            db.ref('userWallets/' + activeUserPhone).set(currentWallet);
             updateWalletUI();
 
             if(!withdrawRequests) withdrawRequests = [];
@@ -1884,9 +1868,12 @@
             depositRequests[idx].status = 'approved';
             db.ref('depositRequests').set(depositRequests);
             let u = depositRequests[idx].user;
-            userWallets[u] = (userWallets[u] || 0) + depositRequests[idx].amount;
-            db.ref('userWallets').set(userWallets);
-            if(u === activeUserPhone) { currentWallet = userWallets[u]; updateWalletUI(); }
+            db.ref('userWallets/' + u).once('value').then((snap) => {
+                let cur = snap.exists() ? snap.val() : 0;
+                let updated = cur + depositRequests[idx].amount;
+                db.ref('userWallets/' + u).set(updated);
+                if(u === activeUserPhone) { currentWallet = updated; updateWalletUI(); }
+            });
             alert('डिपॉजिट स्वीकृत!');
             renderAdminLists();
         }
@@ -1904,4 +1891,4 @@
         }
     </script>
 </body>
-                </html>
+</html>
