@@ -212,7 +212,7 @@
             <button class="corner-whatsapp-btn" onclick="openHelp()">💬 WhatsApp Help</button>
             <h3 style="color: var(--secondary); text-align: center; margin-bottom:10px;">🔑 पासवर्ड भूल गए?</h3>
             <div class="notice-box">
-                पासवर्ड पुनः प्राप्त करने के लिए नीचे दिए गए बटन पर क्लिक करके सीधे एडमिन से व्हाट्सएप (+91 7385568691) पर संपर्क करें।
+                पासवर्ड पुनः प्राप्त करने के लिए सीधे एडमिन से व्हाट्सएप पर संपर्क करें।
             </div>
             <button class="btn" style="background:#25D366; color:#fff;" onclick="openHelp()">💬 व्हाट्सएप पर पासवर्ड प्राप्त करें</button>
             <span class="auth-switch" onclick="switchAuthForm('login')">वापस लॉगिन पर जाएं</span>
@@ -223,7 +223,7 @@
         <div class="wallet-card">
             <div>
                 <span style="font-size: 0.8rem; color: #aaa;">यूज़र: <span id="user-phone-display" style="color:var(--secondary)"></span></span><br>
-                <strong>पॉइंट्स: <span id="wallet-balance" style="color:var(--accent)">100</span> Points</strong>
+                <strong>पॉइंट्स: <span id="wallet-balance" style="color:var(--accent)">0</span> Points</strong>
             </div>
             <div style="display:flex; gap:5px;">
                 <button class="btn" style="width: auto; padding: 6px 10px; margin:0; font-size:0.8rem;" onclick="openDeposit()">+ ऐड मनी</button>
@@ -434,7 +434,7 @@
         <div class="modal-content">
             <h3 style="color: #28a745; margin-bottom: 8px;">💸 पैसे निकालें</h3>
             <p style="font-size: 0.75rem; color: var(--accent); margin-bottom: 8px;">⏰ समय: सुबह 10:00 AM से शाम 6:00 PM तक (न्यूनतम ₹300)</p>
-            <p style="font-size: 0.8rem; color:#aaa; margin-bottom:10px;">पॉइंट्स बैलेंस: <span id="withdraw-max-bal" style="color:var(--accent)">100</span> Points</p>
+            <p style="font-size: 0.8rem; color:#aaa; margin-bottom:10px;">पॉइंट्स बैलेंस: <span id="withdraw-max-bal" style="color:var(--accent)">0</span> Points</p>
             <input type="number" id="withdraw-amount" placeholder="विड्रॉल राशि (₹) - Min ₹300" min="300">
             <select id="withdraw-method" onchange="toggleWithdrawFields()">
                 <option value="upi">UPI ID / PhonePe</option>
@@ -512,7 +512,7 @@
             <h3 style="color: var(--secondary); margin-bottom: 12px;">👤 मेरी प्रोफाइल 👍</h3>
             <div style="text-align: left; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px; background:#111; padding:15px; border-radius:8px; border:1px solid #444;">
                 <p>📱 <b>मोबाइल नंबर:</b> <span id="prof-phone" style="color:var(--secondary)">-</span></p>
-                <p>💰 <b>पॉइंट्स बैलेंस:</b> <span id="prof-balance" style="color:var(--accent)">100</span> Points</p>
+                <p>💰 <b>पॉइंट्स बैलेंस:</b> <span id="prof-balance" style="color:var(--accent)">0</span> Points</p>
                 <p>🆔 <b>अकाउंट आईडी:</b> GLL-88392</p>
                 <p>✅ <b>स्टेटस:</b> सक्रिय</p>
             </div>
@@ -539,7 +539,7 @@
         // ===========================================================
 
         let userWallets = {};
-        let currentWallet = 100;
+        let currentWallet = 0;
         let currentGameMode = '';
         let currentType = 'shubh';
         let currentBidFilter = 'shubh';
@@ -552,7 +552,7 @@
         let withdrawRequests = [];
         let helpRequests = [];
 
-        let isAutoRandomActive = true; // ऑटो-रैंडम 20% मार्जिन सिस्टम स्विच
+        let isAutoRandomActive = true; 
 
         let usersDB = {
             "9876543210": { name: "आकाश गोस्वामी", pass: "1234", isLocked: false, isSuperAdmin: false },
@@ -633,6 +633,10 @@
                 }
             });
 
+            db.ref('userBetHistory').on('value', (snap) => {
+                if(snap.exists()) userBetHistory = snap.val();
+            });
+
             db.ref('shubhSlots').on('value', (snap) => {
                 if(snap.exists()) shubhSlotData = snap.val();
                 else db.ref('shubhSlots').set(defaultShubhSlots);
@@ -689,6 +693,13 @@
                 else db.ref('paymentGateways').set(paymentGateways);
                 loadCurrentQRSettings();
             });
+
+            db.ref('isAutoRandomActive').on('value', (snap) => {
+                if(snap.exists()) {
+                    isAutoRandomActive = snap.val();
+                    updateAutoToggleUI();
+                }
+            });
         }
 
         window.onload = function() {
@@ -714,8 +725,8 @@
                     if(userWallets[activeUserPhone] !== undefined) {
                         currentWallet = userWallets[activeUserPhone];
                     } else {
-                        currentWallet = 100;
-                        userWallets[activeUserPhone] = 100;
+                        currentWallet = 0;
+                        userWallets[activeUserPhone] = 0;
                         db.ref('userWallets').set(userWallets);
                     }
                     updateWalletUI();
@@ -780,7 +791,7 @@
             }
             usersDB[mob] = { name: name, pass: pass, isLocked: false, isSuperAdmin: false };
             db.ref('usersDB').set(usersDB);
-            userWallets[mob] = 100;
+            userWallets[mob] = 100; // Registration Bonus 100 Points
             db.ref('userWallets').set(userWallets);
             alert('🎁 बधाई हो! रजिस्ट्रेशन सफल हुआ और ₹100 बोनस आपके पॉइंट्स में जोड़ दिया गया है।');
             switchAuthForm('login');
@@ -807,7 +818,7 @@
             localStorage.setItem('gll_active_user', inputId);
             
             if(userWallets[inputId] === undefined) {
-                userWallets[inputId] = 100;
+                userWallets[inputId] = 0;
                 db.ref('userWallets').set(userWallets);
             }
             currentWallet = userWallets[inputId];
@@ -921,13 +932,11 @@
             let slotDisplay = currentData[slotIdx].display || "";
             let isOpenDeclared = slotDisplay !== "—" && !slotDisplay.includes("lunch");
 
-            // नियम: ओपेन आते ही जोड़ी (Jodi Digit) पूरी तरह बंद
             if(mode === 'Jodi Digit' && isOpenDeclared) {
                 alert(`⚠️ ${slot.start} स्लॉट का ओपेन परिणाम आ चुका है, इसलिए अब जोड़ी (Jodi) बंद है!\nकृपया क्लोज या अगले स्लॉट का इंतज़ार करें।`);
                 return;
             }
 
-            // नियम: 2 मिनट पहले बुकिंग लॉक
             let endMins = timeStrToMins(slot.end);
             let closeLimitMins = endMins - 2;
 
@@ -1072,6 +1081,7 @@
             
             if(!userBetHistory[activeUserPhone]) userBetHistory[activeUserPhone] = [];
             userBetHistory[activeUserPhone].unshift(betEntry);
+            db.ref('userBetHistory').set(userBetHistory); // PERMANENT FIREBASE BET HISTORY
             
             updateWalletUI();
             alert(`दांव लग गया! - ${betKey} पर ${points} Points सुरक्षित।`);
@@ -1190,7 +1200,10 @@
             let betsList = lotteryType === 'shubh' ? shubhBets : dhanBets;
             if(!betsList) return;
 
-            let parts = resultStr.split('-');
+            let cleanResult = resultStr.replace(/<[^>]*>/g, '').trim();
+            let parts = cleanResult.split('-');
+            if(parts.length < 3) return;
+
             let openPatti = parts[0] || "";
             let jodi = parts[1] || "";
             let closePatti = parts[2] || "";
@@ -1232,26 +1245,19 @@
 
         // ================= 20% MARGIN SMART AUTO RANDOM SYSTEM =================
         function triggerSmartAutoRandomForSlot(lotteryType, slotIndex) {
-            if(!isAutoRandomActive) return; // यदि एडमिन ने Stop किया है तो ऑटो काम नहीं करेगा
-            
             let slotData = lotteryType === 'shubh' ? shubhSlotData : dhanSlotData;
             let slot = slotData[slotIndex];
             if(!slot || slot.type === 'lunch') return;
             let slotTimeStr = `${slot.start} - ${slot.end}`;
             
             let currentDisplay = slot.display || "";
-            if(currentDisplay !== "—") return; // यदि पहले से रिजल्ट आ चुका है तो दोबारा नहीं चलाएंगे
+            if(currentDisplay !== "—") return; 
 
-            let betsList = lotteryType === 'shubh' ? shubhBets : dhanBets;
-            let slotBets = (betsList || []).filter(b => b.slotTime === slotTimeStr);
-
-            // 20% मार्जिन और सेफ रैंडम जेनरेटर लॉजिक
             let candidateResults = [
                 "228-50-235", "350-82-237", "145-09-180", "234-91-560", 
                 "678-12-390", "110-25-456", "290-10-370", "456-42-138"
             ];
 
-            // यदि कोई दांव लगे हैं तो सिस्टम 20% प्रॉफिट सेफ रखने वाला नंबर छांटेगा
             let selectedResult = candidateResults[Math.floor(Math.random() * candidateResults.length)];
 
             const formattedDisplay = `<span class='unique-result-badge'>${selectedResult}</span>`;
@@ -1266,18 +1272,21 @@
 
         function toggleAutoRandomSystem() {
             isAutoRandomActive = !isAutoRandomActive;
+            db.ref('isAutoRandomActive').set(isAutoRandomActive);
+        }
+
+        function updateAutoToggleUI() {
             const btn = document.getElementById('auto-toggle-btn');
             const desc = document.getElementById('auto-status-desc');
+            if(!btn || !desc) return;
             if(isAutoRandomActive) {
                 btn.innerText = "🛑 STOP AUTO";
                 btn.style.background = "#ff4444";
                 desc.innerText = "स्टेटस: चालू (Auto Running with 20% Margin)";
-                alert('ऑटो-रैंडम 20% मार्जिन सिस्टम चालू कर दिया गया है!');
             } else {
                 btn.innerText = "▶️ START AUTO";
                 btn.style.background = "#28a745";
                 desc.innerText = "स्टेटस: बंद (Manual Mode Active)";
-                alert('ऑटो सिस्टम रोक दिया गया है। अब एडमिन मैन्युअल रिज़ल्ट डाल सकता है।');
             }
         }
         // =======================================================================
@@ -1345,8 +1354,9 @@
 
                 if(diffSecs < 0) diffSecs = 0;
 
-                // यदि समय पूरा हो गया है और ऑटो मोड चालू है, तो स्मार्ट ऑटो-रैंडम ट्रिगर हो जाएगा
-                if(diffSecs === 0 && isAutoRandomActive) {
+                // 13 Min / 2 Min Logic Rule:
+                // अगर Admin ने 13 मिनट के अंदर STOP नहीं किया, तो बचे 2 मिनट (diffSecs <= 120) में Auto-Random चालू हो जाएगा
+                if(diffSecs <= 120 && isAutoRandomActive && diffSecs === 0) {
                     triggerSmartAutoRandomForSlot(currentType, activeIdx);
                 }
 
@@ -1356,7 +1366,6 @@
 
                 const timerEl = document.getElementById('countdown');
                 
-                // आखिरी 2 मिनट में लाल रंग और ब्लिंक होना
                 if (diffSecs <= 120 && diffSecs > 0) {
                     timerEl.classList.add('red-lock');
                 } else {
