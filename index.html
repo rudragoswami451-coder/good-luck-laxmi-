@@ -322,7 +322,7 @@
         
         <div class="auto-toggle-box">
             <div>
-                <strong style="color:var(--accent); font-size:0.85rem;">🤖 स्मार्ट ऑटो-रैंडम (विशाल नंबर पूल)</strong>
+                <strong style="color:var(--accent); font-size:0.85rem;">🤖 स्मार्ट ऑटो-रैंडम (ओपन ➔ जोड़ी लॉक ➔ क्लोज)</strong>
                 <p style="font-size:0.7rem; color:#aaa;" id="auto-status-desc">स्टेटस: चालू (Auto Running)</p>
             </div>
             <button class="btn" id="auto-toggle-btn" style="width:auto; padding:6px 12px; margin:0; font-size:0.8rem; background:#ff4444; color:#fff;" onclick="toggleAutoRandomSystem()">🛑 STOP AUTO</button>
@@ -613,43 +613,43 @@
         let qrTimeRemaining = 300;
 
         let defaultShubhSlots = [
-            { start: "09:15 AM", display: "—", end: "09:30 AM" },
-            { start: "09:45 AM", display: "—", end: "10:00 AM" },
-            { start: "10:15 AM", display: "—", end: "10:30 AM" },
-            { start: "10:45 AM", display: "—", end: "11:00 AM" },
-            { start: "11:15 AM", display: "—", end: "11:30 AM" },
-            { start: "11:45 AM", display: "—", end: "12:00 PM" },
-            { start: "12:15 PM", display: "—", end: "12:30 PM" },
-            { start: "12:45 PM", display: "—", end: "01:00 PM" },
-            { start: "01:15 PM", display: "—", end: "01:30 PM" },
-            { start: "01:30 PM", display: "—", end: "01:45 PM" },
-            { start: "02:00 PM", display: "—", end: "02:15 PM" },
-            { start: "02:30 PM", display: "—", end: "02:45 PM" },
-            { start: "03:00 PM", display: "—", end: "03:15 PM" },
-            { start: "03:30 PM", display: "—", end: "03:45 PM" },
+            { start: "09:15 AM", display: "—", end: "09:30 AM", stage: "pending" },
+            { start: "09:45 AM", display: "—", end: "10:00 AM", stage: "pending" },
+            { start: "10:15 AM", display: "—", end: "10:30 AM", stage: "pending" },
+            { start: "10:45 AM", display: "—", end: "11:00 AM", stage: "pending" },
+            { start: "11:15 AM", display: "—", end: "11:30 AM", stage: "pending" },
+            { start: "11:45 AM", display: "—", end: "12:00 PM", stage: "pending" },
+            { start: "12:15 PM", display: "—", end: "12:30 PM", stage: "pending" },
+            { start: "12:45 PM", display: "—", end: "01:00 PM", stage: "pending" },
+            { start: "01:15 PM", display: "—", end: "01:30 PM", stage: "pending" },
+            { start: "01:30 PM", display: "—", end: "01:45 PM", stage: "pending" },
+            { start: "02:00 PM", display: "—", end: "02:15 PM", stage: "pending" },
+            { start: "02:30 PM", display: "—", end: "02:45 PM", stage: "pending" },
+            { start: "03:00 PM", display: "—", end: "03:15 PM", stage: "pending" },
+            { start: "03:30 PM", display: "—", end: "03:45 PM", stage: "pending" },
             { type: "lunch", display: "🍽️ LUNCH TIME (3:45 PM से 4:30 PM भोजन अवकाश)" },
-            { start: "04:45 PM", display: "—", end: "05:00 PM" },
-            { start: "05:15 PM", display: "—", end: "05:30 PM" },
-            { start: "05:45 PM", display: "—", end: "06:00 PM" },
-            { start: "06:15 PM", display: "—", end: "06:30 PM" },
-            { start: "06:45 PM", display: "—", end: "07:00 PM" },
-            { start: "07:15 PM", display: "—", end: "07:30 PM" },
-            { start: "07:45 PM", display: "—", end: "08:00 PM" }
+            { start: "04:45 PM", display: "—", end: "05:00 PM", stage: "pending" },
+            { start: "05:15 PM", display: "—", end: "05:30 PM", stage: "pending" },
+            { start: "05:45 PM", display: "—", end: "06:00 PM", stage: "pending" },
+            { start: "06:15 PM", display: "—", end: "06:30 PM", stage: "pending" },
+            { start: "06:45 PM", display: "—", end: "07:00 PM", stage: "pending" },
+            { start: "07:15 PM", display: "—", end: "07:30 PM", stage: "pending" },
+            { start: "07:45 PM", display: "—", end: "08:00 PM", stage: "pending" }
         ];
 
         let defaultDhanSlots = [
-            { start: "10:00 AM", display: "—", end: "10:30 AM" },
-            { start: "10:30 AM", display: "—", end: "11:00 AM" },
-            { start: "11:00 AM", display: "—", end: "11:30 AM" },
-            { start: "12:00 PM", display: "—", end: "12:30 PM" },
-            { start: "01:00 PM", display: "—", end: "01:30 PM" },
-            { start: "02:00 PM", display: "—", end: "02:30 PM" },
-            { start: "03:00 PM", display: "—", end: "03:30 PM" },
+            { start: "10:00 AM", display: "—", end: "10:30 AM", stage: "pending" },
+            { start: "10:30 AM", display: "—", end: "11:00 AM", stage: "pending" },
+            { start: "11:00 AM", display: "—", end: "11:30 AM", stage: "pending" },
+            { start: "12:00 PM", display: "—", end: "12:30 PM", stage: "pending" },
+            { start: "01:00 PM", display: "—", end: "01:30 PM", stage: "pending" },
+            { start: "02:00 PM", display: "—", end: "02:30 PM", stage: "pending" },
+            { start: "03:00 PM", display: "—", end: "03:30 PM", stage: "pending" },
             { type: "lunch", display: "🍽️ LUNCH TIME (3:32 PM से 4:28 PM भोजन अवकाश)" },
-            { start: "04:30 PM", display: "—", end: "05:00 PM" },
-            { start: "05:30 PM", display: "—", end: "06:00 PM" },
-            { start: "06:30 PM", display: "—", end: "07:00 PM" },
-            { start: "07:30 PM", display: "—", end: "08:00 PM" }
+            { start: "04:30 PM", display: "—", end: "05:00 PM", stage: "pending" },
+            { start: "05:30 PM", display: "—", end: "06:00 PM", stage: "pending" },
+            { start: "06:30 PM", display: "—", end: "07:00 PM", stage: "pending" },
+            { start: "07:30 PM", display: "—", end: "08:00 PM", stage: "pending" }
         ];
 
         let shubhSlotData = defaultShubhSlots;
@@ -657,12 +657,10 @@
 
         // ================= FIREBASE REAL-TIME LISTENERS =================
         function initializeFirebaseListeners() {
-            // Check Daily Reset (Auto-clear on new date)
             let todayStr = new Date().toDateString();
             db.ref('lastActiveDate').on('value', (snap) => {
                 let savedDate = snap.val();
                 if(savedDate !== todayStr) {
-                    // New day detected! Reset all slots
                     db.ref('lastActiveDate').set(todayStr);
                     db.ref('shubhSlots').set(defaultShubhSlots);
                     db.ref('dhanSlots').set(defaultDhanSlots);
@@ -742,6 +740,7 @@
             });
         }
 
+        // ================= CORRECT OPEN ➔ JODI LOCK ➔ CLOSE STAGE LOGIC =================
         function checkAndCatchUpMissedSlots(lotteryType, slotData) {
             if(!isAutoRandomActive) return;
             let now = new Date();
@@ -750,14 +749,37 @@
 
             slotData.forEach((slot, index) => {
                 if(slot.type === 'lunch') return;
+                let startMins = timeStrToMins(slot.start);
                 let endMins = timeStrToMins(slot.end);
+                let stage = slot.stage || "pending";
                 let displayVal = slot.display || "—";
-                
-                if(currentMins > endMins && displayVal === "—") {
-                    let selectedResult = generateRandomResult();
-                    slotData[index].display = `<span class='unique-result-badge'>${selectedResult}</span>`;
+
+                // Step 1: At Start Time, open OPEN if not opened yet
+                if(currentMins >= startMins && currentMins < endMins && (stage === "pending" || displayVal === "—")) {
+                    let openPatti = getRandomPatti();
+                    let openDigit = String(Number(openPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
+                    slotData[index].openData = `${openPatti}-${openDigit}`;
+                    slotData[index].display = `<span class='unique-result-badge'>${openPatti}-${openDigit}</span>`;
+                    slotData[index].stage = "open_declared";
                     updated = true;
-                    checkAndPayoutWinners(lotteryType, index, selectedResult);
+                }
+
+                // Step 2: At End Time, open CLOSE and complete Jodi
+                if(currentMins >= endMins && stage !== "closed_declared") {
+                    let openStr = slotData[index].openData || `${getRandomPatti()}-${Math.floor(Math.random()*10)}`;
+                    let parts = openStr.split('-');
+                    let opPatti = parts[0];
+                    let opDigit = parts[1];
+
+                    let closePatti = getRandomPatti();
+                    let closeDigit = String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
+                    let jodiVal = opDigit + closeDigit;
+
+                    let finalResultStr = `${opPatti}-${jodiVal}-${closePatti}`;
+                    slotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
+                    slotData[index].stage = "closed_declared";
+                    updated = true;
+                    checkAndPayoutWinners(lotteryType, index, finalResultStr);
                 }
             });
 
@@ -772,7 +794,6 @@
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
 
-            // Set today date tracker if not present
             db.ref('lastActiveDate').once('value').then((snap) => {
                 let todayStr = new Date().toDateString();
                 if(!snap.exists()) {
@@ -1005,8 +1026,8 @@
             let slotIdx = activeInfo.index;
             let currentData = currentType === 'shubh' ? shubhSlotData : dhanSlotData;
 
-            let slotDisplay = currentData[slotIdx].display || "";
-            let isOpenDeclared = slotDisplay !== "—" && !slotDisplay.includes("lunch");
+            let slotStage = currentData[slotIdx].stage || "pending";
+            let isOpenDeclared = slotStage === "open_declared" || slotStage === "closed_declared";
 
             if(mode === 'Jodi Digit' && isOpenDeclared) {
                 alert(`⚠️ ${slot.start} स्लॉट का ओपेन परिणाम आ चुका है, इसलिए अब जोड़ी (Jodi) बंद है!\nकृपया क्लोज या अगले स्लॉट का इंतज़ार करें।`);
@@ -1093,8 +1114,8 @@
             let slot = activeInfo.slot;
             let slotIdx = activeInfo.index;
             let currentData = currentType === 'shubh' ? shubhSlotData : dhanSlotData;
-            let slotDisplay = currentData[slotIdx].display || "";
-            let isOpenDeclared = slotDisplay !== "—" && !slotDisplay.includes("lunch");
+            let slotStage = currentData[slotIdx].stage || "pending";
+            let isOpenDeclared = slotStage === "open_declared" || slotStage === "closed_declared";
 
             const gameType = document.getElementById('board-game-type').value;
 
@@ -1261,6 +1282,7 @@
             if(newVal !== null) {
                 const formattedDisplay = `<span class='unique-result-badge'>${newVal}</span>`;
                 currentData[index].display = formattedDisplay;
+                currentData[index].stage = "closed_declared";
                 if(currentType === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
                 else db.ref('dhanSlots').set(dhanSlotData);
                 renderResults();
@@ -1321,53 +1343,21 @@
             });
         }
 
-        // ================= MASSIVE RANDOM RESULT GENERATOR =================
-        function generateRandomResult() {
-            // विशाल पत्ती और जोड़ी पूल ताकि कभी भी एक जैसा रिजल्ट रिपीट न हो
+        // ================= HELPER FUNCTIONS =================
+        function getRandomPatti() {
             const pattiPool = [
                 "123", "134", "145", "156", "167", "178", "189", "124", "135", "146",
                 "234", "245", "256", "267", "278", "289", "345", "356", "367", "378",
                 "456", "467", "478", "489", "567", "578", "589", "678", "689", "789",
                 "110", "220", "330", "440", "550", "660", "770", "880", "990", "100",
                 "200", "300", "400", "500", "600", "700", "800", "900", "112", "223",
-                "334", "445", "556", "667", "778", "889", "133", "244", "355", "466",
-                "128", "137", "146", "155", "236", "245", "290", "380", "470", "560"
+                "334", "445", "556", "667", "778", "889", "133", "244", "355", "466"
             ];
-
-            const jodiPool = [
-                "10", "12", "15", "18", "20", "24", "25", "28", "30", "35",
-                "40", "42", "45", "48", "50", "52", "55", "60", "65", "68",
-                "70", "72", "75", "80", "82", "85", "90", "92", "95", "98",
-                "11", "22", "33", "44", "55", "66", "77", "88", "99", "00",
-                "13", "16", "19", "23", "26", "29", "34", "37", "41", "46",
-                "53", "58", "62", "67", "73", "78", "84", "89", "93", "97"
-            ];
-
-            let p1 = pattiPool[Math.floor(Math.random() * pattiPool.length)];
-            let j  = jodiPool[Math.floor(Math.random() * jodiPool.length)];
-            let p2 = pattiPool[Math.floor(Math.random() * pattiPool.length)];
-
-            return `${p1}-${j}-${p2}`;
+            return pattiPool[Math.floor(Math.random() * pattiPool.length)];
         }
 
         function triggerSmartAutoRandomForSlot(lotteryType, slotIndex) {
-            let slotData = lotteryType === 'shubh' ? shubhSlotData : dhanSlotData;
-            let slot = slotData[slotIndex];
-            if(!slot || slot.type === 'lunch') return;
-            
-            let currentDisplay = slot.display || "";
-            if(currentDisplay !== "—") return; 
-
-            let selectedResult = generateRandomResult();
-
-            const formattedDisplay = `<span class='unique-result-badge'>${selectedResult}</span>`;
-            slotData[slotIndex].display = formattedDisplay;
-
-            if(lotteryType === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
-            else db.ref('dhanSlots').set(dhanSlotData);
-
-            renderResults();
-            checkAndPayoutWinners(lotteryType, slotIndex, selectedResult);
+            // Manual trigger fallback if needed
         }
 
         function toggleAutoRandomSystem() {
@@ -1382,14 +1372,13 @@
             if(isAutoRandomActive) {
                 btn.innerText = "🛑 STOP AUTO";
                 btn.style.background = "#ff4444";
-                desc.innerText = "स्टेटस: चालू (Auto Running with Massive Pool)";
+                desc.innerText = "स्टेटस: चालू (Open ➔ Jodi Lock ➔ Close Sequence)";
             } else {
                 btn.innerText = "▶️ START AUTO";
                 btn.style.background = "#28a745";
                 desc.innerText = "स्टेटस: बंद (Manual Mode Active)";
             }
         }
-        // =======================================================================
 
         function populateAdminSlots() {
             const select = document.getElementById('admin-slot-index');
@@ -1454,8 +1443,10 @@
 
                 if(diffSecs < 0) diffSecs = 0;
 
-                if(diffSecs <= 120 && isAutoRandomActive && diffSecs === 0) {
-                    triggerSmartAutoRandomForSlot(currentType, activeIdx);
+                // Call slot check every second
+                if(isAutoRandomActive) {
+                    checkAndCatchUpMissedSlots('shubh', shubhSlotData);
+                    checkAndCatchUpMissedSlots('dhan', dhanSlotData);
                 }
 
                 let m = Math.floor(diffSecs / 60);
@@ -1498,20 +1489,19 @@
             }
 
             tempAdminOpenData[index] = { patti: opPatti, digit: opDigit };
+            let currentData = gameSelector === 'shubh' ? shubhSlotData : dhanSlotData;
+            currentData[index].openData = `${opPatti}-${opDigit}`;
+            currentData[index].stage = "open_declared";
 
             let openDisplayStr = `${opPatti}-${opDigit}`;
             const formattedDisplay = `<span class='unique-result-badge'>${openDisplayStr}</span>`;
+            currentData[index].display = formattedDisplay;
 
-            if(gameSelector === 'shubh') {
-                shubhSlotData[index].display = formattedDisplay;
-                db.ref('shubhSlots').set(shubhSlotData);
-            } else {
-                dhanSlotData[index].display = formattedDisplay;
-                db.ref('dhanSlots').set(dhanSlotData);
-            }
+            if(gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
+            else db.ref('dhanSlots').set(dhanSlotData);
 
             renderResults();
-            alert(`✅ ओपन (${openDisplayStr}) लाइव पब्लिश हो गया! अब दोनों गेमों में जोड़ी की बुकिंग बंद कर दी गई है।`);
+            alert(`✅ ओपन (${openDisplayStr}) लाइव पब्लिश हो गया! अब जोड़ी की बुकिंग बंद हो गई है।`);
         }
 
         function updateAdminResult() {
@@ -1520,8 +1510,9 @@
             
             let clPatti = cleanToEnglish(document.getElementById('admin-close-patti').value);
             let clDigit = cleanToEnglish(document.getElementById('admin-close-digit').value);
+            let currentData = gameSelector === 'shubh' ? shubhSlotData : dhanSlotData;
 
-            if(!tempAdminOpenData[index] || !tempAdminOpenData[index].digit) {
+            if(!currentData[index].openData && (!tempAdminOpenData[index] || !tempAdminOpenData[index].digit)) {
                 let manualOpen = prompt("ओपन की जानकारी नहीं मिली। ओपन पत्ती और अंक दर्ज करें (उदा. 228-5):");
                 if(manualOpen) {
                     let parts = manualOpen.split('-');
@@ -1537,19 +1528,16 @@
                 return;
             }
 
-            let opData = tempAdminOpenData[index];
+            let opData = tempAdminOpenData[index] || { patti: currentData[index].openData.split('-')[0], digit: currentData[index].openData.split('-')[1] };
             let jodiVal = opData.digit + clDigit;
             let finalResultStr = `${opData.patti}-${jodiVal}-${clPatti}`;
             
             const formattedDisplay = `<span class='unique-result-badge'>${finalResultStr}</span>`;
+            currentData[index].display = formattedDisplay;
+            currentData[index].stage = "closed_declared";
             
-            if(gameSelector === 'shubh') {
-                shubhSlotData[index].display = formattedDisplay;
-                db.ref('shubhSlots').set(shubhSlotData);
-            } else {
-                dhanSlotData[index].display = formattedDisplay;
-                db.ref('dhanSlots').set(dhanSlotData);
-            }
+            if(gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
+            else db.ref('dhanSlots').set(dhanSlotData);
             
             delete tempAdminOpenData[index];
             document.getElementById('admin-open-patti').value = '';
@@ -1559,7 +1547,7 @@
 
             renderResults();
             checkAndPayoutWinners(gameSelector, index, finalResultStr);
-            alert('🚀 सफलतापूर्वक पूरा परिणाम और जोड़ी पब्लिश हो गई, और विनर्स के पॉइंट्स उनके वॉलेट में जोड़ दिए गए हैं!');
+            alert('🚀 सफलतापूर्वक पूरा परिणाम (ओपन, जोड़ी, क्लोज) पब्लिश हो गया!');
             closeAdmin();
         }
 
@@ -1572,11 +1560,12 @@
             if(currentVal) {
                 const formattedDisplay = `<span class='unique-result-badge'>${currentVal}</span>`;
                 currentData[index].display = formattedDisplay;
+                currentData[index].stage = "closed_declared";
                 if(gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
                 else db.ref('dhanSlots').set(dhanSlotData);
                 renderResults();
                 checkAndPayoutWinners(gameSelector, index, currentVal);
-                alert('परिणाम अपडेट हो गया और विनर्स का भुगतान चेक कर लिया गया!');
+                alert('परिणाम अपडेट हो गया!');
             }
         }
 
