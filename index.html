@@ -143,6 +143,35 @@
         .user-msg { background: #332200; padding: 6px 10px; border-radius: 6px; margin-bottom: 6px; color: #fff; text-align: right; }
         
         .auto-toggle-box { background: #2b1a1a; border: 1px solid var(--secondary); padding: 10px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+
+        .big-qr-box {
+            width: 240px;
+            height: 240px;
+            background: #fff;
+            margin: 10px auto;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border: 3px solid var(--secondary);
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255,223,0,0.3);
+        }
+        .dep-help-note {
+            background: #2b1a1a;
+            border: 1px dashed #ff9800;
+            color: #ffdf00;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            margin: 8px 0;
+            line-height: 1.4;
+            text-align: left;
+        }
     </style>
 </head>
 <body class="theme-shubh">
@@ -291,10 +320,9 @@
         <h3 style="color: #ff4444; text-align: center; margin-bottom: 8px;">👑 3-ADMIN मास्टर कंट्रोल सेंटर</h3>
         <p style="font-size:0.75rem; text-align:center; color:var(--secondary); margin-bottom:10px;" id="logged-admin-info">सक्रिय एडमिन: -</p>
         
-        <!-- AUTO START / STOP TOGGLE PANEL -->
         <div class="auto-toggle-box">
             <div>
-                <strong style="color:var(--accent); font-size:0.85rem;">🤖 स्मार्ट ऑटो-रैंडम (20% मार्जिन)</strong>
+                <strong style="color:var(--accent); font-size:0.85rem;">🤖 स्मार्ट ऑटो-रैंडम (विशाल नंबर पूल)</strong>
                 <p style="font-size:0.7rem; color:#aaa;" id="auto-status-desc">स्टेटस: चालू (Auto Running)</p>
             </div>
             <button class="btn" id="auto-toggle-btn" style="width:auto; padding:6px 12px; margin:0; font-size:0.8rem; background:#ff4444; color:#fff;" onclick="toggleAutoRandomSystem()">🛑 STOP AUTO</button>
@@ -348,16 +376,28 @@
             <div id="admin-users-list"></div>
         </div>
 
-        <!-- एकलौता और साफ़ QR कंट्रोल बॉक्स -->
         <div id="adm-sec-qr" class="hidden">
-            <h4 style="color:var(--secondary); margin-bottom:8px;">💳 सिंगल QR कोड मास्टर कंट्रोल</h4>
-            <label style="font-size:0.85rem; display:block; text-align:left; margin-top:8px;">नया UPI ID दर्ज करें:</label>
-            <input type="text" id="admin-upi-input" placeholder="उदा. goodluck@upi">
+            <h4 style="color:var(--secondary); margin-bottom:8px;">💳 QR कोड मास्टर कंट्रोल (2 ऑप्शंस)</h4>
             
-            <label style="font-size:0.85rem; display:block; text-align:left; margin-top:8px;">QR कोड का सीधा इमेज लिंक (URL) डालें:</label>
-            <input type="text" id="admin-qr-url-input" placeholder="उदा. https://i.ibb.co/xyz/qr.jpg" style="padding: 10px; background:#222; border:1px solid var(--secondary); border-radius:6px; color:#fff; width:100%; margin:5px 0;">
+            <label style="font-size:0.85rem; display:block; text-align:left; color:var(--accent); font-weight:bold;">कौन सा QR लाइव रखना है?</label>
+            <select id="admin-active-qr-select" onchange="switchAdminActiveQR()" style="background:#111; color:var(--accent); font-weight:bold;">
+                <option value="qr1">QR Option 1 (आपका QR)</option>
+                <option value="qr2">QR Option 2 (दूसरा QR)</option>
+            </select>
+
+            <div style="background:#181818; padding:10px; border-radius:6px; margin:10px 0; border:1px solid #444;">
+                <h5 style="color:var(--secondary); text-align:left; margin-bottom:5px;">🔹 QR Option 1 (Primary)</h5>
+                <input type="text" id="admin-upi1-input" placeholder="UPI ID (उदा. goodluck@paytm)">
+                <input type="text" id="admin-qr1-url-input" placeholder="QR इमेज डायरेक्ट URL डालें">
+            </div>
+
+            <div style="background:#181818; padding:10px; border-radius:6px; margin:10px 0; border:1px solid #444;">
+                <h5 style="color:var(--secondary); text-align:left; margin-bottom:5px;">🔹 QR Option 2 (Secondary)</h5>
+                <input type="text" id="admin-upi2-input" placeholder="UPI ID (उदा. alternative@upi)">
+                <input type="text" id="admin-qr2-url-input" placeholder="QR इमेज डायरेक्ट URL डालें">
+            </div>
             
-            <button class="btn" style="background:#ff4444; color:#fff;" onclick="saveNewQRSettings()">QR अपडेट सेव करें</button>
+            <button class="btn" style="background:#ff4444; color:#fff;" onclick="saveAllQRSettings()">QR अपडेट सेव करें</button>
         </div>
 
         <div id="adm-sec-bids" class="hidden">
@@ -392,21 +432,33 @@
         <button class="btn" style="background:#555; color:#fff; margin-top:15px;" onclick="closeAdmin()">वापस जाएँ</button>
     </div>
 
-    <!-- डिपॉजिट मॉडल (बिना किसी फालतू ऐप बटन के सीधा QR) -->
+    <!-- डिपॉजिट मॉडल -->
     <div class="modal hidden" id="deposit-modal">
         <div class="modal-content">
-            <h3 style="color: var(--secondary); margin-bottom: 8px;">💳 भुगतान करें (QR Scan) 👍</h3>
-            <div style="background: #181818; border: 2px solid var(--secondary); padding: 12px; border-radius: 8px; margin: 10px 0;">
-                <p style="font-size: 0.8rem; color: #d4af37;">अपना QR कोड स्कैन करें:</p>
+            <h3 style="color: var(--secondary); margin-bottom: 5px;">💳 पेमेंट गेटवे 👍</h3>
+            
+            <div style="background: #181818; border: 2px solid var(--secondary); padding: 12px; border-radius: 8px; margin: 5px 0;">
+                <p style="font-size: 0.8rem; color: #d4af37;">QR कोड स्कैन करके भुगतान करें:</p>
                 <div class="qr-timer-display" id="qr-timer">05:00</div>
-                <div id="qr-display-box" style="width: 150px; height: 150px; background: #fff; margin: 5px auto; border-radius: 6px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#000; font-weight:bold; font-size:0.75rem; border:2px solid var(--secondary); overflow:hidden;">
+                
+                <div class="big-qr-box" id="qr-display-box">
                     <span id="qr-placeholder-text">[ QR CODE ]</span>
                 </div>
-                <p style="font-size: 0.75rem; color: #aaa; margin-top: 5px;">UPI ID: <b id="display-upi-id" style="color:var(--accent)">goodluck@paytm</b></p>
+                
+                <p style="font-size: 0.85rem; color: #fff; margin-top: 5px;">
+                    UPI ID: <b id="display-upi-id" style="color:var(--accent); font-size:0.95rem;">goodluck@paytm</b>
+                </p>
             </div>
+
+            <div class="dep-help-note">
+                💡 <b>जरूरी सूचना:</b> यदि नीचे वाला बटन काम न करे, तो ऊपर दिए गए QR कोड का <b>स्क्रीनशॉट (Screenshot) ले लें</b> और अपनी किसी भी ऐप (PhonePe, GPay, Paytm) से स्कैन करके भुगतान करें। भुगतान के बाद 12 अंकों का UTR नंबर नीचे भरकर सबमिट करें, आपके पॉइंट्स तुरंत जुड़ जाएंगे।
+            </div>
+
+            <input type="number" id="dep-amount" placeholder="राशि (₹) दर्ज करें" value="500" oninput="updateUPIPayLink()">
             
-            <input type="number" id="dep-amount" placeholder="राशि (₹) दर्ज करें" value="500">
-            <a href="upi://pay?pa=goodluck@paytm&pn=GoodLuckLaxmi&cu=INR" id="direct-upi-pay-btn" class="btn" style="background:#25D366; color:#fff; margin-bottom:5px;">📱 सीधे अपने फोन की ऐप से भुगतान करें</a>
+            <button class="btn" id="direct-upi-pay-btn" style="background:#25D366; color:#fff; margin-bottom:5px;" onclick="handleCopyAndPayApp()">
+                📱 UPI ID कॉपी करें & सीधे ऐप से भुगतान करें
+            </button>
 
             <input type="text" id="utr-input" placeholder="12-अंकों का UTR नंबर" maxlength="12">
             <button class="btn" onclick="submitDeposit()">पेमेंट सत्यापित करें</button>
@@ -551,8 +603,12 @@
         let activeUserPhone = localStorage.getItem('gll_active_user') || "";
         let loggedInAdminId = "";
 
-        // Single QR Gateway structure
-        let masterQR = { upi: "goodluck@paytm", imageSrc: "" };
+        let qrSettings = {
+            activeKey: "qr1",
+            qr1: { upi: "goodluck.gpay@paytm", imageSrc: "" },
+            qr2: { upi: "goodluck.phonepe@ybl", imageSrc: "" }
+        };
+
         let qrTimerInterval = null;
         let qrTimeRemaining = 300;
 
@@ -601,6 +657,18 @@
 
         // ================= FIREBASE REAL-TIME LISTENERS =================
         function initializeFirebaseListeners() {
+            // Check Daily Reset (Auto-clear on new date)
+            let todayStr = new Date().toDateString();
+            db.ref('lastActiveDate').on('value', (snap) => {
+                let savedDate = snap.val();
+                if(savedDate !== todayStr) {
+                    // New day detected! Reset all slots
+                    db.ref('lastActiveDate').set(todayStr);
+                    db.ref('shubhSlots').set(defaultShubhSlots);
+                    db.ref('dhanSlots').set(defaultDhanSlots);
+                }
+            });
+
             db.ref('usersDB').on('value', (snap) => {
                 if(snap.exists()) usersDB = snap.val();
                 else db.ref('usersDB').set(usersDB);
@@ -661,8 +729,8 @@
                 if(activeUserPhone) renderUserTransactionHistory();
             });
 
-            db.ref('masterQR').on('value', (snap) => {
-                if(snap.exists()) masterQR = snap.val();
+            db.ref('qrSettings').on('value', (snap) => {
+                if(snap.exists()) qrSettings = snap.val();
                 loadCurrentQRSettings();
             });
 
@@ -686,11 +754,7 @@
                 let displayVal = slot.display || "—";
                 
                 if(currentMins > endMins && displayVal === "—") {
-                    let candidateResults = [
-                        "228-50-235", "350-82-237", "145-09-180", "234-91-560", 
-                        "678-12-390", "110-25-456", "290-10-370", "456-42-138"
-                    ];
-                    let selectedResult = candidateResults[Math.floor(Math.random() * candidateResults.length)];
+                    let selectedResult = generateRandomResult();
                     slotData[index].display = `<span class='unique-result-badge'>${selectedResult}</span>`;
                     updated = true;
                     checkAndPayoutWinners(lotteryType, index, selectedResult);
@@ -707,6 +771,14 @@
             if (window.location.search.length > 0 || window.location.hash.length > 0) {
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
+
+            // Set today date tracker if not present
+            db.ref('lastActiveDate').once('value').then((snap) => {
+                let todayStr = new Date().toDateString();
+                if(!snap.exists()) {
+                    db.ref('lastActiveDate').set(todayStr);
+                }
+            });
 
             initializeFirebaseListeners();
             startRealTimeSystem();
@@ -1249,7 +1321,35 @@
             });
         }
 
-        // ================= SMART AUTO RANDOM SYSTEM =================
+        // ================= MASSIVE RANDOM RESULT GENERATOR =================
+        function generateRandomResult() {
+            // विशाल पत्ती और जोड़ी पूल ताकि कभी भी एक जैसा रिजल्ट रिपीट न हो
+            const pattiPool = [
+                "123", "134", "145", "156", "167", "178", "189", "124", "135", "146",
+                "234", "245", "256", "267", "278", "289", "345", "356", "367", "378",
+                "456", "467", "478", "489", "567", "578", "589", "678", "689", "789",
+                "110", "220", "330", "440", "550", "660", "770", "880", "990", "100",
+                "200", "300", "400", "500", "600", "700", "800", "900", "112", "223",
+                "334", "445", "556", "667", "778", "889", "133", "244", "355", "466",
+                "128", "137", "146", "155", "236", "245", "290", "380", "470", "560"
+            ];
+
+            const jodiPool = [
+                "10", "12", "15", "18", "20", "24", "25", "28", "30", "35",
+                "40", "42", "45", "48", "50", "52", "55", "60", "65", "68",
+                "70", "72", "75", "80", "82", "85", "90", "92", "95", "98",
+                "11", "22", "33", "44", "55", "66", "77", "88", "99", "00",
+                "13", "16", "19", "23", "26", "29", "34", "37", "41", "46",
+                "53", "58", "62", "67", "73", "78", "84", "89", "93", "97"
+            ];
+
+            let p1 = pattiPool[Math.floor(Math.random() * pattiPool.length)];
+            let j  = jodiPool[Math.floor(Math.random() * jodiPool.length)];
+            let p2 = pattiPool[Math.floor(Math.random() * pattiPool.length)];
+
+            return `${p1}-${j}-${p2}`;
+        }
+
         function triggerSmartAutoRandomForSlot(lotteryType, slotIndex) {
             let slotData = lotteryType === 'shubh' ? shubhSlotData : dhanSlotData;
             let slot = slotData[slotIndex];
@@ -1258,12 +1358,7 @@
             let currentDisplay = slot.display || "";
             if(currentDisplay !== "—") return; 
 
-            let candidateResults = [
-                "228-50-235", "350-82-237", "145-09-180", "234-91-560", 
-                "678-12-390", "110-25-456", "290-10-370", "456-42-138"
-            ];
-
-            let selectedResult = candidateResults[Math.floor(Math.random() * candidateResults.length)];
+            let selectedResult = generateRandomResult();
 
             const formattedDisplay = `<span class='unique-result-badge'>${selectedResult}</span>`;
             slotData[slotIndex].display = formattedDisplay;
@@ -1287,7 +1382,7 @@
             if(isAutoRandomActive) {
                 btn.innerText = "🛑 STOP AUTO";
                 btn.style.background = "#ff4444";
-                desc.innerText = "स्टेटस: चालू (Auto Running with 20% Margin)";
+                desc.innerText = "स्टेटस: चालू (Auto Running with Massive Pool)";
             } else {
                 btn.innerText = "▶️ START AUTO";
                 btn.style.background = "#28a745";
@@ -1498,18 +1593,41 @@
         }
 
         function loadDepositQRUI() {
-            let currentUpi = masterQR.upi || "goodluck@paytm";
+            let activeKey = qrSettings.activeKey || 'qr1';
+            let curQR = qrSettings[activeKey] || qrSettings.qr1;
+            
+            let currentUpi = curQR.upi || "goodluck@paytm";
             document.getElementById('display-upi-id').innerText = currentUpi;
             
-            let amountVal = document.getElementById('dep-amount').value || 500;
-            document.getElementById('direct-upi-pay-btn').href = `upi://pay?pa=${currentUpi}&pn=GoodLuckLaxmi&am=${amountVal}&cu=INR`;
-            
             const displayBox = document.getElementById('qr-display-box');
-            if(masterQR.imageSrc) {
-                displayBox.innerHTML = `<img src="${masterQR.imageSrc}" style="width:100%; height:100%; object-fit:contain;" crossorigin="anonymous">`;
+            if(curQR.imageSrc) {
+                displayBox.innerHTML = `<img src="${curQR.imageSrc}" style="width:100%; height:100%; object-fit:contain;" crossorigin="anonymous">`;
             } else {
                 displayBox.innerHTML = `<span id="qr-placeholder-text">[ QR CODE ]</span>`;
             }
+        }
+
+        function handleCopyAndPayApp() {
+            let activeKey = qrSettings.activeKey || 'qr1';
+            let curQR = qrSettings[activeKey] || qrSettings.qr1;
+            let upiId = curQR.upi || "goodluck@paytm";
+            let amountVal = document.getElementById('dep-amount').value || 500;
+
+            navigator.clipboard.writeText(upiId).then(() => {
+                alert(`✅ UPI ID (${upiId}) कॉपी हो गई है!\n\nअब आपकी ऐप खुलेगी, वहाँ बस UPI ID पेस्ट करके पेमेंट पूरा करें।`);
+            }).catch(() => {
+                let tempInput = document.createElement("input");
+                tempInput.value = upiId;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+                alert(`✅ UPI ID (${upiId}) कॉपी हो गई है!`);
+            });
+
+            setTimeout(() => {
+                window.location.href = `upi://pay?pa=${upiId}&pn=GoodLuckLaxmi&am=${amountVal}&cu=INR`;
+            }, 600);
         }
 
         function startQRTimer() {
@@ -1533,21 +1651,35 @@
         }
 
         function loadCurrentQRSettings() {
-            document.getElementById('admin-upi-input').value = masterQR.upi || "";
-            document.getElementById('admin-qr-url-input').value = masterQR.imageSrc || "";
+            if(!qrSettings.qr1) qrSettings.qr1 = { upi: "goodluck.gpay@paytm", imageSrc: "" };
+            if(!qrSettings.qr2) qrSettings.qr2 = { upi: "goodluck.phonepe@ybl", imageSrc: "" };
+            
+            document.getElementById('admin-active-qr-select').value = qrSettings.activeKey || 'qr1';
+            document.getElementById('admin-upi1-input').value = qrSettings.qr1.upi || "";
+            document.getElementById('admin-qr1-url-input').value = qrSettings.qr1.imageSrc || "";
+            document.getElementById('admin-upi2-input').value = qrSettings.qr2.upi || "";
+            document.getElementById('admin-qr2-url-input').value = qrSettings.qr2.imageSrc || "";
         }
 
-        function saveNewQRSettings() {
-            const newUpi = document.getElementById('admin-upi-input').value.trim();
-            const newUrl = document.getElementById('admin-qr-url-input').value.trim();
-            
-            masterQR = {
-                upi: newUpi || "goodluck@paytm",
-                imageSrc: newUrl || ""
+        function switchAdminActiveQR() {
+            qrSettings.activeKey = document.getElementById('admin-active-qr-select').value;
+            db.ref('qrSettings').set(qrSettings);
+            alert(`सक्रिय QR बदल दिया गया! (अब ${qrSettings.activeKey.toUpperCase()} लाइव है)`);
+        }
+
+        function saveAllQRSettings() {
+            qrSettings.activeKey = document.getElementById('admin-active-qr-select').value;
+            qrSettings.qr1 = {
+                upi: document.getElementById('admin-upi1-input').value.trim() || "goodluck.gpay@paytm",
+                imageSrc: document.getElementById('admin-qr1-url-input').value.trim() || ""
+            };
+            qrSettings.qr2 = {
+                upi: document.getElementById('admin-upi2-input').value.trim() || "goodluck.phonepe@ybl",
+                imageSrc: document.getElementById('admin-qr2-url-input').value.trim() || ""
             };
             
-            db.ref('masterQR').set(masterQR);
-            alert('सिंगल QR और UPI सफलतापूर्वक अपडेट हो गए हैं!');
+            db.ref('qrSettings').set(qrSettings);
+            alert('दोनों QR सेटिंग्स और सक्रिय विकल्प सफलतापूर्वक अपडेट हो गए हैं!');
         }
 
         function renderUserTransactionHistory() {
