@@ -579,6 +579,9 @@
         const db = firebase.database();
         // ===========================================================
 
+        // 🎵 tick-tock audio setup for last 2 minutes countdown
+        const tickSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+
         let userWallets = {};
         let currentWallet = 0;
         let currentGameMode = '';
@@ -740,7 +743,6 @@
             });
         }
 
-        // ================= CORRECT OPEN ➔ JODI LOCK ➔ CLOSE STAGE LOGIC =================
         function checkAndCatchUpMissedSlots(lotteryType, slotData) {
             if(!isAutoRandomActive) return;
             let now = new Date();
@@ -754,7 +756,6 @@
                 let stage = slot.stage || "pending";
                 let displayVal = slot.display || "—";
 
-                // Step 1: At Start Time, open OPEN if not opened yet
                 if(currentMins >= startMins && currentMins < endMins && (stage === "pending" || displayVal === "—")) {
                     let openPatti = getRandomPatti();
                     let openDigit = String(Number(openPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
@@ -764,7 +765,6 @@
                     updated = true;
                 }
 
-                // Step 2: At End Time, open CLOSE and complete Jodi
                 if(currentMins >= endMins && stage !== "closed_declared") {
                     let openStr = slotData[index].openData || `${getRandomPatti()}-${Math.floor(Math.random()*10)}`;
                     let parts = openStr.split('-');
@@ -1455,8 +1455,13 @@
 
                 const timerEl = document.getElementById('countdown');
                 
+                // 🔊 TICK-TOCK SOUND IN LAST 2 MINUTES (120 SECONDS)
                 if (diffSecs <= 120 && diffSecs > 0) {
                     timerEl.classList.add('red-lock');
+                    try {
+                        tickSound.currentTime = 0;
+                        tickSound.play().catch(e => { /* Handled silent play permissions */ });
+                    } catch(err){}
                 } else {
                     timerEl.classList.remove('red-lock');
                 }
