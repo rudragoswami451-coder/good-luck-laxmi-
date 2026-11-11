@@ -542,7 +542,7 @@
     <div class="modal hidden" id="my-bets-modal">
         <div class="modal-content">
             <h3 style="color: var(--secondary); margin-bottom: 8px;">📝 मेरी बेटिंग (दांव) इतिहास</h3>
-            <div class="notice-box">आपके द्वारा लगाए गए सभी दांव, स्लॉट समय और मोबाइल टाइम यहाँ सुरक्षित हैं।</div>
+            <div class="notice-box">आज के दिन लगाए गए आपके सभी दांव यहाँ सुरक्षित हैं। (कल का रिकॉर्ड स्वतः हटा दिया जाता है)</div>
             <div class="result-line-box" id="my-bets-container" style="max-height: 280px; text-align: left;"></div>
             <button class="btn" style="margin-top:12px;" onclick="closeMyBetsHistory()">बंद करें</button>
         </div>
@@ -579,7 +579,6 @@
         const db = firebase.database();
         // ===========================================================
 
-        // 🎵 tick-tock audio setup for last 2 minutes countdown
         const tickSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
 
         let userWallets = {};
@@ -661,12 +660,17 @@
         // ================= FIREBASE REAL-TIME LISTENERS =================
         function initializeFirebaseListeners() {
             let todayStr = new Date().toDateString();
+            
+            // Check Daily Reset for Slots and Bet History
             db.ref('lastActiveDate').on('value', (snap) => {
                 let savedDate = snap.val();
                 if(savedDate !== todayStr) {
                     db.ref('lastActiveDate').set(todayStr);
                     db.ref('shubhSlots').set(defaultShubhSlots);
                     db.ref('dhanSlots').set(defaultDhanSlots);
+                    db.ref('shubhBets').set([]);
+                    db.ref('dhanBets').set([]);
+                    db.ref('userBetHistory').set({});
                 }
             });
 
@@ -688,6 +692,7 @@
 
             db.ref('userBetHistory').on('value', (snap) => {
                 if(snap.exists()) userBetHistory = snap.val();
+                else userBetHistory = {};
             });
 
             db.ref('shubhSlots').on('value', (snap) => {
@@ -1192,7 +1197,7 @@
             
             let userBets = userBetHistory[activeUserPhone] || [];
             if(userBets.length === 0) {
-                container.innerHTML = `<p style="color:#888; text-align:center; padding:15px;">आपने अभी तक कोई दांव नहीं लगाया है।</p>`;
+                container.innerHTML = `<p style="color:#888; text-align:center; padding:15px;">आज आपने कोई दांव नहीं लगाया है। (पुराना इतिहास स्वतः हटा दिया गया है)</p>`;
             } else {
                 userBets.forEach(b => {
                     const row = document.createElement('div');
@@ -1356,9 +1361,7 @@
             return pattiPool[Math.floor(Math.random() * pattiPool.length)];
         }
 
-        function triggerSmartAutoRandomForSlot(lotteryType, slotIndex) {
-            // Manual trigger fallback if needed
-        }
+        function triggerSmartAutoRandomForSlot(lotteryType, slotIndex) {}
 
         function toggleAutoRandomSystem() {
             isAutoRandomActive = !isAutoRandomActive;
@@ -1443,7 +1446,6 @@
 
                 if(diffSecs < 0) diffSecs = 0;
 
-                // Call slot check every second
                 if(isAutoRandomActive) {
                     checkAndCatchUpMissedSlots('shubh', shubhSlotData);
                     checkAndCatchUpMissedSlots('dhan', dhanSlotData);
@@ -1455,12 +1457,11 @@
 
                 const timerEl = document.getElementById('countdown');
                 
-                // 🔊 TICK-TOCK SOUND IN LAST 2 MINUTES (120 SECONDS)
                 if (diffSecs <= 120 && diffSecs > 0) {
                     timerEl.classList.add('red-lock');
                     try {
                         tickSound.currentTime = 0;
-                        tickSound.play().catch(e => { /* Handled silent play permissions */ });
+                        tickSound.play().catch(e => {});
                     } catch(err){}
                 } else {
                     timerEl.classList.remove('red-lock');
