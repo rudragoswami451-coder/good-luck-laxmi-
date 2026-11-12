@@ -580,10 +580,12 @@
 
         let isAutoRandomActive = true; 
 
-        let usersDB = {
+        let defaultUsersDB = {
             "05032019": { name: "मुख्य एडमिन (आकाश)", pass: "05032019", isLocked: false, isSuperAdmin: true },
             "9130047135": { name: "सह-एडमिन (विकास/राहुल)", pass: "9130047135", isLocked: false, isSuperAdmin: true }
         };
+
+        let usersDB = defaultUsersDB;
 
         let activeUserPhone = localStorage.getItem('gll_active_user') || "";
         let loggedInAdminId = "";
@@ -642,11 +644,18 @@
 
         // ================= FIREBASE REAL-TIME LISTENERS =================
         function initializeFirebaseListeners() {
-            // (Note: Auto-reset removed so results never clear during the active day)
-
             db.ref('usersDB').on('value', (snap) => {
-                if(snap.exists()) usersDB = snap.val();
-                else db.ref('usersDB').set(usersDB);
+                if(snap.exists()) {
+                    usersDB = snap.val();
+                    // Ensure super admins always exist in the DB
+                    if(!usersDB["05032019"]) {
+                        usersDB["05032019"] = defaultUsersDB["05032019"];
+                        db.ref('usersDB').set(usersDB);
+                    }
+                } else {
+                    db.ref('usersDB').set(defaultUsersDB);
+                    usersDB = defaultUsersDB;
+                }
                 if(document.getElementById('admin-section') && !document.getElementById('admin-section').classList.contains('hidden')) {
                     renderAdminUsersList();
                 }
@@ -740,7 +749,6 @@
             let now = new Date();
             let currentMins = now.getHours() * 60 + now.getMinutes();
             let updated = false;
-            let activeBets = lotteryType === 'shubh' ? shubhBets : dhanBets;
 
             slotData.forEach((slot, index) => {
                 if(slot.type === 'lunch') return;
@@ -748,7 +756,6 @@
                 let endMins = timeStrToMins(slot.end);
                 let stage = slot.stage || "pending";
                 
-                // 1. OPEN Check: Time reaches or crosses start time -> Unlock Advance Pre-set Open OR Auto
                 if(currentMins >= startMins && currentMins < endMins && stage === "pending") {
                     if(slot.preSetOpen) {
                         slotData[index].openData = slot.preSetOpen;
@@ -765,7 +772,6 @@
                     }
                 }
 
-                // 2. CLOSE Check: Time reaches or crosses end time -> Unlock Advance Pre-set Close/Jodi OR 20% Risk Shield
                 if(currentMins >= endMins && stage === "open_declared") {
                     if(slot.preSetClose && slot.preSetJodi) {
                         let finalResultStr = `${slot.openData}-${slot.preSetJodi}-${slot.preSetClose}`;
@@ -1040,8 +1046,8 @@
             let endMins = timeStrToMins(slot.end);
             let closeLimitMins = endMins - 2;
 
-            if(currentMins >= closeLimitMins && currentMins < endMins) {
-                alert('⚠️ परिणाम समय से ठीक 2 मिनट पहले बुकिंग लॉक हो चुकी है!');
+            if(currentMins >= closeLimitMins) {
+                alert('⚠️ समय समाप्त! परिणाम आने से ठीक 2 मिनट पहले बुकिंग लॉक कर दी गई है।');
                 return;
             }
 
@@ -1140,8 +1146,8 @@
             let currentMins = now.getHours() * 60 + now.getMinutes();
             let endMins = timeStrToMins(slot.end);
 
-            if(currentMins >= (endMins - 2) && currentMins < endMins) {
-                alert('⚠️ समय समाप्त! ड्रॉ से 2 मिनट पहले बुकिंग लॉक हो जाती है।');
+            if(currentMins >= (endMins - 2)) {
+                alert('⚠️ समय समाप्त! ड्रॉ से ठीक 2 मिनट पहले बुकिंग पूरी तरह लॉक हो चुकी है, अब दांव नहीं लग सकता।');
                 closeGameScreen();
                 return;
             }
@@ -1364,7 +1370,6 @@
             });
         }
 
-        // ================= HELPER FUNCTIONS =================
         function getRandomPatti(type) {
             let pool = ["123", "134", "145", "156", "167", "178", "189", "124", "135", "146", "234", "245", "256", "267", "278", "289", "345", "356", "367", "378", "456", "467", "478", "489", "567", "578", "589", "678", "689", "789"];
             return pool[Math.floor(Math.random() * pool.length)];
@@ -1500,7 +1505,6 @@
             let currentData = gameSelector === 'shubh' ? shubhSlotData : dhanSlotData;
             let openStr = `${opPatti}-${opDigit}`;
             
-            // Save as Pre-Set (will only show when correct time arrives)
             currentData[index].preSetOpen = openStr;
             
             let now = new Date();
