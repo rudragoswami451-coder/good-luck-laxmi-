@@ -323,7 +323,7 @@
         <div class="auto-toggle-box">
             <div>
                 <strong style="color:var(--accent); font-size:0.85rem;">🤖 स्मार्ट ऑटो-रैंडम & 20% रिस्क शील्ड</strong>
-                <p style="font-size:0.7rem; color:#aaa;" id="auto-status-desc">स्टेटस: चालू (एडमिन एडवांस डाल सकता है, न डालने पर 2 मि. पहले भीड़ देखकर ऑटो)</p>
+                <p style="font-size:0.7rem; color:#aaa;" id="auto-status-desc">स्टेटस: चालू (एडमिन एडवांस डाल सकता है, न डालने पर समय पर ऑटो)</p>
             </div>
             <button class="btn" id="auto-toggle-btn" style="width:auto; padding:6px 12px; margin:0; font-size:0.8rem; background:#ff4444; color:#fff;" onclick="toggleAutoRandomSystem()">🛑 STOP AUTO</button>
         </div>
@@ -525,7 +525,7 @@
     <div class="modal hidden" id="my-bets-modal">
         <div class="modal-content">
             <h3 style="color: var(--secondary); margin-bottom: 8px;">📝 मेरी बेटिंग (दांव) इतिहास</h3>
-            <div class="notice-box">आज के दिन लगाए गए आपके सभी दांव यहाँ सुरक्षित हैं। (कल का रिकॉर्ड स्वतः हटा दिया जाता है)</div>
+            <div class="notice-box">आज के दिन लगाए गए आपके सभी दांव यहाँ सुरक्षित हैं।</div>
             <div class="result-line-box" id="my-bets-container" style="max-height: 280px; text-align: left;"></div>
             <button class="btn" style="margin-top:12px;" onclick="closeMyBetsHistory()">बंद करें</button>
         </div>
@@ -642,19 +642,7 @@
 
         // ================= FIREBASE REAL-TIME LISTENERS =================
         function initializeFirebaseListeners() {
-            let todayStr = new Date().toDateString();
-            
-            db.ref('lastActiveDate').on('value', (snap) => {
-                let savedDate = snap.val();
-                if(savedDate !== todayStr) {
-                    db.ref('lastActiveDate').set(todayStr);
-                    db.ref('shubhSlots').set(defaultShubhSlots);
-                    db.ref('dhanSlots').set(defaultDhanSlots);
-                    db.ref('shubhBets').set([]);
-                    db.ref('dhanBets').set([]);
-                    db.ref('userBetHistory').set({});
-                }
-            });
+            // (Note: Auto-reset removed so results never clear during the active day)
 
             db.ref('usersDB').on('value', (snap) => {
                 if(snap.exists()) usersDB = snap.val();
@@ -747,7 +735,7 @@
             return true;
         }
 
-        // ================= SMART AUTO & ADVANCED TIME-LOCK SCHEDULER =================
+        // ================= SMART TIME-LOCKED SCHEDULER & 20% RISK SHIELD =================
         function checkAndCatchUpMissedSlots(lotteryType, slotData) {
             let now = new Date();
             let currentMins = now.getHours() * 60 + now.getMinutes();
@@ -760,16 +748,14 @@
                 let endMins = timeStrToMins(slot.end);
                 let stage = slot.stage || "pending";
                 
-                // 1. OPEN Check: Time crossed start time -> Make advanced pre-set OPEN live if available!
+                // 1. OPEN Check: Time reaches or crosses start time -> Unlock Advance Pre-set Open OR Auto
                 if(currentMins >= startMins && currentMins < endMins && stage === "pending") {
                     if(slot.preSetOpen) {
-                        // Admin already saved Open in advance! Make it live now.
                         slotData[index].openData = slot.preSetOpen;
                         slotData[index].display = `<span class='unique-result-badge'>${slot.preSetOpen}</span>`;
                         slotData[index].stage = "open_declared";
                         updated = true;
                     } else if(isAutoRandomActive) {
-                        // Smart Auto Fallback for Open (Safe Random)
                         let openPatti = getRandomPatti('Single Pana');
                         let openDigit = String(Number(openPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
                         slotData[index].openData = `${openPatti}-${openDigit}`;
@@ -779,30 +765,15 @@
                     }
                 }
 
-                // 2. CLOSE Check: Time crossed or last 2 mins reached -> Make advanced pre-set CLOSE live or run Smart 20% Risk Shield!
-                let remMins = endMins - currentMins;
+                // 2. CLOSE Check: Time reaches or crosses end time -> Unlock Advance Pre-set Close/Jodi OR 20% Risk Shield
                 if(currentMins >= endMins && stage === "open_declared") {
                     if(slot.preSetClose && slot.preSetJodi) {
-                        // Admin already saved Full result in advance!
                         let finalResultStr = `${slot.openData}-${slot.preSetJodi}-${slot.preSetClose}`;
                         slotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
                         slotData[index].stage = "closed_declared";
                         updated = true;
                         checkAndPayoutWinners(lotteryType, index, finalResultStr);
                     } else if(isAutoRandomActive && !slot.closeAutoFilled) {
-                        // SMART 20% RISK SHIELD / CROWD ANALYSIS FORMULA:
-                        // Check bets in this slot to protect company from heavy crowd loss
-                        let slotTimeStr = `${slot.start} - ${slot.end}`;
-                        let crowdStats = {};
-                        if(activeBets) {
-                            activeBets.forEach(b => {
-                                if(b.slotTime === slotTimeStr) {
-                                    crowdStats[b.number] = (crowdStats[b.number] || 0) + b.points;
-                                }
-                            });
-                        }
-
-                        // Pick a safe winning number/patti that avoids the heaviest crowd if possible, else random safe
                         let openStr = slotData[index].openData || `${getRandomPatti('Single Pana')}-${Math.floor(Math.random()*10)}`;
                         let parts = openStr.split('-');
                         let opPatti = parts[0];
@@ -832,13 +803,6 @@
             if (window.location.search.length > 0 || window.location.hash.length > 0) {
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
-
-            db.ref('lastActiveDate').once('value').then((snap) => {
-                let todayStr = new Date().toDateString();
-                if(!snap.exists()) {
-                    db.ref('lastActiveDate').set(todayStr);
-                }
-            });
 
             initializeFirebaseListeners();
             startRealTimeSystem();
@@ -1249,7 +1213,7 @@
             
             let userBets = userBetHistory[activeUserPhone] || [];
             if(userBets.length === 0) {
-                container.innerHTML = `<p style="color:#888; text-align:center; padding:15px;">आज आपने कोई दांव नहीं लगाया है। (पुराना इतिहास स्वतः हटा दिया गया है)</p>`;
+                container.innerHTML = `<p style="color:#888; text-align:center; padding:15px;">आज आपने कोई दांव नहीं लगाया है।</p>`;
             } else {
                 userBets.forEach(b => {
                     const row = document.createElement('div');
@@ -1418,7 +1382,7 @@
             if(isAutoRandomActive) {
                 btn.innerText = "🛑 STOP AUTO";
                 btn.style.background = "#ff4444";
-                desc.innerText = "स्टेटस: चालू (एडमिन एडवांस डाल सकता है, न डालने पर 2 मि. पहले भीड़ देखकर ऑटो)";
+                desc.innerText = "स्टेटस: चालू (एडमिन एडवांस डाल सकता है, न डालने पर समय पर ऑटो)";
             } else {
                 btn.innerText = "▶️ START AUTO";
                 btn.style.background = "#28a745";
@@ -1510,7 +1474,7 @@
 
                 if(currentMins >= limitMins) {
                     timerEl.innerText = "GOOD NIGHT";
-                    document.getElementById('timer-status-hint').innerText = "🌙 खेल समाप्त (कल सुबह पुनः चालू होगा)";
+                    document.getElementById('timer-status-hint').innerText = "🌙 खेल समाप्त";
                 } else {
                     timerEl.innerText = timerStr;
                     document.getElementById('timer-status-hint').innerText = `सक्रिय स्लॉट: ${activeSlot.start} (${stageName}) ➔ ${activeSlot.end} ${diffSecs <= 120 ? '(⚠️ बुकिंग बंद)' : ''}`;
@@ -1536,7 +1500,7 @@
             let currentData = gameSelector === 'shubh' ? shubhSlotData : dhanSlotData;
             let openStr = `${opPatti}-${opDigit}`;
             
-            // Save as Pre-Set for future or immediate use
+            // Save as Pre-Set (will only show when correct time arrives)
             currentData[index].preSetOpen = openStr;
             
             let now = new Date();
@@ -1544,7 +1508,6 @@
             let startMins = timeStrToMins(currentData[index].start);
 
             if(currentMins >= startMins) {
-                // If time already reached, publish immediately
                 currentData[index].openData = openStr;
                 currentData[index].display = `<span class='unique-result-badge'>${openStr}</span>`;
                 currentData[index].stage = "open_declared";
@@ -1597,8 +1560,7 @@
             let currentMins = now.getHours() * 60 + now.getMinutes();
             let endMins = timeStrToMins(currentData[index].end);
 
-            if(currentMins >= (endMins - 30)) {
-                // Publish if time is close or passed
+            if(currentMins >= endMins) {
                 const formattedDisplay = `<span class='unique-result-badge'>${finalResultStr}</span>`;
                 currentData[index].display = formattedDisplay;
                 currentData[index].stage = "closed_declared";
