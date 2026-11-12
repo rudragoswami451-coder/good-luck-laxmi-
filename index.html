@@ -307,7 +307,7 @@
 
                 <label style="font-size: 0.85rem; color: #aaa; margin-top: 8px; display: block;" id="board-input-label">INPUT DIGIT / PANA:</label>
                 <input type="tel" id="board-input-val" placeholder="केवल अंक दर्ज करें" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <div class="input-hint" id="board-input-hint">⚠️ केवल संख्यात्मक अंक ही स्वीकार किए जाएंगे।</div>
+                <div class="input-hint" id="board-input-hint">⚠️ नियम के अनुसार सही अंक या पत्ती दर्ज करें।</div>
                 <label style="font-size: 0.85rem; color: #aaa; margin-top: 8px; display: block;">POINTS (₹):</label>
                 <input type="number" id="board-points" placeholder="अंक राशि दर्ज करें" min="10" value="10">
             </div>
@@ -322,8 +322,8 @@
         
         <div class="auto-toggle-box">
             <div>
-                <strong style="color:var(--accent); font-size:0.85rem;">🤖 स्मार्ट ऑटो-रैंडम (ओपन ➔ जोड़ी लॉक ➔ क्लोज)</strong>
-                <p style="font-size:0.7rem; color:#aaa;" id="auto-status-desc">स्टेटस: चालू (Auto Running)</p>
+                <strong style="color:var(--accent); font-size:0.85rem;">🤖 स्मार्ट ऑटो-रैंडम (आखिरी 2 मिनट फ़ॉलबैक)</strong>
+                <p style="font-size:0.7rem; color:#aaa;" id="auto-status-desc">स्टेटस: चालू (एडमिन पहले डालेगा, न डालने पर 2 मिनट पहले रैंडम)</p>
             </div>
             <button class="btn" id="auto-toggle-btn" style="width:auto; padding:6px 12px; margin:0; font-size:0.8rem; background:#ff4444; color:#fff;" onclick="toggleAutoRandomSystem()">🛑 STOP AUTO</button>
         </div>
@@ -350,7 +350,7 @@
                 <option value="dhan">💰 धन लक्ष्मी (30 मि. टाइमर)</option>
             </select>
 
-            <label style="font-size:0.9rem; display:block; text-align:left; margin-top:8px;">समय स्लॉट चुनें (लाइव या पुराना छूटा हुआ):</label>
+            <label style="font-size:0.9rem; display:block; text-align:left; margin-top:8px;">समय स्लॉट चुनें:</label>
             <select id="admin-slot-index" onchange="updateAdminSlotInfo()"></select>
             <div id="admin-current-slot-time-hint" style="font-size:0.75rem; color:var(--accent); margin-top:3px; text-align:left;">चयनित स्लॉट समय: -</div>
 
@@ -358,7 +358,7 @@
                 <label style="font-size:0.85rem; color:var(--secondary); font-weight:bold;">1. ओपन बॉक्स (Step 1):</label>
                 <input type="text" id="admin-open-patti" placeholder="पत्ती (उदा. 228)" style="margin:5px 0;">
                 <input type="text" id="admin-open-digit" placeholder="अंक (उदा. 5)" style="margin:5px 0;">
-                <button class="btn" style="background:#28a745; color:#fff; padding:8px; font-size:0.85rem;" onclick="saveAdminOpen()">✅ ओपन सेव & लाइव करें (Step 1)</button>
+                <button class="btn" style="background:#28a745; color:#fff; padding:8px; font-size:0.85rem;" onclick="saveAdminOpen()">✅ ओपन सेव & लॉक करें (Step 1)</button>
             </div>
             
             <div class="admin-input-group">
@@ -368,7 +368,7 @@
             </div>
             
             <button class="btn" style="background:#ff4444; color:#fff;" onclick="updateAdminResult()">🚀 पूरी जोड़ी बनाकर पब्लिश करें (Step 2)</button>
-            <button class="btn" style="background:#25D366; color:#fff;" onclick="enableAdminEditMode()">✏️ छूटा/पुराना रिजल्ट सीधे एडिट करें</button>
+            <button class="btn" style="background:#25D366; color:#fff;" onclick="enableAdminEditMode()">✏️ पुराना रिजल्ट सीधे एडिट करें</button>
         </div>
 
         <div id="adm-sec-users" class="hidden">
@@ -377,26 +377,24 @@
         </div>
 
         <div id="adm-sec-qr" class="hidden">
-            <h4 style="color:var(--secondary); margin-bottom:8px;">💳 QR कोड मास्टर कंट्रोल (2 ऑप्शंस)</h4>
-            
+            <h4 style="color:var(--secondary); margin-bottom:8px;">💳 QR कोड मास्टर कंट्रोल</h4>
             <label style="font-size:0.85rem; display:block; text-align:left; color:var(--accent); font-weight:bold;">कौन सा QR लाइव रखना है?</label>
             <select id="admin-active-qr-select" onchange="switchAdminActiveQR()" style="background:#111; color:var(--accent); font-weight:bold;">
-                <option value="qr1">QR Option 1 (आपका QR)</option>
-                <option value="qr2">QR Option 2 (दूसरा QR)</option>
+                <option value="qr1">QR Option 1</option>
+                <option value="qr2">QR Option 2</option>
             </select>
 
             <div style="background:#181818; padding:10px; border-radius:6px; margin:10px 0; border:1px solid #444;">
-                <h5 style="color:var(--secondary); text-align:left; margin-bottom:5px;">🔹 QR Option 1 (Primary)</h5>
-                <input type="text" id="admin-upi1-input" placeholder="UPI ID (उदा. goodluck@paytm)">
-                <input type="text" id="admin-qr1-url-input" placeholder="QR इमेज डायरेक्ट URL डालें">
+                <h5 style="color:var(--secondary); text-align:left; margin-bottom:5px;">🔹 QR Option 1</h5>
+                <input type="text" id="admin-upi1-input" placeholder="UPI ID">
+                <input type="text" id="admin-qr1-url-input" placeholder="QR इमेज डायरेक्ट URL">
             </div>
 
             <div style="background:#181818; padding:10px; border-radius:6px; margin:10px 0; border:1px solid #444;">
-                <h5 style="color:var(--secondary); text-align:left; margin-bottom:5px;">🔹 QR Option 2 (Secondary)</h5>
-                <input type="text" id="admin-upi2-input" placeholder="UPI ID (उदा. alternative@upi)">
-                <input type="text" id="admin-qr2-url-input" placeholder="QR इमेज डायरेक्ट URL डालें">
+                <h5 style="color:var(--secondary); text-align:left; margin-bottom:5px;">🔹 QR Option 2</h5>
+                <input type="text" id="admin-upi2-input" placeholder="UPI ID">
+                <input type="text" id="admin-qr2-url-input" placeholder="QR इमेज डायरेक्ट URL">
             </div>
-            
             <button class="btn" style="background:#ff4444; color:#fff;" onclick="saveAllQRSettings()">QR अपडेट सेव करें</button>
         </div>
 
@@ -415,17 +413,17 @@
         </div>
 
         <div id="adm-sec-dep" class="hidden">
-            <h4 style="color:var(--secondary); margin-bottom:10px;">📥 डिपॉजिट अनुरोध (Deposit Requests)</h4>
+            <h4 style="color:var(--secondary); margin-bottom:10px;">📥 डिपॉजिट अनुरोध</h4>
             <div id="admin-deposit-list"></div>
         </div>
 
         <div id="adm-sec-wit" class="hidden">
-            <h4 style="color:var(--secondary); margin-bottom:10px;">📤 विड्रॉल अनुरोध (Withdraw Requests)</h4>
+            <h4 style="color:var(--secondary); margin-bottom:10px;">📤 विड्रॉल अनुरोध</h4>
             <div id="admin-withdraw-list"></div>
         </div>
 
         <div id="adm-sec-req" class="hidden">
-            <h4 style="color:var(--secondary); margin-bottom:10px;">🤖 यूज़र्स की हेल्प / समस्या रिक्वेस्ट</h4>
+            <h4 style="color:var(--secondary); margin-bottom:10px;">🤖 यूज़र्स की हेल्प रिक्वेस्ट</h4>
             <div id="admin-help-requests-list"></div>
         </div>
 
@@ -436,36 +434,23 @@
     <div class="modal hidden" id="deposit-modal">
         <div class="modal-content">
             <h3 style="color: var(--secondary); margin-bottom: 5px;">💳 पेमेंट गेटवे 👍</h3>
-            
             <div style="background: #181818; border: 2px solid var(--secondary); padding: 12px; border-radius: 8px; margin: 5px 0;">
                 <p style="font-size: 0.8rem; color: #d4af37;">QR कोड स्कैन करके भुगतान करें:</p>
                 <div class="qr-timer-display" id="qr-timer">05:00</div>
-                
-                <div class="big-qr-box" id="qr-display-box">
-                    <span id="qr-placeholder-text">[ QR CODE ]</span>
-                </div>
-                
-                <p style="font-size: 0.85rem; color: #fff; margin-top: 5px;">
-                    UPI ID: <b id="display-upi-id" style="color:var(--accent); font-size:0.95rem;">goodluck@paytm</b>
-                </p>
+                <div class="big-qr-box" id="qr-display-box"><span id="qr-placeholder-text">[ QR CODE ]</span></div>
+                <p style="font-size: 0.85rem; color: #fff; margin-top: 5px;">UPI ID: <b id="display-upi-id" style="color:var(--accent); font-size:0.95rem;">goodluck@paytm</b></p>
             </div>
-
             <div class="dep-help-note">
-                💡 <b>जरूरी सूचना:</b> यदि नीचे वाला बटन काम न करे, तो ऊपर दिए गए QR कोड का <b>स्क्रीनशॉट (Screenshot) ले लें</b> और अपनी किसी भी ऐप (PhonePe, GPay, Paytm) से स्कैन करके भुगतान करें। भुगतान के बाद 12 अंकों का UTR नंबर नीचे भरकर सबमिट करें, आपके पॉइंट्स तुरंत जुड़ जाएंगे।
+                💡 <b>जरूरी सूचना:</b> QR का स्क्रीनशॉट लेकर किसी भी ऐप से स्कैन करें और 12 अंकों का UTR नंबर नीचे भरें।
             </div>
-
-            <input type="number" id="dep-amount" placeholder="राशि (₹) दर्ज करें" value="500" oninput="updateUPIPayLink()">
-            
+            <input type="number" id="dep-amount" placeholder="राशि (₹) दर्ज करें" value="500">
             <button class="btn" id="direct-upi-pay-btn" style="background:#25D366; color:#fff; margin-bottom:5px;" onclick="handleCopyAndPayApp()">
-                📱 UPI ID कॉपी करें & सीधे ऐप से भुगतान करें
+                📱 UPI ID कॉपी करें & ऐप से भुगतान करें
             </button>
-
             <input type="text" id="utr-input" placeholder="12-अंकों का UTR नंबर" maxlength="12">
             <button class="btn" onclick="submitDeposit()">पेमेंट सत्यापित करें</button>
-            
             <h4 style="color:var(--secondary); font-size:0.85rem; margin-top:12px; text-align:left;">📜 आपकी डिपॉजिट व विड्रॉल हिस्ट्री:</h4>
             <div class="result-line-box" id="user-transaction-history-box" style="max-height:120px; font-size:0.75rem; text-align:left;"></div>
-
             <button class="btn" style="background:#444; color:#fff; margin-top:8px;" onclick="closeDeposit()">रद्द करें</button>
         </div>
     </div>
@@ -474,7 +459,7 @@
     <div class="modal hidden" id="withdraw-modal">
         <div class="modal-content">
             <h3 style="color: #28a745; margin-bottom: 8px;">💸 पैसे निकालें</h3>
-            <p style="font-size: 0.75rem; color: var(--accent); margin-bottom: 8px;">⏰ समय: सुबह 10:00 AM से शाम 6:00 PM तक (न्यूनतम ₹300)</p>
+            <p style="font-size: 0.75rem; color: var(--accent); margin-bottom: 8px;">⏰ समय: सुबह 10:00 से शाम 6:00 (न्यूनतम ₹300)</p>
             <p style="font-size: 0.8rem; color:#aaa; margin-bottom:10px;">पॉइंट्स बैलेंस: <span id="withdraw-max-bal" style="color:var(--accent)">0</span> Points</p>
             <input type="number" id="withdraw-amount" placeholder="विड्रॉल राशि (₹) - Min ₹300" min="300">
             <select id="withdraw-method" onchange="toggleWithdrawFields()">
@@ -499,19 +484,17 @@
                 • सिंगल अंक: <b>10 के 100</b> | जोड़ी: <b>10 के 1000</b><br>
                 • सिंगल पत्ती: <b>10 के 1500</b> | डबल: <b>10 के 3000</b> | ट्रिपल: <b>10 के 7000</b>
             </p>
-            
             <div style="border-top: 1px dashed var(--secondary); padding-top: 10px; margin-top: 10px;">
                 <h4 style="color:var(--accent); font-size:0.9rem; text-align:left;">🤖 हेल्पबोट (AI Assistant)</h4>
                 <div class="bot-chat-box" id="bot-chat-history">
-                    <div class="bot-msg">नमस्कार! मैं गुड लक लक्ष्मी का हेल्पबोट हूँ। आप मुझसे खेल या डिपॉजिट के बारे में पूछ सकते हैं।</div>
+                    <div class="bot-msg">नमस्कार! गुड लक लक्ष्मी में आपका स्वागत है।</div>
                 </div>
                 <input type="text" id="bot-user-input" placeholder="यहाँ अपना सवाल पूछें..." style="margin:5px 0; font-size:0.85rem; padding:8px;">
                 <div style="display:flex; gap:5px;">
                     <button class="btn" style="margin:0; padding:8px; font-size:0.85rem;" onclick="askHelpBot()">सवाल पूछें</button>
-                    <button class="btn" style="margin:0; padding:8px; font-size:0.85rem; background:#28a745; color:#fff;" onclick="sendRequestToAdmin()">एडमिन को रिक्वेस्ट भेजें</button>
+                    <button class="btn" style="margin:0; padding:8px; font-size:0.85rem; background:#28a745; color:#fff;" onclick="sendRequestToAdmin()">एडमिन को भेजें</button>
                 </div>
             </div>
-
             <button class="btn" style="margin-top:12px;" onclick="closeRates()">बंद करें</button>
         </div>
     </div>
@@ -615,43 +598,43 @@
         let qrTimeRemaining = 300;
 
         let defaultShubhSlots = [
-            { start: "09:15 AM", display: "—", end: "09:30 AM", stage: "pending" },
-            { start: "09:45 AM", display: "—", end: "10:00 AM", stage: "pending" },
-            { start: "10:15 AM", display: "—", end: "10:30 AM", stage: "pending" },
-            { start: "10:45 AM", display: "—", end: "11:00 AM", stage: "pending" },
-            { start: "11:15 AM", display: "—", end: "11:30 AM", stage: "pending" },
-            { start: "11:45 AM", display: "—", end: "12:00 PM", stage: "pending" },
-            { start: "12:15 PM", display: "—", end: "12:30 PM", stage: "pending" },
-            { start: "12:45 PM", display: "—", end: "01:00 PM", stage: "pending" },
-            { start: "01:15 PM", display: "—", end: "01:30 PM", stage: "pending" },
-            { start: "01:30 PM", display: "—", end: "01:45 PM", stage: "pending" },
-            { start: "02:00 PM", display: "—", end: "02:15 PM", stage: "pending" },
-            { start: "02:30 PM", display: "—", end: "02:45 PM", stage: "pending" },
-            { start: "03:00 PM", display: "—", end: "03:15 PM", stage: "pending" },
-            { start: "03:30 PM", display: "—", end: "03:45 PM", stage: "pending" },
+            { start: "09:15 AM", display: "—", end: "09:30 AM", stage: "pending", adminLocked: false },
+            { start: "09:45 AM", display: "—", end: "10:00 AM", stage: "pending", adminLocked: false },
+            { start: "10:15 AM", display: "—", end: "10:30 AM", stage: "pending", adminLocked: false },
+            { start: "10:45 AM", display: "—", end: "11:00 AM", stage: "pending", adminLocked: false },
+            { start: "11:15 AM", display: "—", end: "11:30 AM", stage: "pending", adminLocked: false },
+            { start: "11:45 AM", display: "—", end: "12:00 PM", stage: "pending", adminLocked: false },
+            { start: "12:15 PM", display: "—", end: "12:30 PM", stage: "pending", adminLocked: false },
+            { start: "12:45 PM", display: "—", end: "01:00 PM", stage: "pending", adminLocked: false },
+            { start: "01:15 PM", display: "—", end: "01:30 PM", stage: "pending", adminLocked: false },
+            { start: "01:30 PM", display: "—", end: "01:45 PM", stage: "pending", adminLocked: false },
+            { start: "02:00 PM", display: "—", end: "02:15 PM", stage: "pending", adminLocked: false },
+            { start: "02:30 PM", display: "—", end: "02:45 PM", stage: "pending", adminLocked: false },
+            { start: "03:00 PM", display: "—", end: "03:15 PM", stage: "pending", adminLocked: false },
+            { start: "03:30 PM", display: "—", end: "03:45 PM", stage: "pending", adminLocked: false },
             { type: "lunch", display: "🍽️ LUNCH TIME (3:45 PM से 4:30 PM भोजन अवकाश)" },
-            { start: "04:45 PM", display: "—", end: "05:00 PM", stage: "pending" },
-            { start: "05:15 PM", display: "—", end: "05:30 PM", stage: "pending" },
-            { start: "05:45 PM", display: "—", end: "06:00 PM", stage: "pending" },
-            { start: "06:15 PM", display: "—", end: "06:30 PM", stage: "pending" },
-            { start: "06:45 PM", display: "—", end: "07:00 PM", stage: "pending" },
-            { start: "07:15 PM", display: "—", end: "07:30 PM", stage: "pending" },
-            { start: "07:45 PM", display: "—", end: "08:00 PM", stage: "pending" }
+            { start: "04:45 PM", display: "—", end: "05:00 PM", stage: "pending", adminLocked: false },
+            { start: "05:15 PM", display: "—", end: "05:30 PM", stage: "pending", adminLocked: false },
+            { start: "05:45 PM", display: "—", end: "06:00 PM", stage: "pending", adminLocked: false },
+            { start: "06:15 PM", display: "—", end: "06:30 PM", stage: "pending", adminLocked: false },
+            { start: "06:45 PM", display: "—", end: "07:00 PM", stage: "pending", adminLocked: false },
+            { start: "07:15 PM", display: "—", end: "07:30 PM", stage: "pending", adminLocked: false },
+            { start: "07:45 PM", display: "—", end: "08:00 PM", stage: "pending", adminLocked: false }
         ];
 
         let defaultDhanSlots = [
-            { start: "10:00 AM", display: "—", end: "10:30 AM", stage: "pending" },
-            { start: "10:30 AM", display: "—", end: "11:00 AM", stage: "pending" },
-            { start: "11:00 AM", display: "—", end: "11:30 AM", stage: "pending" },
-            { start: "12:00 PM", display: "—", end: "12:30 PM", stage: "pending" },
-            { start: "01:00 PM", display: "—", end: "01:30 PM", stage: "pending" },
-            { start: "02:00 PM", display: "—", end: "02:30 PM", stage: "pending" },
-            { start: "03:00 PM", display: "—", end: "03:30 PM", stage: "pending" },
+            { start: "10:00 AM", display: "—", end: "10:30 AM", stage: "pending", adminLocked: false },
+            { start: "10:30 AM", display: "—", end: "11:00 AM", stage: "pending", adminLocked: false },
+            { start: "11:00 AM", display: "—", end: "11:30 AM", stage: "pending", adminLocked: false },
+            { start: "12:00 PM", display: "—", end: "12:30 PM", stage: "pending", adminLocked: false },
+            { start: "01:00 PM", display: "—", end: "01:30 PM", stage: "pending", adminLocked: false },
+            { start: "02:00 PM", display: "—", end: "02:30 PM", stage: "pending", adminLocked: false },
+            { start: "03:00 PM", display: "—", end: "03:30 PM", stage: "pending", adminLocked: false },
             { type: "lunch", display: "🍽️ LUNCH TIME (3:32 PM से 4:28 PM भोजन अवकाश)" },
-            { start: "04:30 PM", display: "—", end: "05:00 PM", stage: "pending" },
-            { start: "05:30 PM", display: "—", end: "06:00 PM", stage: "pending" },
-            { start: "06:30 PM", display: "—", end: "07:00 PM", stage: "pending" },
-            { start: "07:30 PM", display: "—", end: "08:00 PM", stage: "pending" }
+            { start: "04:30 PM", display: "—", end: "05:00 PM", stage: "pending", adminLocked: false },
+            { start: "05:30 PM", display: "—", end: "06:00 PM", stage: "pending", adminLocked: false },
+            { start: "06:30 PM", display: "—", end: "07:00 PM", stage: "pending", adminLocked: false },
+            { start: "07:30 PM", display: "—", end: "08:00 PM", stage: "pending", adminLocked: false }
         ];
 
         let shubhSlotData = defaultShubhSlots;
@@ -661,7 +644,6 @@
         function initializeFirebaseListeners() {
             let todayStr = new Date().toDateString();
             
-            // Check Daily Reset for Slots and Bet History
             db.ref('lastActiveDate').on('value', (snap) => {
                 let savedDate = snap.val();
                 if(savedDate !== todayStr) {
@@ -748,6 +730,27 @@
             });
         }
 
+        // ================= PANA VALIDATION LOGIC =================
+        function validatePanaInput(mode, val) {
+            if(val.length !== 3) return false;
+            let d1 = val[0], d2 = val[1], d3 = val[2];
+            
+            if(mode === 'Single Pana') {
+                // No repeating digits: e.g. 235
+                return (d1 !== d2 && d1 !== d3 && d2 !== d3);
+            } else if(mode === 'Double Pana') {
+                // Exactly two repeating digits: e.g. 223, 550, 112
+                let isRep = (d1 === d2 || d1 === d3 || d2 === d3);
+                let isTri = (d1 === d2 && d2 === d3);
+                return isRep && !isTri;
+            } else if(mode === 'Triple Pana') {
+                // All three repeating: e.g. 333, 777, 000
+                return (d1 === d2 && d2 === d3);
+            }
+            return true;
+        }
+
+        // ================= ADMIN FIRST & 2-MIN FALLBACK LOGIC =================
         function checkAndCatchUpMissedSlots(lotteryType, slotData) {
             if(!isAutoRandomActive) return;
             let now = new Date();
@@ -759,10 +762,11 @@
                 let startMins = timeStrToMins(slot.start);
                 let endMins = timeStrToMins(slot.end);
                 let stage = slot.stage || "pending";
-                let displayVal = slot.display || "—";
+                let adminLocked = slot.adminLocked || false;
 
-                if(currentMins >= startMins && currentMins < endMins && (stage === "pending" || displayVal === "—")) {
-                    let openPatti = getRandomPatti();
+                // 1. OPEN Check: If admin didn't lock/fill open before start time, and 2 mins left or time crossed, auto fill if not locked by admin
+                if(currentMins >= startMins && currentMins < endMins && stage === "pending" && !adminLocked) {
+                    let openPatti = getRandomPatti('Single Pana'); // Default safe
                     let openDigit = String(Number(openPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
                     slotData[index].openData = `${openPatti}-${openDigit}`;
                     slotData[index].display = `<span class='unique-result-badge'>${openPatti}-${openDigit}</span>`;
@@ -770,19 +774,23 @@
                     updated = true;
                 }
 
-                if(currentMins >= endMins && stage !== "closed_declared") {
-                    let openStr = slotData[index].openData || `${getRandomPatti()}-${Math.floor(Math.random()*10)}`;
+                // 2. CLOSE Check: Fallback only if last 2 mins reached and admin didn't fill close
+                let remMins = endMins - currentMins;
+                if(currentMins >= (endMins - 2) && currentMins < endMins && stage === "open_declared" && !slot.closeAutoFilled) {
+                    // Auto fallback close if admin left it
+                    let openStr = slotData[index].openData || `${getRandomPatti('Single Pana')}-${Math.floor(Math.random()*10)}`;
                     let parts = openStr.split('-');
                     let opPatti = parts[0];
                     let opDigit = parts[1];
 
-                    let closePatti = getRandomPatti();
+                    let closePatti = getRandomPatti('Single Pana');
                     let closeDigit = String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
                     let jodiVal = opDigit + closeDigit;
 
                     let finalResultStr = `${opPatti}-${jodiVal}-${closePatti}`;
                     slotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
                     slotData[index].stage = "closed_declared";
+                    slot.closeAutoFilled = true;
                     updated = true;
                     checkAndPayoutWinners(lotteryType, index, finalResultStr);
                 }
@@ -1035,7 +1043,7 @@
             let isOpenDeclared = slotStage === "open_declared" || slotStage === "closed_declared";
 
             if(mode === 'Jodi Digit' && isOpenDeclared) {
-                alert(`⚠️ ${slot.start} स्लॉट का ओपेन परिणाम आ चुका है, इसलिए अब जोड़ी (Jodi) बंद है!\nकृपया क्लोज या अगले स्लॉट का इंतज़ार करें।`);
+                alert(`⚠️ ${slot.start} स्लॉट का ओपेन परिणाम आ चुका है, इसलिए अब जोड़ी (Jodi) बंद है!`);
                 return;
             }
 
@@ -1091,10 +1099,18 @@
                 inputField.maxLength = 2;
                 inputField.placeholder = "केवल 2 अंक (00-99)";
                 inputHint.innerText = "⚠️ केवल 2 अंकों की जोड़ी दर्ज करें।";
-            } else if(mode.includes('Pana')) {
+            } else if(mode === 'Single Pana') {
                 inputField.maxLength = 3;
-                inputField.placeholder = "केवल 3 अंक (उदा. 228)";
-                inputHint.innerText = "⚠️ 3 अंकों की पत्ती अनिवार्य है!";
+                inputField.placeholder = "उदा. 235 (बिना रिपीट)";
+                inputHint.innerText = "⚠️ सिंगल पाना: 3 अलग-अलग अंक होने चाहिए (कोई रिपीट नहीं)।";
+            } else if(mode === 'Double Pana') {
+                inputField.maxLength = 3;
+                inputField.placeholder = "उदा. 223 (दो रिपीट)";
+                inputHint.innerText = "⚠️ डबल पाना: ठीक दो अंक एक जैसे होने चाहिए।";
+            } else if(mode === 'Triple Pana') {
+                inputField.maxLength = 3;
+                inputField.placeholder = "उदा. 333 (तीनों सेम)";
+                inputHint.innerText = "⚠️ ट्रिपल पाना: तीनों अंक बिल्कुल एक जैसे होने चाहिए।";
             } else {
                 inputField.maxLength = 6;
                 inputField.placeholder = "नंबर दर्ज करें";
@@ -1146,7 +1162,18 @@
             if(!val) { alert('मान दर्ज करें!'); return; }
             if(currentGameMode === 'Single Digit' && val.length !== 1) { alert('केवल 1 अंक दर्ज करें!'); return; }
             if(currentGameMode === 'Jodi Digit' && val.length !== 2) { alert('केवल 2 अंक दर्ज करें!'); return; }
-            if(currentGameMode.includes('Pana') && val.length !== 3) { alert('केवल 3 अंकों की पत्ती दर्ज करें!'); return; }
+            
+            // STRICT PANA VALIDATION CHECK
+            if(currentGameMode.includes('Pana')) {
+                if(val.length !== 3) { alert('कृपया ठीक 3 अंकों की पत्ती दर्ज करें!'); return; }
+                let isValidPana = validatePanaInput(currentGameMode, val);
+                if(!isValidPana) {
+                    if(currentGameMode === 'Single Pana') alert('❌ अमान्य सिंगल पाना! सिंगल पाने में कोई भी अंक रिपीट नहीं होना चाहिए (उदा. 235)।');
+                    if(currentGameMode === 'Double Pana') alert('❌ अमान्य डबल पाना! डबल पाने में ठीक दो अंक एक जैसे होने चाहिए (उदा. 223)।');
+                    if(currentGameMode === 'Triple Pana') alert('❌ अमान्य ट्रिपल पाना! ट्रिपल पाने में तीनों अंक एक जैसे होने चाहिए (उदा. 333)।');
+                    return;
+                }
+            }
             
             if(isNaN(points) || points < 10 || points > currentWallet) { alert('अमान्य राशि या पॉइंट्स कम हैं!'); return; }
             
@@ -1288,6 +1315,7 @@
                 const formattedDisplay = `<span class='unique-result-badge'>${newVal}</span>`;
                 currentData[index].display = formattedDisplay;
                 currentData[index].stage = "closed_declared";
+                currentData[index].adminLocked = true;
                 if(currentType === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
                 else db.ref('dhanSlots').set(dhanSlotData);
                 renderResults();
@@ -1323,15 +1351,15 @@
                         if(bet.gameType === 'OPEN' && num === openDigit) winMultiplier = 10;
                         if(bet.gameType === 'CLOSE' && num === closeDigit) winMultiplier = 10;
                     } else if(bet.gameMode === 'Jodi Digit') {
-                        if(jodi && num === jodi) winMultiplier = 100;
+                        if(jodi && num === jodi) winMultiplier = 100; // 10 ke 1000
                     } else if(bet.gameMode === 'Single Pana') {
-                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 150;
+                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 150; // 10 ke 1500
                         if(bet.gameType === 'CLOSE' && num === closePatti) winMultiplier = 150;
                     } else if(bet.gameMode === 'Double Pana') {
-                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 300;
+                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 300; // 10 ke 3000
                         if(bet.gameType === 'CLOSE' && num === closePatti) winMultiplier = 300;
                     } else if(bet.gameMode === 'Triple Pana') {
-                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 700;
+                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 700; // 10 ke 7000
                         if(bet.gameType === 'CLOSE' && num === closePatti) winMultiplier = 700;
                     }
 
@@ -1349,19 +1377,15 @@
         }
 
         // ================= HELPER FUNCTIONS =================
-        function getRandomPatti() {
-            const pattiPool = [
-                "123", "134", "145", "156", "167", "178", "189", "124", "135", "146",
-                "234", "245", "256", "267", "278", "289", "345", "356", "367", "378",
-                "456", "467", "478", "489", "567", "578", "589", "678", "689", "789",
-                "110", "220", "330", "440", "550", "660", "770", "880", "990", "100",
-                "200", "300", "400", "500", "600", "700", "800", "900", "112", "223",
-                "334", "445", "556", "667", "778", "889", "133", "244", "355", "466"
-            ];
-            return pattiPool[Math.floor(Math.random() * pattiPool.length)];
+        function getRandomPatti(type) {
+            let pool = [];
+            if(type === 'Single Pana') {
+                pool = ["123", "134", "145", "156", "167", "178", "189", "124", "135", "146", "234", "245", "256", "267", "278", "289", "345", "356", "367", "378", "456", "467", "478", "489", "567", "578", "589", "678", "689", "789"];
+            } else {
+                pool = ["123", "223", "333", "228", "350", "110", "220", "330"];
+            }
+            return pool[Math.floor(Math.random() * pool.length)];
         }
-
-        function triggerSmartAutoRandomForSlot(lotteryType, slotIndex) {}
 
         function toggleAutoRandomSystem() {
             isAutoRandomActive = !isAutoRandomActive;
@@ -1375,7 +1399,7 @@
             if(isAutoRandomActive) {
                 btn.innerText = "🛑 STOP AUTO";
                 btn.style.background = "#ff4444";
-                desc.innerText = "स्टेटस: चालू (Open ➔ Jodi Lock ➔ Close Sequence)";
+                desc.innerText = "स्टेटस: चालू (एडमिन पहले डालेगा, न डालने पर 2 मिनट पहले रैंडम)";
             } else {
                 btn.innerText = "▶️ START AUTO";
                 btn.style.background = "#28a745";
@@ -1498,6 +1522,7 @@
             let currentData = gameSelector === 'shubh' ? shubhSlotData : dhanSlotData;
             currentData[index].openData = `${opPatti}-${opDigit}`;
             currentData[index].stage = "open_declared";
+            currentData[index].adminLocked = true; // Admin has manually locked/filled open, stop auto random override
 
             let openDisplayStr = `${opPatti}-${opDigit}`;
             const formattedDisplay = `<span class='unique-result-badge'>${openDisplayStr}</span>`;
@@ -1507,7 +1532,7 @@
             else db.ref('dhanSlots').set(dhanSlotData);
 
             renderResults();
-            alert(`✅ ओपन (${openDisplayStr}) लाइव पब्लिश हो गया! अब जोड़ी की बुकिंग बंद हो गई है।`);
+            alert(`✅ ओपन (${openDisplayStr}) एडमिन द्वारा सेव और लॉक हो गया! ऑटो-रैंडम अब इसपर दखل नहीं देगा।`);
         }
 
         function updateAdminResult() {
@@ -1541,6 +1566,8 @@
             const formattedDisplay = `<span class='unique-result-badge'>${finalResultStr}</span>`;
             currentData[index].display = formattedDisplay;
             currentData[index].stage = "closed_declared";
+            currentData[index].adminLocked = true;
+            currentData[index].closeAutoFilled = true;
             
             if(gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
             else db.ref('dhanSlots').set(dhanSlotData);
@@ -1567,6 +1594,7 @@
                 const formattedDisplay = `<span class='unique-result-badge'>${currentVal}</span>`;
                 currentData[index].display = formattedDisplay;
                 currentData[index].stage = "closed_declared";
+                currentData[index].adminLocked = true;
                 if(gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
                 else db.ref('dhanSlots').set(dhanSlotData);
                 renderResults();
@@ -1590,7 +1618,6 @@
         function loadDepositQRUI() {
             let activeKey = qrSettings.activeKey || 'qr1';
             let curQR = qrSettings[activeKey] || qrSettings.qr1;
-            
             let currentUpi = curQR.upi || "goodluck@paytm";
             document.getElementById('display-upi-id').innerText = currentUpi;
             
@@ -1609,7 +1636,7 @@
             let amountVal = document.getElementById('dep-amount').value || 500;
 
             navigator.clipboard.writeText(upiId).then(() => {
-                alert(`✅ UPI ID (${upiId}) कॉपी हो गई है!\n\nअब आपकी ऐप खुलेगी, वहाँ बस UPI ID पेस्ट करके पेमेंट पूरा करें।`);
+                alert(`✅ UPI ID (${upiId}) कॉपी हो गई है!`);
             }).catch(() => {
                 let tempInput = document.createElement("input");
                 tempInput.value = upiId;
@@ -1672,7 +1699,6 @@
                 upi: document.getElementById('admin-upi2-input').value.trim() || "goodluck.phonepe@ybl",
                 imageSrc: document.getElementById('admin-qr2-url-input').value.trim() || ""
             };
-            
             db.ref('qrSettings').set(qrSettings);
             alert('दोनों QR सेटिंग्स और सक्रिय विकल्प सफलतापूर्वक अपडेट हो गए हैं!');
         }
