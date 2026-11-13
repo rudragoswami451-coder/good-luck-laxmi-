@@ -572,7 +572,7 @@
         let withdrawRequests = [];
         let helpRequests = [];
 
-        let isAutoRandomActive = false; // By default manual as per your screenshot
+        let isAutoRandomActive = true; // Enabled by default for auto results
 
         let defaultUsersDB = {
             "05032019": { name: "मुख्य एडमिन (आकाश)", pass: "05032019", isLocked: false, isSuperAdmin: true },
@@ -652,16 +652,128 @@
                 if(!savedDate) {
                     db.ref('activeDateKey').set(todayKey);
                 } else if(savedDate !== todayKey) {
-                    // New day detected! Archive yesterday's slots before resetting
                     db.ref(`archives/${savedDate}/shubhSlots`).set(shubhSlotData);
                     db.ref(`archives/${savedDate}/dhanSlots`).set(dhanSlotData);
                     
-                    // Reset slots for the new day
                     db.ref('shubhSlots').set(defaultShubhSlots);
                     db.ref('dhanSlots').set(defaultDhanSlots);
                     db.ref('activeDateKey').set(todayKey);
                 }
             });
+        }
+
+        // ================= AUTOMATIC RESULT GENERATOR LOGIC =================
+        function checkAndTriggerAutoResults() {
+            if (!isAutoRandomActive) return;
+
+            let now = new Date();
+            let currentMins = now.getHours() * 60 + now.getMinutes();
+
+            // Process Shubh Slots
+            let shubhUpdated = false;
+            shubhSlotData.forEach((slot, index) => {
+                if (slot.type === 'lunch') return;
+                let startMins = timeStrToMins(slot.start);
+                let endMins = timeStrToMins(slot.end);
+                let stage = slot.stage || "pending";
+
+                // Open Auto Generator
+                if (currentMins >= startMins && currentMins < endMins && stage === "pending") {
+                    if (slot.preSetOpen) {
+                        shubhSlotData[index].openData = slot.preSetOpen;
+                        shubhSlotData[index].display = `<span class='unique-result-badge'>${slot.preSetOpen}</span>`;
+                        shubhSlotData[index].stage = "open_declared";
+                        shubhUpdated = true;
+                    } else {
+                        let opPatti = getRandomPatti('Single Pana');
+                        let opDigit = String(Number(opPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
+                        let openStr = `${opPatti}-${opDigit}`;
+                        shubhSlotData[index].openData = openStr;
+                        shubhSlotData[index].display = `<span class='unique-result-badge'>${openStr}</span>`;
+                        shubhSlotData[index].stage = "open_declared";
+                        shubhUpdated = true;
+                    }
+                }
+
+                // Close Auto Generator
+                if (currentMins >= endMins && stage === "open_declared") {
+                    if (slot.preSetClose && slot.preSetJodi) {
+                        let finalResultStr = `${slot.openData}-${slot.preSetJodi}-${slot.preSetClose}`;
+                        shubhSlotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
+                        shubhSlotData[index].stage = "closed_declared";
+                        shubhUpdated = true;
+                        checkAndPayoutWinners('shubh', index, finalResultStr);
+                    } else if (!slot.closeAutoFilled) {
+                        let openStr = shubhSlotData[index].openData || `${getRandomPatti('Single Pana')}-${Math.floor(Math.random()*10)}`;
+                        let parts = openStr.split('-');
+                        let opDigit = parts[1];
+
+                        let closePatti = getRandomPatti('Single Pana');
+                        let closeDigit = String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
+                        let jodiVal = opDigit + closeDigit;
+
+                        let finalResultStr = `${parts[0]}-${jodiVal}-${closePatti}`;
+                        shubhSlotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
+                        shubhSlotData[index].stage = "closed_declared";
+                        slot.closeAutoFilled = true;
+                        shubhUpdated = true;
+                        checkAndPayoutWinners('shubh', index, finalResultStr);
+                    }
+                }
+            });
+            if (shubhUpdated) db.ref('shubhSlots').set(shubhSlotData);
+
+            // Process Dhan Slots
+            let dhanUpdated = false;
+            dhanSlotData.forEach((slot, index) => {
+                if (slot.type === 'lunch') return;
+                let startMins = timeStrToMins(slot.start);
+                let endMins = timeStrToMins(slot.end);
+                let stage = slot.stage || "pending";
+
+                if (currentMins >= startMins && currentMins < endMins && stage === "pending") {
+                    if (slot.preSetOpen) {
+                        dhanSlotData[index].openData = slot.preSetOpen;
+                        dhanSlotData[index].display = `<span class='unique-result-badge'>${slot.preSetOpen}</span>`;
+                        dhanSlotData[index].stage = "open_declared";
+                        dhanUpdated = true;
+                    } else {
+                        let opPatti = getRandomPatti('Single Pana');
+                        let opDigit = String(Number(opPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
+                        let openStr = `${opPatti}-${opDigit}`;
+                        dhanSlotData[index].openData = openStr;
+                        dhanSlotData[index].display = `<span class='unique-result-badge'>${openStr}</span>`;
+                        dhanSlotData[index].stage = "open_declared";
+                        dhanUpdated = true;
+                    }
+                }
+
+                if (currentMins >= endMins && stage === "open_declared") {
+                    if (slot.preSetClose && slot.preSetJodi) {
+                        let finalResultStr = `${slot.openData}-${slot.preSetJodi}-${slot.preSetClose}`;
+                        dhanSlotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
+                        dhanSlotData[index].stage = "closed_declared";
+                        dhanUpdated = true;
+                        checkAndPayoutWinners('dhan', index, finalResultStr);
+                    } else if (!slot.closeAutoFilled) {
+                        let openStr = dhanSlotData[index].openData || `${getRandomPatti('Single Pana')}-${Math.floor(Math.random()*10)}`;
+                        let parts = openStr.split('-');
+                        let opDigit = parts[1];
+
+                        let closePatti = getRandomPatti('Single Pana');
+                        let closeDigit = String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
+                        let jodiVal = opDigit + closeDigit;
+
+                        let finalResultStr = `${parts[0]}-${jodiVal}-${closePatti}`;
+                        dhanSlotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
+                        dhanSlotData[index].stage = "closed_declared";
+                        slot.closeAutoFilled = true;
+                        dhanUpdated = true;
+                        checkAndPayoutWinners('dhan', index, finalResultStr);
+                    }
+                }
+            });
+            if (dhanUpdated) db.ref('dhanSlots').set(dhanSlotData);
         }
 
         // ================= FIREBASE REAL-TIME LISTENERS =================
@@ -1330,13 +1442,18 @@
             });
         }
 
+        function getRandomPatti(type) {
+            let pool = ["123", "134", "145", "156", "167", "178", "189", "124", "135", "146", "234", "245", "256", "267", "278", "289", "345", "356", "367", "378", "456", "467", "478", "489", "567", "578", "589", "678", "689", "789"];
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
         function toggleAutoRandomSystem() {
             isAutoRandomActive = !isAutoRandomActive;
             db.ref('isAutoRandomActive').set(isAutoRandomActive);
         }
 
         function updateAutoToggleUI() {
-            const btn = document.getElementById('auto-toggle-btn');
+            const btn = document.getElementById('admin-panel-trigger-btn') ? document.getElementById('auto-toggle-btn') : null;
             const desc = document.getElementById('auto-status-desc');
             if(!btn || !desc) return;
             if(isAutoRandomActive) {
@@ -1396,6 +1513,9 @@
                 let now = new Date();
                 let limitMins = timeStrToMins("08:00 PM");
                 let currentMins = now.getHours() * 60 + now.getMinutes();
+
+                // Trigger automatic result generator on every tick
+                checkAndTriggerAutoResults();
 
                 let activeInfo = getCurrentActiveSlotObject();
                 let activeSlot = activeInfo.slot;
