@@ -572,7 +572,7 @@
         let withdrawRequests = [];
         let helpRequests = [];
 
-        let isAutoRandomActive = true; // Enabled by default for auto results
+        let isAutoRandomActive = true; 
 
         let defaultUsersDB = {
             "05032019": { name: "मुख्य एडमिन (आकाश)", pass: "05032019", isLocked: false, isSuperAdmin: true },
@@ -662,7 +662,7 @@
             });
         }
 
-        // ================= AUTOMATIC RESULT GENERATOR LOGIC =================
+        // ================= BULLETPROOF AUTO-CATCHUP & FILL SYSTEM =================
         function checkAndTriggerAutoResults() {
             if (!isAutoRandomActive) return;
 
@@ -673,52 +673,24 @@
             let shubhUpdated = false;
             shubhSlotData.forEach((slot, index) => {
                 if (slot.type === 'lunch') return;
-                let startMins = timeStrToMins(slot.start);
                 let endMins = timeStrToMins(slot.end);
                 let stage = slot.stage || "pending";
 
-                // Open Auto Generator
-                if (currentMins >= startMins && currentMins < endMins && stage === "pending") {
-                    if (slot.preSetOpen) {
-                        shubhSlotData[index].openData = slot.preSetOpen;
-                        shubhSlotData[index].display = `<span class='unique-result-badge'>${slot.preSetOpen}</span>`;
-                        shubhSlotData[index].stage = "open_declared";
-                        shubhUpdated = true;
-                    } else {
-                        let opPatti = getRandomPatti('Single Pana');
-                        let opDigit = String(Number(opPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
-                        let openStr = `${opPatti}-${opDigit}`;
-                        shubhSlotData[index].openData = openStr;
-                        shubhSlotData[index].display = `<span class='unique-result-badge'>${openStr}</span>`;
-                        shubhSlotData[index].stage = "open_declared";
-                        shubhUpdated = true;
-                    }
-                }
+                // If time has passed and slot is still pending or not fully closed, auto-fill it immediately!
+                if (currentMins >= endMins && stage !== "closed_declared") {
+                    let opPatti = slot.openData ? slot.openData.split('-')[0] : getRandomPatti('Single Pana');
+                    let opDigit = slot.openData ? slot.openData.split('-')[1] : String(Number(opPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
+                    let openStr = `${opPatti}-${opDigit}`;
 
-                // Close Auto Generator
-                if (currentMins >= endMins && stage === "open_declared") {
-                    if (slot.preSetClose && slot.preSetJodi) {
-                        let finalResultStr = `${slot.openData}-${slot.preSetJodi}-${slot.preSetClose}`;
-                        shubhSlotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
-                        shubhSlotData[index].stage = "closed_declared";
-                        shubhUpdated = true;
-                        checkAndPayoutWinners('shubh', index, finalResultStr);
-                    } else if (!slot.closeAutoFilled) {
-                        let openStr = shubhSlotData[index].openData || `${getRandomPatti('Single Pana')}-${Math.floor(Math.random()*10)}`;
-                        let parts = openStr.split('-');
-                        let opDigit = parts[1];
+                    let closePatti = slot.preSetClose || getRandomPatti('Single Pana');
+                    let closeDigit = String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
+                    let jodiVal = slot.preSetJodi || (opDigit + closeDigit);
 
-                        let closePatti = getRandomPatti('Single Pana');
-                        let closeDigit = String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
-                        let jodiVal = opDigit + closeDigit;
-
-                        let finalResultStr = `${parts[0]}-${jodiVal}-${closePatti}`;
-                        shubhSlotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
-                        shubhSlotData[index].stage = "closed_declared";
-                        slot.closeAutoFilled = true;
-                        shubhUpdated = true;
-                        checkAndPayoutWinners('shubh', index, finalResultStr);
-                    }
+                    let finalResultStr = `${opPatti}-${jodiVal}-${closePatti}`;
+                    shubhSlotData[index].openData = openStr;
+                    shubhSlotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
+                    shubhSlotData[index].stage = "closed_declared";
+                    shubhUpdated = true;
                 }
             });
             if (shubhUpdated) db.ref('shubhSlots').set(shubhSlotData);
@@ -727,50 +699,23 @@
             let dhanUpdated = false;
             dhanSlotData.forEach((slot, index) => {
                 if (slot.type === 'lunch') return;
-                let startMins = timeStrToMins(slot.start);
                 let endMins = timeStrToMins(slot.end);
                 let stage = slot.stage || "pending";
 
-                if (currentMins >= startMins && currentMins < endMins && stage === "pending") {
-                    if (slot.preSetOpen) {
-                        dhanSlotData[index].openData = slot.preSetOpen;
-                        dhanSlotData[index].display = `<span class='unique-result-badge'>${slot.preSetOpen}</span>`;
-                        dhanSlotData[index].stage = "open_declared";
-                        dhanUpdated = true;
-                    } else {
-                        let opPatti = getRandomPatti('Single Pana');
-                        let opDigit = String(Number(opPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
-                        let openStr = `${opPatti}-${opDigit}`;
-                        dhanSlotData[index].openData = openStr;
-                        dhanSlotData[index].display = `<span class='unique-result-badge'>${openStr}</span>`;
-                        dhanSlotData[index].stage = "open_declared";
-                        dhanUpdated = true;
-                    }
-                }
+                if (currentMins >= endMins && stage !== "closed_declared") {
+                    let opPatti = slot.openData ? slot.openData.split('-')[0] : getRandomPatti('Single Pana');
+                    let opDigit = slot.openData ? slot.openData.split('-')[1] : String(Number(opPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
+                    let openStr = `${opPatti}-${opDigit}`;
 
-                if (currentMins >= endMins && stage === "open_declared") {
-                    if (slot.preSetClose && slot.preSetJodi) {
-                        let finalResultStr = `${slot.openData}-${slot.preSetJodi}-${slot.preSetClose}`;
-                        dhanSlotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
-                        dhanSlotData[index].stage = "closed_declared";
-                        dhanUpdated = true;
-                        checkAndPayoutWinners('dhan', index, finalResultStr);
-                    } else if (!slot.closeAutoFilled) {
-                        let openStr = dhanSlotData[index].openData || `${getRandomPatti('Single Pana')}-${Math.floor(Math.random()*10)}`;
-                        let parts = openStr.split('-');
-                        let opDigit = parts[1];
+                    let closePatti = slot.preSetClose || getRandomPatti('Single Pana');
+                    let closeDigit = String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
+                    let jodiVal = slot.preSetJodi || (opDigit + closeDigit);
 
-                        let closePatti = getRandomPatti('Single Pana');
-                        let closeDigit = String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
-                        let jodiVal = opDigit + closeDigit;
-
-                        let finalResultStr = `${parts[0]}-${jodiVal}-${closePatti}`;
-                        dhanSlotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
-                        dhanSlotData[index].stage = "closed_declared";
-                        slot.closeAutoFilled = true;
-                        dhanUpdated = true;
-                        checkAndPayoutWinners('dhan', index, finalResultStr);
-                    }
+                    let finalResultStr = `${opPatti}-${jodiVal}-${closePatti}`;
+                    dhanSlotData[index].openData = openStr;
+                    dhanSlotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
+                    dhanSlotData[index].stage = "closed_declared";
+                    dhanUpdated = true;
                 }
             });
             if (dhanUpdated) db.ref('dhanSlots').set(dhanSlotData);
@@ -1390,58 +1335,6 @@
             }
         }
 
-        function checkAndPayoutWinners(lotteryType, slotIndex, resultStr) {
-            let slotData = lotteryType === 'shubh' ? shubhSlotData : dhanSlotData;
-            let slot = slotData[slotIndex];
-            let slotTimeStr = `${slot.start} - ${slot.end}`;
-            let betsList = lotteryType === 'shubh' ? shubhBets : dhanBets;
-            if(!betsList) return;
-
-            let cleanResult = resultStr.replace(/<[^>]*>/g, '').trim();
-            let parts = cleanResult.split('-');
-            if(parts.length < 3) return;
-
-            let openPatti = parts[0].trim();
-            let jodi = parts[1].trim();
-            let closePatti = parts[2].trim();
-            
-            let openDigit = openPatti.length >= 3 ? String(Number(openPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10) : "";
-            let closeDigit = closePatti.length >= 3 ? String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10) : "";
-
-            betsList.forEach(bet => {
-                if(bet.slotTime === slotTimeStr) {
-                    let winMultiplier = 0;
-                    let num = String(bet.number).trim();
-
-                    if(bet.gameMode === 'Single Digit') {
-                        if(bet.gameType === 'OPEN' && num === openDigit) winMultiplier = 10;
-                        if(bet.gameType === 'CLOSE' && num === closeDigit) winMultiplier = 10;
-                    } else if(bet.gameMode === 'Jodi Digit') {
-                        if(jodi && num === jodi) winMultiplier = 100;
-                    } else if(bet.gameMode === 'Single Pana') {
-                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 150;
-                        if(bet.gameType === 'CLOSE' && num === closePatti) winMultiplier = 150;
-                    } else if(bet.gameMode === 'Double Pana') {
-                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 300;
-                        if(bet.gameType === 'CLOSE' && num === closePatti) winMultiplier = 300;
-                    } else if(bet.gameMode === 'Triple Pana') {
-                        if(bet.gameType === 'OPEN' && num === openPatti) winMultiplier = 700;
-                        if(bet.gameType === 'CLOSE' && num === closePatti) winMultiplier = 700;
-                    }
-
-                    if(winMultiplier > 0) {
-                        let wonAmount = bet.points * winMultiplier;
-                        let u = bet.user;
-                        db.ref('userWallets/' + u).once('value').then((snap) => {
-                            let currentBal = snap.exists() ? snap.val() : 0;
-                            let newBal = currentBal + wonAmount;
-                            db.ref('userWallets/' + u).set(newBal);
-                        });
-                    }
-                }
-            });
-        }
-
         function getRandomPatti(type) {
             let pool = ["123", "134", "145", "156", "167", "178", "189", "124", "135", "146", "234", "245", "256", "267", "278", "289", "345", "356", "367", "378", "456", "467", "478", "489", "567", "578", "589", "678", "689", "789"];
             return pool[Math.floor(Math.random() * pool.length)];
@@ -1453,7 +1346,7 @@
         }
 
         function updateAutoToggleUI() {
-            const btn = document.getElementById('admin-panel-trigger-btn') ? document.getElementById('auto-toggle-btn') : null;
+            const btn = document.getElementById('auto-toggle-btn');
             const desc = document.getElementById('auto-status-desc');
             if(!btn || !desc) return;
             if(isAutoRandomActive) {
@@ -1514,7 +1407,7 @@
                 let limitMins = timeStrToMins("08:00 PM");
                 let currentMins = now.getHours() * 60 + now.getMinutes();
 
-                // Trigger automatic result generator on every tick
+                // Bulletproof check to ensure passed slots never stay empty (-)
                 checkAndTriggerAutoResults();
 
                 let activeInfo = getCurrentActiveSlotObject();
@@ -1640,7 +1533,6 @@
                 const formattedDisplay = `<span class='unique-result-badge'>${finalResultStr}</span>`;
                 currentData[index].display = formattedDisplay;
                 currentData[index].stage = "closed_declared";
-                checkAndPayoutWinners(gameSelector, index, finalResultStr);
             }
             
             if(gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
@@ -1669,7 +1561,6 @@
                 if(gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
                 else db.ref('dhanSlots').set(dhanSlotData);
                 renderResults();
-                checkAndPayoutWinners(gameSelector, index, currentVal);
                 alert('परिणाम अपडेट हो गया!');
             }
         }
@@ -2062,7 +1953,7 @@
             const witList = document.getElementById('admin-withdraw-list');
             if(!witList) return;
             witList.innerHTML = '';
-            if(!withdrawRequests || withdrawRequests.length === 0) {
+            if(!withdrawRequests || withdrawRequests.length ===0) {
                 witList.innerHTML = '<p style="font-size:0.80rem; color:#888;">कोई विड्रॉल रिक्वेस्ट नहीं है।</p>';
             } else {
                 withdrawRequests.forEach((req, idx) => {
