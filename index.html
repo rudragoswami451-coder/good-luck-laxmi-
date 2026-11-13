@@ -502,20 +502,14 @@
     <div class="modal hidden" id="history-modal">
         <div class="modal-content">
             <h3 style="color: var(--secondary); margin-bottom: 8px;">📜 वीकली पैनल इतिहास</h3>
-            <div class="notice-box">⚠️ यह चार्ट पिछले 7 दिनों का है।</div>
-            <h4 style="color: var(--accent); font-size: 0.9rem; text-align: left; margin-top: 10px;">⭐ शुभ लक्ष्मी वीकली चार्ट</h4>
+            <div class="notice-box">⚠️ यह चार्ट पिछले दिनों का सुरक्षित रिकॉर्ड है।</div>
+            <h4 style="color: var(--accent); font-size: 0.9rem; text-align: left; margin-top: 10px;">⭐ शुभ लक्ष्मी ऐतिहासिक चार्ट</h4>
             <div style="overflow-x: auto; margin-bottom: 15px;">
                 <table class="chart-table">
-                    <thead><tr><th>MON</th><th>TUE</th><th>WED</th><th>THU</th><th>FRI</th><th>SAT</th><th>SUN</th></tr></thead>
-                    <tbody><tr>
-                        <td><span class="unique-result-badge">228-00-235</span></td>
-                        <td><span class="unique-result-badge">350-82-237</span></td>
-                        <td><span class="unique-result-badge">145-09-180</span></td>
-                        <td><span class="unique-result-badge">234-91-560</span></td>
-                        <td><span class="unique-result-badge">678-12-390</span></td>
-                        <td><span class="unique-result-badge">110-25-456</span></td>
-                        <td><span class="unique-result-badge">290-10-370</span></td>
-                    </tr></tbody>
+                    <thead><tr><th>तारीख (Date)</th><th>रिकॉर्ड / परिणाम</th></tr></thead>
+                    <tbody id="historical-archive-tbody">
+                        <tr><td colspan="2" style="color:#888;">कोई पिछला रिकॉर्ड नहीं मिला।</td></tr>
+                    </tbody>
                 </table>
             </div>
             <button class="btn" onclick="closeHistory()">बंद करें</button>
@@ -578,7 +572,7 @@
         let withdrawRequests = [];
         let helpRequests = [];
 
-        let isAutoRandomActive = true; 
+        let isAutoRandomActive = false; // By default manual as per your screenshot
 
         let defaultUsersDB = {
             "05032019": { name: "मुख्य एडमिन (आकाश)", pass: "05032019", isLocked: false, isSuperAdmin: true },
@@ -642,12 +636,41 @@
         let shubhSlotData = defaultShubhSlots;
         let dhanSlotData = defaultDhanSlots;
 
+        // ================= DATE-BASED PERSISTENT ARCHIVE =================
+        function getTodayDateKey() {
+            let d = new Date();
+            let dd = String(d.getDate()).padStart(2, '0');
+            let mm = String(d.getMonth() + 1).padStart(2, '0');
+            let yyyy = d.getFullYear();
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function checkAndArchiveDailySlots() {
+            let todayKey = getTodayDateKey();
+            db.ref('activeDateKey').once('value').then(snap => {
+                let savedDate = snap.val();
+                if(!savedDate) {
+                    db.ref('activeDateKey').set(todayKey);
+                } else if(savedDate !== todayKey) {
+                    // New day detected! Archive yesterday's slots before resetting
+                    db.ref(`archives/${savedDate}/shubhSlots`).set(shubhSlotData);
+                    db.ref(`archives/${savedDate}/dhanSlots`).set(dhanSlotData);
+                    
+                    // Reset slots for the new day
+                    db.ref('shubhSlots').set(defaultShubhSlots);
+                    db.ref('dhanSlots').set(defaultDhanSlots);
+                    db.ref('activeDateKey').set(todayKey);
+                }
+            });
+        }
+
         // ================= FIREBASE REAL-TIME LISTENERS =================
         function initializeFirebaseListeners() {
+            checkAndArchiveDailySlots();
+
             db.ref('usersDB').on('value', (snap) => {
                 if(snap.exists()) {
                     usersDB = snap.val();
-                    // Ensure super admins always exist in the DB
                     if(!usersDB["05032019"]) {
                         usersDB["05032019"] = defaultUsersDB["05032019"];
                         db.ref('usersDB').set(usersDB);
@@ -677,7 +700,6 @@
             db.ref('shubhSlots').on('value', (snap) => {
                 if(snap.exists()) {
                     shubhSlotData = snap.val();
-                    checkAndCatchUpMissedSlots('shubh', shubhSlotData);
                 } else {
                     db.ref('shubhSlots').set(defaultShubhSlots);
                 }
@@ -687,7 +709,6 @@
             db.ref('dhanSlots').on('value', (snap) => {
                 if(snap.exists()) {
                     dhanSlotData = snap.val();
-                    checkAndCatchUpMissedSlots('dhan', dhanSlotData);
                 } else {
                     db.ref('dhanSlots').set(defaultDhanSlots);
                 }
@@ -742,67 +763,6 @@
                 return (d1 === d2 && d2 === d3);
             }
             return true;
-        }
-
-        // ================= SMART TIME-LOCKED SCHEDULER & 20% RISK SHIELD =================
-        function checkAndCatchUpMissedSlots(lotteryType, slotData) {
-            let now = new Date();
-            let currentMins = now.getHours() * 60 + now.getMinutes();
-            let updated = false;
-
-            slotData.forEach((slot, index) => {
-                if(slot.type === 'lunch') return;
-                let startMins = timeStrToMins(slot.start);
-                let endMins = timeStrToMins(slot.end);
-                let stage = slot.stage || "pending";
-                
-                if(currentMins >= startMins && currentMins < endMins && stage === "pending") {
-                    if(slot.preSetOpen) {
-                        slotData[index].openData = slot.preSetOpen;
-                        slotData[index].display = `<span class='unique-result-badge'>${slot.preSetOpen}</span>`;
-                        slotData[index].stage = "open_declared";
-                        updated = true;
-                    } else if(isAutoRandomActive) {
-                        let openPatti = getRandomPatti('Single Pana');
-                        let openDigit = String(Number(openPatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
-                        slotData[index].openData = `${openPatti}-${openDigit}`;
-                        slotData[index].display = `<span class='unique-result-badge'>${openPatti}-${openDigit}</span>`;
-                        slotData[index].stage = "open_declared";
-                        updated = true;
-                    }
-                }
-
-                if(currentMins >= endMins && stage === "open_declared") {
-                    if(slot.preSetClose && slot.preSetJodi) {
-                        let finalResultStr = `${slot.openData}-${slot.preSetJodi}-${slot.preSetClose}`;
-                        slotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
-                        slotData[index].stage = "closed_declared";
-                        updated = true;
-                        checkAndPayoutWinners(lotteryType, index, finalResultStr);
-                    } else if(isAutoRandomActive && !slot.closeAutoFilled) {
-                        let openStr = slotData[index].openData || `${getRandomPatti('Single Pana')}-${Math.floor(Math.random()*10)}`;
-                        let parts = openStr.split('-');
-                        let opPatti = parts[0];
-                        let opDigit = parts[1];
-
-                        let closePatti = getRandomPatti('Single Pana');
-                        let closeDigit = String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
-                        let jodiVal = opDigit + closeDigit;
-
-                        let finalResultStr = `${opPatti}-${jodiVal}-${closePatti}`;
-                        slotData[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
-                        slotData[index].stage = "closed_declared";
-                        slot.closeAutoFilled = true;
-                        updated = true;
-                        checkAndPayoutWinners(lotteryType, index, finalResultStr);
-                    }
-                }
-            });
-
-            if(updated) {
-                if(lotteryType === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
-                else db.ref('dhanSlots').set(dhanSlotData);
-            }
         }
 
         window.onload = function() {
@@ -1370,11 +1330,6 @@
             });
         }
 
-        function getRandomPatti(type) {
-            let pool = ["123", "134", "145", "156", "167", "178", "189", "124", "135", "146", "234", "245", "256", "267", "278", "289", "345", "356", "367", "378", "456", "467", "478", "489", "567", "578", "589", "678", "689", "789"];
-            return pool[Math.floor(Math.random() * pool.length)];
-        }
-
         function toggleAutoRandomSystem() {
             isAutoRandomActive = !isAutoRandomActive;
             db.ref('isAutoRandomActive').set(isAutoRandomActive);
@@ -1457,9 +1412,6 @@
                 let diffSecs = exactTargetSecs - exactCurrentSecs;
 
                 if(diffSecs < 0) diffSecs = 0;
-
-                checkAndCatchUpMissedSlots('shubh', shubhSlotData);
-                checkAndCatchUpMissedSlots('dhan', dhanSlotData);
 
                 let m = Math.floor(diffSecs / 60);
                 let s = diffSecs % 60;
@@ -1802,7 +1754,30 @@
         function closeWithdraw() { document.getElementById('withdraw-modal').classList.add('hidden'); }
         function openRates() { document.getElementById('rates-modal').classList.remove('hidden'); }
         function closeRates() { document.getElementById('rates-modal').classList.add('hidden'); }
-        function openHistory() { document.getElementById('history-modal').classList.remove('hidden'); }
+        
+        function openHistory() { 
+            const tbody = document.getElementById('historical-archive-tbody');
+            tbody.innerHTML = `<tr><td colspan="2" style="color:#aaa;">पुराना डेटा लोड हो रहा है...</td></tr>`;
+            
+            db.ref('archives').once('value').then(snap => {
+                tbody.innerHTML = '';
+                if(!snap.exists()) {
+                    tbody.innerHTML = `<tr><td colspan="2" style="color:#888;">अभी तक कोई पुराना आर्काइव डेटा मौजूद नहीं है। कल से स्वतः सुरक्षित हो जाएगा।</td></tr>`;
+                } else {
+                    let archives = snap.val();
+                    Object.keys(archives).sort().reverse().forEach(dateKey => {
+                        let dayData = archives[dateKey];
+                        let shubhSummary = (dayData.shubhSlots || []).map(s => s.display !== '—' ? `${s.start}:${s.display}` : '').filter(Boolean).join(', ');
+                        
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td style="color:var(--secondary); font-weight:bold;">${dateKey}</td><td style="font-size:0.75rem; text-align:left; color:#fff;"> शुभ: ${shubhSummary || 'कोई रिकॉर्ड नहीं'}</td>`;
+                        tbody.appendChild(tr);
+                    });
+                }
+            });
+            document.getElementById('history-modal').classList.remove('hidden'); 
+        }
+
         function closeHistory() { document.getElementById('history-modal').classList.add('hidden'); }
         function openProfile() { document.getElementById('profile-modal').classList.remove('hidden'); }
         function closeProfile() { document.getElementById('profile-modal').classList.add('hidden'); }
