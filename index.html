@@ -172,6 +172,17 @@
             line-height: 1.4;
             text-align: left;
         }
+        .locked-banner-alert {
+            background: rgba(255, 68, 68, 0.15);
+            border: 1px solid #ff4444;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 0.82rem;
+            color: #ffdf00;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body class="theme-shubh">
@@ -221,7 +232,10 @@
         </div>
 
         <div id="form-register" class="hidden">
-            <h3 style="color: var(--secondary); text-align: center; margin-bottom:10px;">📝 नया रजिस्ट्रेशन (🎁 ₹100 बोनस फ्री)</h3>
+            <h3 style="color: var(--secondary); text-align: center; margin-bottom:10px;">📝 नया रजिस्ट्रेशन (🎁 ₹80 लॉक्ड बोनस)</h3>
+            <div class="notice-box">
+                नया अकाउंट बनाने पर ₹80 बोनस आपके खाते में जोड़ा जाएगा, जो ₹20 का पहला डिपॉजिट करने और एडमिन द्वारा स्वीकृत होने पर तुरंत अनलॉक हो जाएगा!
+            </div>
             <input type="text" id="reg-name" placeholder="पूरा नाम दर्ज करें">
             <input type="tel" id="reg-mobile" placeholder="10 अंकों का मोबाइल नंबर" maxlength="10">
             
@@ -230,7 +244,7 @@
                 <button type="button" class="pass-toggle-btn" onclick="togglePasswordVisibility('reg-pass', this)">👁️ देखें</button>
             </div>
 
-            <button class="btn" onclick="performRegister()">अकाउंट बनाएं & ₹100 पाएं</button>
+            <button class="btn" onclick="performRegister()">अकाउंट बनाएं & ₹80 बोनस पाएं</button>
             <span class="auth-switch" onclick="switchAuthForm('login')">पहले से अकाउंट है? लॉगिन करें</span>
         </div>
 
@@ -246,10 +260,15 @@
     </div>
 
     <div class="container hidden" id="main-section">
+        <!-- नया लॉक्ड बोनस अलर्ट बैनर -->
+        <div class="locked-banner-alert" id="locked-bonus-banner">
+            ⚠️ <b>वेलकम!</b> आपके खाते में <b>80 पॉइंट लॉक्ड बोनस</b> पड़ा है। गेम खेलने के लिए पहले <b>कम से कम ₹20 का डिपॉजिट</b> करें, एडमिन द्वारा अप्रूव होते ही आपके 80 पॉइंट और डिपॉजिट पॉइंट्स दोनों अनलॉक हो जाएंगे!
+        </div>
+
         <div class="wallet-card">
             <div>
                 <span style="font-size: 0.8rem; color: #aaa;">यूज़र: <span id="user-phone-display" style="color:var(--secondary)"></span></span><br>
-                <strong>पॉइंट्स: <span id="wallet-balance" style="color:var(--accent)">0</span> Points</strong>
+                <strong>पॉइंट्स: <span id="wallet-balance" style="color:var(--accent)">0</span> Points <span id="locked-badge-text" style="font-size:0.75rem; color:#ff9800;"></span></strong>
             </div>
             <div style="display:flex; gap:5px;">
                 <button class="btn" style="width: auto; padding: 6px 10px; margin:0; font-size:0.8rem;" onclick="openDeposit()">+ ऐड मनी</button>
@@ -441,9 +460,9 @@
                 <p style="font-size: 0.85rem; color: #fff; margin-top: 5px;">UPI ID: <b id="display-upi-id" style="color:var(--accent); font-size:0.95rem;">goodluck@paytm</b></p>
             </div>
             <div class="dep-help-note">
-                💡 <b>जरूरी सूचना:</b> QR का स्क्रीनशॉट लेकर किसी भी ऐप से स्कैन करें और 12 अंकों का UTR नंबर नीचे भरें।
+                💡 <b>जरूरी सूचना:</b> न्यूनतम ₹20 या अधिक का डिपॉजिट करें। UTR नंबर भरने और एडमिन द्वारा अप्रूव होने पर आपके 80 लॉक्ड बोनस पॉइंट्स तुरंत अनलॉक हो जाएंगे!
             </div>
-            <input type="number" id="dep-amount" placeholder="राशि (₹) दर्ज करें" value="500">
+            <input type="number" id="dep-amount" placeholder="राशि (₹) दर्ज करें - Min ₹20" value="20" min="20">
             <button class="btn" id="direct-upi-pay-btn" style="background:#25D366; color:#fff; margin-bottom:5px;" onclick="handleCopyAndPayApp()">
                 📱 UPI ID कॉपी करें & ऐप से भुगतान करें
             </button>
@@ -531,6 +550,7 @@
             <div style="text-align: left; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px; background:#111; padding:15px; border-radius:8px; border:1px solid #444;">
                 <p>📱 <b>मोबाइल नंबर:</b> <span id="prof-phone" style="color:var(--secondary)">-</span></p>
                 <p>💰 <b>पॉइंट्स बैलेंस:</b> <span id="prof-balance" style="color:var(--accent)">0</span> Points</p>
+                <p>🔒 <b>लॉक्ड बोनस:</b> <span id="prof-locked" style="color:#ff9800">0</span> Points</p>
                 <p>🆔 <b>अकाउंट आईडी:</b> GLL-88392</p>
                 <p>✅ <b>स्टेटस:</b> सक्रिय</p>
             </div>
@@ -559,7 +579,9 @@
         const tickSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
 
         let userWallets = {};
+        let userLockedBonuses = {}; // लॉक्ड बोनस का डेटाबेस ऑब्जेक्ट
         let currentWallet = 0;
+        let currentLockedBonus = 0;
         let currentGameMode = '';
         let currentType = 'shubh';
         let currentBidFilter = 'shubh';
@@ -636,7 +658,6 @@
         let shubhSlotData = defaultShubhSlots;
         let dhanSlotData = defaultDhanSlots;
 
-        // ================= DATE-BASED PERSISTENT ARCHIVE =================
         function getTodayDateKey() {
             let d = new Date();
             let dd = String(d.getDate()).padStart(2, '0');
@@ -662,7 +683,6 @@
             });
         }
 
-        // ================= STEP-BY-STEP OPEN & CLOSE AUTO ENGINE =================
         function processSlotProgression(slotsList, lotteryType) {
             let now = new Date();
             let currentMins = now.getHours() * 60 + now.getMinutes();
@@ -674,7 +694,6 @@
                 let endMins = timeStrToMins(slot.end);
                 let stage = slot.stage || "pending";
 
-                // STEP 1: Open Time Reached (e.g., 12:45 PM) -> Declare ONLY OPEN if still pending
                 if (currentMins >= startMins && stage === "pending") {
                     let openStr = "";
                     if (slot.preSetOpen) {
@@ -690,7 +709,6 @@
                     updated = true;
                 }
 
-                // STEP 2: Close Time Reached (e.g., 01:00 PM) -> Declare CLOSE & Form Full Jodi
                 if (currentMins >= endMins && slotsList[index].stage === "open_declared") {
                     let openStr = slotsList[index].openData || `${getRandomPatti('Single Pana')}-5`;
                     let opParts = openStr.split('-');
@@ -714,17 +732,10 @@
 
         function checkAndTriggerAutoResults() {
             if (!isAutoRandomActive) return;
-
-            if (processSlotProgression(shubhSlotData, 'shubh')) {
-                db.ref('shubhSlots').set(shubhSlotData);
-            }
-
-            if (processSlotProgression(dhanSlotData, 'dhan')) {
-                db.ref('dhanSlots').set(dhanSlotData);
-            }
+            if (processSlotProgression(shubhSlotData, 'shubh')) db.ref('shubhSlots').set(shubhSlotData);
+            if (processSlotProgression(dhanSlotData, 'dhan')) db.ref('dhanSlots').set(dhanSlotData);
         }
 
-        // ================= FIREBASE REAL-TIME LISTENERS =================
         function initializeFirebaseListeners() {
             checkAndArchiveDailySlots();
 
@@ -752,26 +763,28 @@
                 }
             });
 
+            db.ref('userLockedBonuses').on('value', (snap) => {
+                if(snap.exists()) userLockedBonuses = snap.val();
+                if(activeUserPhone && userLockedBonuses[activeUserPhone] !== undefined) {
+                    currentLockedBonus = userLockedBonuses[activeUserPhone];
+                    updateWalletUI();
+                }
+            });
+
             db.ref('userBetHistory').on('value', (snap) => {
                 if(snap.exists()) userBetHistory = snap.val();
                 else userBetHistory = {};
             });
 
             db.ref('shubhSlots').on('value', (snap) => {
-                if(snap.exists()) {
-                    shubhSlotData = snap.val();
-                } else {
-                    db.ref('shubhSlots').set(defaultShubhSlots);
-                }
+                if(snap.exists()) shubhSlotData = snap.val();
+                else db.ref('shubhSlots').set(defaultShubhSlots);
                 renderResults();
             });
 
             db.ref('dhanSlots').on('value', (snap) => {
-                if(snap.exists()) {
-                    dhanSlotData = snap.val();
-                } else {
-                    db.ref('dhanSlots').set(defaultDhanSlots);
-                }
+                if(snap.exists()) dhanSlotData = snap.val();
+                else db.ref('dhanSlots').set(defaultDhanSlots);
                 renderResults();
             });
 
@@ -808,11 +821,9 @@
             });
         }
 
-        // ================= PANA VALIDATION LOGIC =================
         function validatePanaInput(mode, val) {
             if(val.length !== 3) return false;
             let d1 = val[0], d2 = val[1], d3 = val[2];
-            
             if(mode === 'Single Pana') {
                 return (d1 !== d2 && d1 !== d3 && d2 !== d3);
             } else if(mode === 'Double Pana') {
@@ -845,12 +856,12 @@
                 document.getElementById('prof-phone').innerText = activeUserPhone;
                 
                 db.ref('userWallets/' + activeUserPhone).once('value').then((snap) => {
-                    if(snap.exists()) {
-                        currentWallet = snap.val();
-                    } else {
-                        currentWallet = 100;
-                        db.ref('userWallets/' + activeUserPhone).set(100);
-                    }
+                    currentWallet = snap.exists() ? snap.val() : 0;
+                    updateWalletUI();
+                });
+
+                db.ref('userLockedBonuses/' + activeUserPhone).once('value').then((snap) => {
+                    currentLockedBonus = snap.exists() ? snap.val() : 0;
                     updateWalletUI();
                 });
 
@@ -899,6 +910,7 @@
             if(formName === 'forgot') document.getElementById('form-forgot').classList.remove('hidden');
         }
 
+        // नया रजिस्ट्रेशन जिसपर ₹80 लॉक्ड बोनस मिलेगा
         function performRegister() {
             const name = document.getElementById('reg-name').value.trim();
             const mob = document.getElementById('reg-mobile').value.trim();
@@ -915,9 +927,12 @@
             }
             usersDB[mob] = { name: name, pass: pass, isLocked: false, isSuperAdmin: false };
             db.ref('usersDB').set(usersDB);
-            db.ref('userWallets/' + mob).set(100);
+            
+            // नया यूज़र: मेन वॉलेट 0, और लॉक्ड बोनस 80 पॉइंट्स
+            db.ref('userWallets/' + mob).set(0);
+            db.ref('userLockedBonuses/' + mob).set(80);
 
-            alert('🎁 बधाई हो! रजिस्ट्रेशन सफल हुआ और ₹100 बोनस आपके पॉइंट्स में हमेशा के लिए जोड़ दिया गया है।');
+            alert('🎁 बधाई हो! रजिस्ट्रेशन सफल हुआ। आपके खाते में ₹80 का बोनस जोड़ दिया गया है, जो न्यूनतम ₹20 का डिपॉजिट करने और एडमिन द्वारा अप्रूव होने के बाद पूरी तरह अनलॉक हो जाएगा!');
             switchAuthForm('login');
         }
 
@@ -942,12 +957,14 @@
             localStorage.setItem('gll_active_user', inputId);
             
             db.ref('userWallets/' + inputId).once('value').then((snap) => {
-                if(!snap.exists()) {
-                    db.ref('userWallets/' + inputId).set(100);
-                    currentWallet = 100;
-                } else {
-                    currentWallet = snap.val();
-                }
+                currentWallet = snap.exists() ? snap.val() : 0;
+                if(!snap.exists()) db.ref('userWallets/' + inputId).set(0);
+                updateWalletUI();
+            });
+
+            db.ref('userLockedBonuses/' + inputId).once('value').then((snap) => {
+                currentLockedBonus = snap.exists() ? snap.val() : 0;
+                if(!snap.exists()) db.ref('userLockedBonuses/' + inputId).set(0);
                 updateWalletUI();
 
                 document.getElementById('auth-section').classList.add('hidden');
@@ -987,8 +1004,8 @@
             
             if(q.includes('भाव') || q.includes('rate') || q.includes('जीत')) {
                 botReply = "जीत के भाव: सिंगल अंक 10 के 100, जोड़ी 10 के 1000, सिंगल पत्ती 10 के 1500, डबल पत्ती 10 के 3000, ट्रिपल पत्ती 10 के 7000!";
-            } else if(q.includes('डिपॉजिट') || q.includes('add') || q.includes('paisa')) {
-                botReply = "डिपॉजिट करने के लिए मेनू से 'डिपॉजिट' खोलें, QR कोड स्कैन करके 12 अंकों का UTR नंबर डालें।";
+            } else if(q.includes('डिपॉजिट') || q.includes('add') || q.includes('paisa') || q.includes('बोनस')) {
+                botReply = "डिपॉजिट करने के लिए मेनू से 'डिपॉजिट' खोलें। न्यूनतम ₹20 का भुगतान करके UTR नंबर डालें, एडमिन अप्रूव करते ही आपका ₹80 लॉक्ड बोनस भी अनलॉक हो जाएगा!";
             }
             
             setTimeout(() => {
@@ -1190,7 +1207,7 @@
                 }
             }
             
-            if(isNaN(points) || points < 10 || points > currentWallet) { alert('अमान्य राशि या पॉइंट्स कम हैं!'); return; }
+            if(isNaN(points) || points < 10 || points > currentWallet) { alert('अमान्य राशि या पॉइंट्स कम हैं! (लॉक्ड बोनस तब तक उपयोग नहीं हो सकता जब तक ₹20 डिपॉजिट कर एडमिन से अप्रूव न करवाएं)'); return; }
             
             let slotTimeStr = `${slot.start} - ${slot.end}`;
             let mobileRealTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -1294,10 +1311,22 @@
             populateAdminSlots();
         }
 
+        // वॉलेट और लॉक्ड बोनस UI अपडेट करने का फंक्शन
         function updateWalletUI() {
             document.getElementById('wallet-balance').innerText = currentWallet;
             document.getElementById('prof-balance').innerText = currentWallet;
-            document.getElementById('withdraw-max-bal').innerText = currentWallet;
+            document.getElementById('prof-locked').innerText = currentLockedBonus;
+            
+            const banner = document.getElementById('locked-bonus-banner');
+            const lockedBadge = document.getElementById('locked-badge-text');
+
+            if (currentLockedBonus > 0) {
+                banner.style.display = "block";
+                lockedBadge.innerText = ` (+${currentLockedBonus} Locked)`;
+            } else {
+                banner.style.display = "none";
+                lockedBadge.innerText = "";
+            }
         }
 
         function renderResults() {
@@ -1651,7 +1680,7 @@
             let activeKey = qrSettings.activeKey || 'qr1';
             let curQR = qrSettings[activeKey] || qrSettings.qr1;
             let upiId = curQR.upi || "goodluck@paytm";
-            let amountVal = document.getElementById('dep-amount').value || 500;
+            let amountVal = document.getElementById('dep-amount').value || 20;
 
             navigator.clipboard.writeText(upiId).then(() => {
                 alert(`✅ UPI ID (${upiId}) कॉपी हो गई है!`);
@@ -1757,7 +1786,7 @@
                 card.innerHTML = `<p>👤 <b>नाम:</b> ${u.name} ${u.isSuperAdmin ? '<span style="color:var(--accent);">(एडमिन)</span>' : ''}</p>
                                   <p>📱 <b>मोबाइल:</b> ${phone}</p>
                                   <p>🔑 <b>पासवर्ड:</b> <span style="color:var(--accent);">${u.pass}</span></p>
-                                  <p>💰 <b>पॉइंट्स:</b> ${userWallets[phone] || 0}</p>
+                                  <p>💰 <b>पॉइंट्स:</b> ${userWallets[phone] || 0} | 🔒 <b>लॉक्ड बोनस:</b> ${userLockedBonuses[phone] || 0}</p>
                                   <p>📌 <b>स्टेटस:</b> <span class="badge ${u.isLocked ? 'badge-pending' : 'badge-approved'}">${u.isLocked ? 'LOCKED' : 'ACTIVE'}</span></p>
                                   <div style="display:flex; gap:5px; margin-top:8px;">
                                       <button class="btn" style="padding:4px; font-size:0.7rem; background:${u.isLocked ? '#28a745' : '#ff9800'}; color:#fff; margin:0;" onclick="toggleLockUser('${phone}')">${u.isLocked ? 'Unlock' : 'Lock'}</button>
@@ -1938,11 +1967,12 @@
             const utr = document.getElementById('utr-input').value;
             const amt = parseInt(document.getElementById('dep-amount').value);
             if(utr.length !== 12 || isNaN(utr)) { alert('12 अंकों का सही UTR नंबर दर्ज करें!'); return; }
+            if(isNaN(amt) || amt < 20) { alert('न्यूनतम डिपॉजिट राशि ₹20 होनी चाहिए!'); return; }
             
             if(!depositRequests) depositRequests = [];
             depositRequests.unshift({ id: Date.now(), user: activeUserPhone, amount: amt, utr: utr, status: 'pending' });
             db.ref('depositRequests').set(depositRequests);
-            alert(`डिपॉजिट अनुरोध सबमिट हुआ! एडमिन को भेज दिया गया है।`);
+            alert(`डिपॉजिट अनुरोध सबमिट हुआ! एडमिन द्वारा स्वीकृत होने पर आपका 80 पॉइंट लॉक्ड बोनस भी अनलॉक हो जाएगा।`);
             closeDeposit();
         }
 
@@ -2001,7 +2031,7 @@
                                       <p>💵 <b>राशि:</b> ₹${req.amount}</p>
                                       <p>🔢 <b>UTR:</b> ${req.utr}</p>
                                       <p>📌 <b>स्टेटस:</b> <span class="badge ${req.status === 'pending' ? 'badge-pending' : 'badge-approved'}">${req.status.toUpperCase()}</span></p>
-                                      ${req.status === 'pending' ? `<button class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#28a745; color:#fff;" onclick="approveDeposit(${idx})">Approve & Add</button>` : ''}`;
+                                      ${req.status === 'pending' ? `<button class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#28a745; color:#fff;" onclick="approveDeposit(${idx})">Approve & Unlock Bonus</button>` : ''}`;
                     depList.appendChild(card);
                 });
             }
@@ -2025,17 +2055,35 @@
             }
         }
 
+        // जब एडमिन डिपॉजिट अप्रूव करेगा, तब लॉक्ड 80 पॉइंट्स और डिपॉजिट राशि दोनों मेन वॉलेट में जुड़ जाएंगे
         function approveDeposit(idx) {
             depositRequests[idx].status = 'approved';
             db.ref('depositRequests').set(depositRequests);
             let u = depositRequests[idx].user;
-            db.ref('userWallets/' + u).once('value').then((snap) => {
-                let cur = snap.exists() ? snap.val() : 0;
-                let updated = cur + depositRequests[idx].amount;
-                db.ref('userWallets/' + u).set(updated);
-                if(u === activeUserPhone) { currentWallet = updated; updateWalletUI(); }
+            let depAmt = depositRequests[idx].amount;
+
+            // लॉक्ड बोनस चेक करके मेन वॉलेट में ट्रांसफर करना
+            db.ref('userLockedBonuses/' + u).once('value').then((snapLocked) => {
+                let lockedBonus = snapLocked.exists() ? snapLocked.val() : 0;
+
+                db.ref('userWallets/' + u).once('value').then((snapWallet) => {
+                    let curWallet = snapWallet.exists() ? snapWallet.val() : 0;
+                    
+                    // डिपॉजिट राशि + लॉक्ड बोनस दोनों जुड़ गए
+                    let updatedWallet = curWallet + depAmt + lockedBonus;
+                    
+                    db.ref('userWallets/' + u).set(updatedWallet);
+                    db.ref('userLockedBonuses/' + u).set(0); // बोनस अनलॉक होने पर 0 हो गया
+
+                    if(u === activeUserPhone) {
+                        currentWallet = updatedWallet;
+                        currentLockedBonus = 0;
+                        updateWalletUI();
+                    }
+                });
             });
-            alert('डिपॉजिट स्वीकृत!');
+
+            alert('डिपॉजिट स्वीकृत हो गया और यूज़र का ₹80 लॉक्ड बोनस भी सफलतापूर्वक अनलॉक कर दिया गया!');
             renderAdminLists();
         }
 
