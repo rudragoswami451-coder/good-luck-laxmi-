@@ -44,7 +44,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
 
-        /* Header Layout Fix: Title full visible on top, Menu cleanly below */
         header { 
             background: linear-gradient(135deg, var(--primary), #300); 
             border-bottom: 4px solid var(--secondary); 
@@ -92,7 +91,6 @@
         .timer.red-lock { color: #ff4444 !important; animation: blink 1s infinite; border-color: #ff4444; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-        /* Live Result Spotlight Box below Timer */
         .live-result-spotlight {
             margin-top: 10px;
             padding: 10px;
@@ -121,7 +119,6 @@
         .result-line-box { background: #1a1a1a; border: 1px solid #444; border-radius: 6px; padding: 10px; margin-top: 15px; max-height: 400px; overflow-y: auto; font-family: monospace; }
         .result-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 5px; border-bottom: 1px dashed #333; font-size: 0.9rem; }
         
-        /* Attractive Break Time Popup Card in Live Chart */
         .break-popup-card {
             background: linear-gradient(135deg, #3b2300, #663d00, #3b2300);
             border: 2px solid var(--accent);
@@ -193,7 +190,6 @@
         .sub-nav-btn { flex: 1; padding: 8px; background: #222; border: 1px solid var(--secondary); color: #fff; font-size: 0.8rem; font-weight: bold; cursor: pointer; border-radius: 5px; }
         .sub-nav-btn.active { background: var(--secondary); color: #000; }
 
-        /* 0-9 Digit Risk Analysis Strip */
         .digit-analysis-box {
             background: #141414;
             border: 1px solid var(--secondary);
@@ -214,14 +210,8 @@
             padding: 5px 2px;
             text-align: center;
         }
-        .digit-pill.high-load {
-            background: #4a0808;
-            border-color: #ff4444;
-        }
-        .digit-pill.zero-load {
-            background: #0b3318;
-            border-color: #27ae60;
-        }
+        .digit-pill.high-load { background: #4a0808; border-color: #ff4444; }
+        .digit-pill.zero-load { background: #0b3318; border-color: #27ae60; }
         .digit-num { font-size: 0.9rem; font-weight: bold; color: var(--accent); display: block; }
         .digit-amt { font-size: 0.72rem; color: #fff; font-family: monospace; }
 
@@ -238,7 +228,6 @@
         .input-hint { font-size: 0.75rem; color: var(--accent); margin-top: -5px; margin-bottom: 8px; text-align: left; }
 
         .qr-timer-display { font-size: 1.2rem; color: #ff4444; font-weight: bold; font-family: monospace; margin: 8px 0; }
-
         .auth-switch { font-size: 0.85rem; color: var(--accent); margin-top: 12px; cursor: pointer; text-decoration: underline; display: inline-block; }
         .corner-whatsapp-btn { position: absolute; top: 15px; right: 15px; background: #25D366; color: #fff; border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
@@ -249,32 +238,20 @@
         .auto-toggle-box { background: #2b1a1a; border: 1px solid var(--secondary); padding: 10px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 
         .big-qr-box {
-            width: 240px;
-            height: 240px;
-            background: #fff;
-            margin: 10px auto;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            font-weight: bold;
-            font-size: 0.85rem;
-            border: 3px solid var(--secondary);
-            overflow: hidden;
+            width: 240px; height: 240px; background: #fff; margin: 10px auto; border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #000; font-weight: bold; font-size: 0.85rem; border: 3px solid var(--secondary); overflow: hidden;
             box-shadow: 0 4px 15px rgba(255,223,0,0.3);
         }
         .dep-help-note {
-            background: #2b1a1a;
-            border: 1px dashed #ff9800;
-            color: #ffdf00;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            margin: 8px 0;
-            line-height: 1.4;
-            text-align: left;
+            background: #2b1a1a; border: 1px dashed #ff9800; color: #ffdf00;
+            padding: 8px; border-radius: 6px; font-size: 0.75rem; margin: 8px 0; line-height: 1.4; text-align: left;
+        }
+        .locked-bonus-banner {
+            background: linear-gradient(135deg, #660000, #990000);
+            border: 1px solid var(--accent); color: #fff; padding: 8px 12px;
+            border-radius: 8px; margin-bottom: 12px; font-size: 0.85rem; text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
     </style>
 </head>
@@ -327,7 +304,8 @@
         </div>
 
         <div id="form-register" class="hidden">
-            <h3 style="color: var(--secondary); text-align: center; margin-bottom:10px;">📝 नया रजिस्ट्रेशन (🎁 ₹100 बोनस फ्री)</h3>
+            <h3 style="color: var(--secondary); text-align: center; margin-bottom:10px;">📝 नया रजिस्ट्रेशन (🎁 ₹80 लॉक्ड बोनस)</h3>
+            <div class="notice-box">नया अकाउंट बनाने पर ₹80 लॉक्ड बोनस मिलेगा, जो न्यूनतम ₹20 का डिपॉजिट करने पर मेन वॉलेट में जुड़ जाएगा!</div>
             <input type="text" id="reg-name" placeholder="पूरा नाम दर्ज करें">
             <input type="tel" id="reg-mobile" placeholder="10 अंकों का मोबाइल नंबर" maxlength="10">
             
@@ -336,22 +314,24 @@
                 <button type="button" class="pass-toggle-btn" onclick="togglePasswordVisibility('reg-pass', this)">👁️ देखें</button>
             </div>
 
-            <button class="btn" onclick="performRegister()">अकाउंट बनाएं & ₹100 पाएं</button>
+            <button class="btn" onclick="performRegister()">अकाउंट बनाएं & ₹80 बोनस पाएं</button>
             <span class="auth-switch" onclick="switchAuthForm('login')">पहले से अकाउंट है? लॉगिन करें</span>
         </div>
 
         <div id="form-forgot" class="hidden">
             <button class="corner-whatsapp-btn" onclick="openHelp()">💬 WhatsApp Help</button>
             <h3 style="color: var(--secondary); text-align: center; margin-bottom:10px;">🔑 पासवर्ड भूल गए?</h3>
-            <div class="notice-box">
-                पासवर्ड पुनः प्राप्त करने के लिए सीधे एडमिन से व्हाट्सएप पर संपर्क करें।
-            </div>
+            <div class="notice-box">पासवर्ड पुनः प्राप्त करने के लिए सीधे एडमिन से व्हाट्सएप पर संपर्क करें।</div>
             <button class="btn" style="background:#25D366; color:#fff;" onclick="openHelp()">💬 व्हाट्सएप पर पासवर्ड प्राप्त करें</button>
             <span class="auth-switch" onclick="switchAuthForm('login')">वापस लॉगिन पर जाएं</span>
         </div>
     </div>
 
     <div class="container hidden" id="main-section">
+        <div id="locked-bonus-banner-box" class="locked-bonus-banner hidden">
+            🎁 लॉक्ड बोनस: <span id="locked-bonus-val" style="color:var(--accent); font-weight:bold;">0</span> Points (₹20+ डिपॉजिट कर अनलॉक करें)
+        </div>
+
         <div class="wallet-card">
             <div>
                 <span style="font-size: 0.8rem; color: #aaa;">यूज़र: <span id="user-phone-display" style="color:var(--secondary)"></span></span><br>
@@ -373,7 +353,6 @@
             <div class="timer" id="countdown">15:00</div>
             <p style="font-size: 0.8rem; color: var(--accent); margin-top: 5px; font-weight: bold;" id="timer-status-hint">सक्रिय स्लॉट: -</p>
 
-            <!-- Live Result Spotlight Display (30 sec fade rule after Jodi) -->
             <div class="live-result-spotlight" id="live-result-spotlight">
                 <div class="spotlight-label" id="spotlight-label">⏳ अगला ओपन जल्द ही</div>
                 <div class="spotlight-value" id="spotlight-value">---</div>
@@ -407,6 +386,7 @@
         <button class="btn hidden" id="admin-panel-trigger-btn" style="background:#8b0000; color:#fff; margin-top:20px;" onclick="openAdmin()">👑 3-ADMIN कंट्रोल पैनल खोलें</button>
     </div>
 
+    <!-- GAME BOARD MODAL -->
     <div class="modal hidden" id="game-board-modal">
         <div class="modal-content">
             <h3 id="board-title" style="color: var(--secondary); margin-bottom: 10px;">GAME BOARD</h3>
@@ -431,6 +411,7 @@
         </div>
     </div>
 
+    <!-- ADMIN SECTION -->
     <div class="container hidden" id="admin-section" style="border: 2px solid #ff4444;">
         <h3 style="color: #ff4444; text-align: center; margin-bottom: 8px;">👑 3-ADMIN मास्टर कंट्रोल सेंटर</h3>
         <p style="font-size:0.75rem; text-align:center; color:var(--secondary); margin-bottom:10px;" id="logged-admin-info">सक्रिय एडमिन: -</p>
@@ -522,7 +503,6 @@
             <label style="font-size:0.85rem; display:block; text-align:left; margin-top:8px; color:var(--accent);">समय स्लॉट फ़िल्टर चुनें:</label>
             <select id="admin-bid-slot-filter" onchange="renderBidsTable()" style="background:#222; color:var(--accent); font-weight:bold;"></select>
 
-            <!-- 0-9 Digit Load Strip for Live Risk Assessment -->
             <div class="digit-analysis-box">
                 <div style="font-size:0.8rem; color:var(--secondary); font-weight:bold; text-align:left;">
                     🔢 0 से 9 अंक लोड (आज का चयनित स्लॉट):
@@ -536,7 +516,6 @@
                 <tbody id="admin-bids-tbody"></tbody>
             </table>
 
-            <!-- Old / Past Days Bids Separated Box -->
             <div style="margin-top: 18px; background: #141414; border: 1px dashed #666; border-radius: 8px; padding: 10px;">
                 <h5 style="color:#aaa; text-align:left; margin-bottom:6px; font-size:0.85rem;">📦 पुराने दिनों के दांव (Archive Box):</h5>
                 <div style="max-height: 200px; overflow-y: auto;">
@@ -566,20 +545,20 @@
         <button class="btn" style="background:#555; color:#fff; margin-top:15px;" onclick="closeAdmin()">वापस जाएँ</button>
     </div>
 
-    <!-- डिपॉजिट मॉडल -->
+    <!-- DEPOSIT MODAL -->
     <div class="modal hidden" id="deposit-modal">
         <div class="modal-content">
             <h3 style="color: var(--secondary); margin-bottom: 5px;">💳 पेमेंट गेटवे 👍</h3>
             <div style="background: #181818; border: 2px solid var(--secondary); padding: 12px; border-radius: 8px; margin: 5px 0;">
-                <p style="font-size: 0.8rem; color: #d4af37;">QR कोड स्कैन करके भुगतान करें:</p>
+                <p style="font-size: 0.8rem; color: #d4af37;">QR कोड स्कैन करके भुगतान करें (न्यूनतम ₹20):</p>
                 <div class="qr-timer-display" id="qr-timer">05:00</div>
                 <div class="big-qr-box" id="qr-display-box"><span id="qr-placeholder-text">[ QR CODE ]</span></div>
                 <p style="font-size: 0.85rem; color: #fff; margin-top: 5px;">UPI ID: <b id="display-upi-id" style="color:var(--accent); font-size:0.95rem;">goodluck@paytm</b></p>
             </div>
             <div class="dep-help-note">
-                💡 <b>जरूरी सूचना:</b> QR का स्क्रीनशॉट लेकर किसी भी ऐप से स्कैन करें और 12 अंकों का UTR नंबर नीचे भरें।
+                💡 <b>जरूरी सूचना:</b> न्यूनतम डिपॉजिट ₹20 है। डिपॉजिट अप्रूव होते ही आपका ₹80 लॉक्ड बोनस तुरंत मेन वॉलेट में जुड़ जाएगा!
             </div>
-            <input type="number" id="dep-amount" placeholder="राशि (₹) दर्ज करें" value="500">
+            <input type="number" id="dep-amount" placeholder="राशि (₹) दर्ज करें (Min ₹20)" value="50" min="20">
             <button class="btn" id="direct-upi-pay-btn" style="background:#25D366; color:#fff; margin-bottom:5px;" onclick="handleCopyAndPayApp()">
                 📱 UPI ID कॉपी करें & ऐप से भुगतान करें
             </button>
@@ -591,7 +570,7 @@
         </div>
     </div>
 
-    <!-- विड्रॉल मॉडल -->
+    <!-- WITHDRAW MODAL -->
     <div class="modal hidden" id="withdraw-modal">
         <div class="modal-content">
             <h3 style="color: #28a745; margin-bottom: 8px;">💸 पैसे निकालें</h3>
@@ -667,6 +646,7 @@
             <div style="text-align: left; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px; background:#111; padding:15px; border-radius:8px; border:1px solid #444;">
                 <p>📱 <b>मोबाइल नंबर:</b> <span id="prof-phone" style="color:var(--secondary)">-</span></p>
                 <p>💰 <b>पॉइंट्स बैलेंस:</b> <span id="prof-balance" style="color:var(--accent)">0</span> Points</p>
+                <p>🎁 <b>लॉक्ड बोनस:</b> <span id="prof-locked-bonus" style="color:var(--accent)">0</span> Points</p>
                 <p>🆔 <b>अकाउंट आईडी:</b> GLL-88392</p>
                 <p>✅ <b>स्टेटस:</b> सक्रिय</p>
             </div>
@@ -695,7 +675,9 @@
         const tickSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
 
         let userWallets = {};
+        let userLockedBonuses = {};
         let currentWallet = 0;
+        let currentLockedBonus = 0;
         let currentGameMode = '';
         let currentType = 'shubh';
         let currentBidFilter = 'shubh';
@@ -717,7 +699,6 @@
 
         let usersDB = JSON.parse(localStorage.getItem('gll_cached_usersDB')) || defaultUsersDB;
 
-        // Persistent session restoration to stop auto-logout on refresh/mobile switch
         let activeUserPhone = localStorage.getItem('gll_active_user') || "";
         let loggedInAdminId = "";
 
@@ -745,7 +726,7 @@
             { start: "02:30 PM", display: "—", end: "02:45 PM", stage: "pending", adminLocked: false },
             { start: "03:00 PM", display: "—", end: "03:15 PM", stage: "pending", adminLocked: false },
             { start: "03:30 PM", display: "—", end: "03:45 PM", stage: "pending", adminLocked: false },
-            { type: "lunch", display: "🍽️ BREAK TIME (भोजन अवकाश)", timeRange: "03:45 PM से 04:30 PM तक" },
+            { type: "lunch", display: "🍽️ BREAK TIME (भोजन अवकाश)", timeRange: "03:48 PM से 04:30 PM तक" },
             { start: "04:45 PM", display: "—", end: "05:00 PM", stage: "pending", adminLocked: false },
             { start: "05:15 PM", display: "—", end: "05:30 PM", stage: "pending", adminLocked: false },
             { start: "05:45 PM", display: "—", end: "06:00 PM", stage: "pending", adminLocked: false },
@@ -773,7 +754,6 @@
         let shubhSlotData = defaultShubhSlots;
         let dhanSlotData = defaultDhanSlots;
 
-        // ================= DATE-BASED PERSISTENT ARCHIVE =================
         function getTodayDateKey() {
             let d = new Date();
             let dd = String(d.getDate()).padStart(2, '0');
@@ -799,7 +779,6 @@
             });
         }
 
-        // ================= SMART LOW-LOAD PATTI PICKER (0-9 RISK SHIELD) =================
         function getLowLoadPatti(lotteryType, slotTimeStr, stageType) {
             let allPattis = [
                 "123", "134", "145", "156", "167", "178", "189", "124", "135", "146",
@@ -826,9 +805,8 @@
                 }
             });
 
-            // Sort digits by lowest bet load
             let sortedDigits = [0,1,2,3,4,5,6,7,8,9].sort((a,b) => digitLoads[a] - digitLoads[b]);
-            let safeDigits = sortedDigits.slice(0, 4); // Pick from 4 lowest loaded digits
+            let safeDigits = sortedDigits.slice(0, 4);
             let chosenDigit = safeDigits[Math.floor(Math.random() * safeDigits.length)];
 
             let matchingPattis = allPattis.filter(p => (p.split('').reduce((a,b)=>Number(a)+Number(b),0) % 10) === chosenDigit);
@@ -838,7 +816,6 @@
             return allPattis[Math.floor(Math.random() * allPattis.length)];
         }
 
-        // ================= STEP-BY-STEP OPEN & CLOSE AUTO ENGINE =================
         function processSlotProgression(slotsList, lotteryType) {
             let now = new Date();
             let currentMins = now.getHours() * 60 + now.getMinutes();
@@ -851,7 +828,6 @@
                 let stage = slot.stage || "pending";
                 let slotTimeStr = `${slot.start} - ${slot.end}`;
 
-                // STEP 1: Open Time Reached -> Declare ONLY OPEN if still pending
                 if (currentMins >= startMins && stage === "pending") {
                     let openStr = "";
                     if (slot.preSetOpen) {
@@ -868,7 +844,6 @@
                     updated = true;
                 }
 
-                // STEP 2: Close Time Reached -> Declare CLOSE & Form Full Jodi
                 if (currentMins >= endMins && slotsList[index].stage === "open_declared") {
                     let openStr = slotsList[index].openData || `${getLowLoadPatti(lotteryType, slotTimeStr, 'OPEN')}-5`;
                     let opParts = openStr.split('-');
@@ -882,7 +857,7 @@
                     let finalResultStr = `${opPatti}-${jodiVal}-${closePatti}`;
                     slotsList[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
                     slotsList[index].stage = "closed_declared";
-                    slotsList[index].closedDeclaredAt = Date.now(); // Used for 30-second spotlight timer
+                    slotsList[index].closedDeclaredAt = Date.now();
                     updated = true;
                     checkAndPayoutWinners(lotteryType, index, finalResultStr);
                 }
@@ -903,7 +878,6 @@
             }
         }
 
-        // ================= LIVE RESULT SPOTLIGHT (TOP 30-SEC RULE) =================
         function updateLiveSpotlightBanner() {
             const labelEl = document.getElementById('spotlight-label');
             const valEl = document.getElementById('spotlight-value');
@@ -917,7 +891,6 @@
             let now = new Date();
             let currentMins = now.getHours() * 60 + now.getMinutes();
 
-            // 1. Check if any slot had its JODI (close) declared within the last 30 seconds
             for (let i = slotData.length - 1; i >= 0; i--) {
                 let s = slotData[i];
                 if (s.type === 'lunch') continue;
@@ -934,7 +907,6 @@
                 }
             }
 
-            // 2. Check if any slot currently has ONLY OPEN declared (waiting for close)
             for (let i = slotData.length - 1; i >= 0; i--) {
                 let s = slotData[i];
                 if (s.type === 'lunch') continue;
@@ -947,7 +919,6 @@
                 }
             }
 
-            // 3. Otherwise show "अगला ओपन जल्द ही"
             let activeInfo = getCurrentActiveSlotObject();
             if (currentMins >= timeStrToMins("08:00 PM")) {
                 labelEl.innerText = "🌙 आज के सभी ड्रॉ संपन्न";
@@ -960,7 +931,6 @@
             }
         }
 
-        // ================= FIREBASE REAL-TIME LISTENERS =================
         function initializeFirebaseListeners() {
             checkAndArchiveDailySlots();
 
@@ -986,6 +956,14 @@
                 if(snap.exists()) userWallets = snap.val();
                 if(activeUserPhone && userWallets[activeUserPhone] !== undefined) {
                     currentWallet = userWallets[activeUserPhone];
+                    updateWalletUI();
+                }
+            });
+
+            db.ref('userLockedBonuses').on('value', (snap) => {
+                if(snap.exists()) userLockedBonuses = snap.val();
+                if(activeUserPhone && userLockedBonuses[activeUserPhone] !== undefined) {
+                    currentLockedBonus = userLockedBonuses[activeUserPhone];
                     updateWalletUI();
                 }
             });
@@ -1054,7 +1032,6 @@
             });
         }
 
-        // ================= PANA VALIDATION LOGIC =================
         function validatePanaInput(mode, val) {
             if(val.length !== 3) return false;
             let d1 = val[0], d2 = val[1], d3 = val[2];
@@ -1080,7 +1057,6 @@
                     return;
                 }
                 document.getElementById('auth-section').classList.add('hidden');
-                // Keep admin section open if user is currently inside it
                 if (document.getElementById('admin-section').classList.contains('hidden')) {
                     document.getElementById('main-section').classList.remove('hidden');
                 }
@@ -1112,12 +1088,11 @@
 
             if(activeUserPhone) {
                 db.ref('userWallets/' + activeUserPhone).once('value').then((snap) => {
-                    if(snap.exists()) {
-                        currentWallet = snap.val();
-                    } else {
-                        currentWallet = 100;
-                        db.ref('userWallets/' + activeUserPhone).set(100);
-                    }
+                    currentWallet = snap.exists() ? snap.val() : 0;
+                    updateWalletUI();
+                });
+                db.ref('userLockedBonuses/' + activeUserPhone).once('value').then((snap) => {
+                    currentLockedBonus = snap.exists() ? snap.val() : 0;
                     updateWalletUI();
                 });
                 switchLottery('shubh');
@@ -1174,9 +1149,12 @@
             usersDB[mob] = { name: name, pass: pass, isLocked: false, isSuperAdmin: false };
             localStorage.setItem('gll_cached_usersDB', JSON.stringify(usersDB));
             db.ref('usersDB').set(usersDB);
-            db.ref('userWallets/' + mob).set(100);
+            
+            // Set Main Wallet to 0 and Locked Bonus to 80 Points
+            db.ref('userWallets/' + mob).set(0);
+            db.ref('userLockedBonuses/' + mob).set(80);
 
-            alert('🎁 बधाई हो! रजिस्ट्रेशन सफल हुआ और ₹100 बोनस आपके पॉइंट्स में हमेशा के लिए जोड़ दिया गया है।');
+            alert('🎁 बधाई हो! रजिस्ट्रेशन सफल हुआ और ₹80 का लॉक्ड बोनस आपके अकाउंट में जोड़ दिया गया है (जो न्यूनतम ₹20 डिपॉजिट करने पर अनलॉक होगा)।');
             switchAuthForm('login');
         }
 
@@ -1202,12 +1180,10 @@
             localStorage.setItem('gll_cached_usersDB', JSON.stringify(usersDB));
             
             db.ref('userWallets/' + inputId).once('value').then((snap) => {
-                if(!snap.exists()) {
-                    db.ref('userWallets/' + inputId).set(100);
-                    currentWallet = 100;
-                } else {
-                    currentWallet = snap.val();
-                }
+                currentWallet = snap.exists() ? snap.val() : 0;
+            });
+            db.ref('userLockedBonuses/' + inputId).once('value').then((snap) => {
+                currentLockedBonus = snap.exists() ? snap.val() : 0;
                 updateWalletUI();
                 applySessionState();
                 switchLottery('shubh');
@@ -1238,7 +1214,7 @@
             if(q.includes('भाव') || q.includes('rate') || q.includes('जीत')) {
                 botReply = "जीत के भाव: सिंगल अंक 10 के 100, जोड़ी 10 के 1000, सिंगल पत्ती 10 के 1500, डबल पत्ती 10 के 3000, ट्रिपल पत्ती 10 के 7000!";
             } else if(q.includes('डिपॉजिट') || q.includes('add') || q.includes('paisa')) {
-                botReply = "डिपॉजिट करने के लिए मेनू से 'डिपॉजिट' खोलें, QR कोड स्कैन करके 12 अंकों का UTR नंबर डालें।";
+                botReply = "डिपॉजिट करने के लिए मेनू से 'डिपॉजिट' खोलें (Min ₹20), QR कोड स्कैन करके 12 अंकों का UTR नंबर डालें।";
             }
             
             setTimeout(() => {
@@ -1325,20 +1301,20 @@
             document.getElementById('board-title').innerText = `${mode.toUpperCase()} BOARD (${currentType === 'shubh' ? 'शुभ' : 'धन'})`;
             
             const typeSelect = document.getElementById('board-game-type');
-            const typeLabel = document.getElementById('board-type-label');
+            const typeLabel = document.getElementById('board-input-label'); // fixed label element ref
             typeSelect.innerHTML = '';
 
             let startMins = timeStrToMins(slot.start);
             let allowOpen = currentMins < startMins;
 
             if(mode === 'Jodi Digit') {
-                typeLabel.innerText = "SLOT TIME (जोड़ी गेम):";
+                document.getElementById('board-type-label').innerText = "SLOT TIME (जोड़ी गेम):";
                 let opt = document.createElement('option');
                 opt.value = 'JODI';
                 opt.innerText = `SLOT (${slot.start} - ${slot.end})`;
                 typeSelect.appendChild(opt);
             } else {
-                typeLabel.innerText = "GAME TYPE / SLOT TIME:";
+                document.getElementById('board-type-label').innerText = "GAME TYPE / SLOT TIME:";
                 if(allowOpen && !isOpenDeclared) {
                     let opt1 = document.createElement('option');
                     opt1.value = 'OPEN';
@@ -1435,20 +1411,17 @@
                 if(val.length !== 3) { alert('कृपया ठीक 3 अंकों की पत्ती दर्ज करें!'); return; }
                 let isValidPana = validatePanaInput(currentGameMode, val);
                 if(!isValidPana) {
-                    if(currentGameMode === 'Single Pana') alert('❌ अमान्य सिंगल पाना! सिंगल पाने में कोई भी अंक रिपीट नहीं होना चाहिए (उदा. 235)।');
-                    if(currentGameMode === 'Double Pana') alert('❌ अमान्य डबल पाना! डबल पाने में ठीक दो अंक एक जैसे होने चाहिए (उदा. 223)।');
-                    if(currentGameMode === 'Triple Pana') alert('❌ अमान्य ट्रिपल पाना! ट्रिपल पाने में तीनों अंक एक जैसे होने चाहिए (उदा. 333)।');
+                    alert('अमान्य पाना संयोजन!');
                     return;
                 }
             }
             
-            // Strict Minimum 10 Points Validation across all boxes
             if(isNaN(points) || points < 10) {
                 alert('⚠️ न्यूनतम दांव 10 Points है! कृपया कम से कम 10 या उससे अधिक पॉइंट्स दर्ज करें।');
                 return;
             }
             if(points > currentWallet) {
-                alert('⚠️ आपके वॉलेट में पर्याप्त पॉइंट्स नहीं हैं!');
+                alert('⚠️ आपके मेन वॉलेट में पर्याप्त पॉइंट्स नहीं हैं! (लॉक्ड बोनस से खेलने के लिए पहले न्यूनतम ₹20 का डिपॉजिट करें)।');
                 return;
             }
             
@@ -1561,6 +1534,16 @@
             document.getElementById('wallet-balance').innerText = currentWallet;
             document.getElementById('prof-balance').innerText = currentWallet;
             document.getElementById('withdraw-max-bal').innerText = currentWallet;
+            document.getElementById('prof-locked-bonus').innerText = currentLockedBonus;
+
+            const bannerBox = document.getElementById('locked-bonus-banner-box');
+            const lockedValEl = document.getElementById('locked-bonus-val');
+            if (currentLockedBonus > 0) {
+                lockedValEl.innerText = currentLockedBonus;
+                bannerBox.classList.remove('hidden');
+            } else {
+                bannerBox.classList.add('hidden');
+            }
         }
 
         function renderResults() {
@@ -1573,7 +1556,6 @@
 
             currentData.forEach((item, index) => {
                 if(item.type === 'lunch') {
-                    // Attractive Break Time Popup Card
                     const breakCard = document.createElement('div');
                     breakCard.className = 'break-popup-card';
                     let rangeText = item.timeRange || (currentType === 'shubh' ? '03:45 PM से 04:30 PM तक' : '03:32 PM से 04:28 PM तक');
@@ -1688,7 +1670,6 @@
             }
         }
 
-        // Filter out passed time slots in Admin Result Dropdown
         function populateAdminSlots() {
             const select = document.getElementById('admin-slot-index');
             const gameSel = document.getElementById('admin-game-selector');
@@ -1705,7 +1686,6 @@
             currentData.forEach((item, index) => {
                 if(item.type !== 'lunch') {
                     let endM = timeStrToMins(item.end);
-                    // Only show currently running or upcoming slots (hide passed time slots)
                     if(currentMins <= endM) {
                         const opt = document.createElement('option');
                         opt.value = index;
@@ -1954,7 +1934,7 @@
             let activeKey = qrSettings.activeKey || 'qr1';
             let curQR = qrSettings[activeKey] || qrSettings.qr1;
             let upiId = curQR.upi || "goodluck@paytm";
-            let amountVal = document.getElementById('dep-amount').value || 500;
+            let amountVal = document.getElementById('dep-amount').value || 50;
 
             navigator.clipboard.writeText(upiId).then(() => {
                 alert(`✅ UPI ID (${upiId}) कॉपी हो गई है!`);
@@ -2060,7 +2040,7 @@
                 card.innerHTML = `<p>👤 <b>नाम:</b> ${u.name} ${u.isSuperAdmin ? '<span style="color:var(--accent);">(एडमिन)</span>' : ''}</p>
                                   <p>📱 <b>मोबाइल:</b> ${phone}</p>
                                   <p>🔑 <b>पासवर्ड:</b> <span style="color:var(--accent);">${u.pass}</span></p>
-                                  <p>💰 <b>पॉइंट्स:</b> ${userWallets[phone] || 0}</p>
+                                  <p>💰 <b>पॉइंट्स:</b> ${userWallets[phone] || 0} | 🎁 <b>लॉक्ड बोनस:</b> ${userLockedBonuses[phone] || 0}</p>
                                   <p>📌 <b>स्टेटस:</b> <span class="badge ${u.isLocked ? 'badge-pending' : 'badge-approved'}">${u.isLocked ? 'LOCKED' : 'ACTIVE'}</span></p>
                                   <div style="display:flex; gap:5px; margin-top:8px;">
                                       <button class="btn" style="padding:4px; font-size:0.7rem; background:${u.isLocked ? '#28a745' : '#ff9800'}; color:#fff; margin:0;" onclick="toggleLockUser('${phone}')">${u.isLocked ? 'Unlock' : 'Lock'}</button>
@@ -2231,7 +2211,6 @@
             const selectedSlotFilter = document.getElementById('admin-bid-slot-filter').value;
             const todayKey = getTodayDateKey();
 
-            // Separate Today's Bids vs Past/Archive Bids
             let todaysBets = [];
             let oldBets = [];
 
@@ -2251,7 +2230,6 @@
                 return true;
             });
 
-            // Calculate 0-9 Digit Money Load for Today's Filtered Bets
             let digitTotals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             filteredToday.forEach(b => {
                 let numStr = String(b.number).trim();
@@ -2320,12 +2298,13 @@
         function submitDeposit() {
             const utr = document.getElementById('utr-input').value;
             const amt = parseInt(document.getElementById('dep-amount').value);
+            if(isNaN(amt) || amt < 20) { alert('⚠️ न्यूनतम डिपॉजिट राशि ₹20 है!'); return; }
             if(utr.length !== 12 || isNaN(utr)) { alert('12 अंकों का सही UTR नंबर दर्ज करें!'); return; }
             
             if(!depositRequests) depositRequests = [];
             depositRequests.unshift({ id: Date.now(), user: activeUserPhone, amount: amt, utr: utr, status: 'pending' });
             db.ref('depositRequests').set(depositRequests);
-            alert(`डिपॉजिट अनुरोध सबमिट हुआ! एडमिन को भेज दिया गया है।`);
+            alert(`डिपॉजिट अनुरोध सबमिट हुआ! एडमिन द्वारा अप्रूव होने पर आपका ₹80 लॉक्ड बोनस भी मेन वॉलेट में जुड़ जाएगा।`);
             closeDeposit();
         }
 
@@ -2384,7 +2363,7 @@
                                       <p>💵 <b>राशि:</b> ₹${req.amount}</p>
                                       <p>🔢 <b>UTR:</b> ${req.utr}</p>
                                       <p>📌 <b>स्टेटस:</b> <span class="badge ${req.status === 'pending' ? 'badge-pending' : 'badge-approved'}">${req.status.toUpperCase()}</span></p>
-                                      ${req.status === 'pending' ? `<button class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#28a745; color:#fff;" onclick="approveDeposit(${idx})">Approve & Add</button>` : ''}`;
+                                      ${req.status === 'pending' ? `<button class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#28a745; color:#fff;" onclick="approveDeposit(${idx})">Approve & Unlock Bonus</button>` : ''}`;
                     depList.appendChild(card);
                 });
             }
@@ -2408,18 +2387,38 @@
             }
         }
 
+        // ================= DEPOSIT APPROVAL WITH LOCKED BONUS UNLOCK LOGIC =================
         function approveDeposit(idx) {
             depositRequests[idx].status = 'approved';
             db.ref('depositRequests').set(depositRequests);
             let u = depositRequests[idx].user;
-            db.ref('userWallets/' + u).once('value').then((snap) => {
-                let cur = snap.exists() ? snap.val() : 0;
-                let updated = cur + depositRequests[idx].amount;
-                db.ref('userWallets/' + u).set(updated);
-                if(u === activeUserPhone) { currentWallet = updated; updateWalletUI(); }
+            let depAmt = depositRequests[idx].amount;
+
+            // Fetch user wallet & locked bonus and merge on admin approval if deposit >= 20
+            db.ref('userLockedBonuses/' + u).once('value').then((snapLocked) => {
+                let lockedAmt = snapLocked.exists() ? snapLocked.val() : 0;
+
+                db.ref('userWallets/' + u).once('value').then((snapWallet) => {
+                    let curWallet = snapWallet.exists() ? snapWallet.val() : 0;
+                    
+                    let totalToAdd = depAmt;
+                    if (depAmt >= 20 && lockedAmt > 0) {
+                        totalToAdd += lockedAmt; // Unlock the ₹80 bonus and add to deposit amount
+                        db.ref('userLockedBonuses/' + u).set(0); // Zero out locked bonus
+                    }
+
+                    let updatedWallet = curWallet + totalToAdd;
+                    db.ref('userWallets/' + u).set(updatedWallet);
+
+                    if(u === activeUserPhone) {
+                        currentWallet = updatedWallet;
+                        currentLockedBonus = 0;
+                        updateWalletUI();
+                    }
+                    renderAdminUsersList();
+                    alert(`डिपॉजिट स्वीकृत हुआ! ${lockedAmt > 0 && depAmt >= 20 ? '₹80 लॉक्ड बोनस सफलतापूर्वक मेन वॉलेट में अनलॉक हो गया है।' : ''}`);
+                });
             });
-            alert('डिपॉजिट स्वीकृत!');
-            renderAdminLists();
         }
 
         function completeWithdraw(idx) {
