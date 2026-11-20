@@ -43,6 +43,33 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { color: var(--light); padding-bottom: 82px; }
 
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0px) rotate(-0.6deg); }
+            50% { transform: translateY(-4px) rotate(0.6deg); }
+        }
+
+        @keyframes openGlowPulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(74, 222, 128, 0.55), 0 0 16px rgba(255, 223, 0, 0.35); transform: scale(1); }
+            50% { box-shadow: 0 0 18px rgba(74, 222, 128, 0.95), 0 0 28px rgba(255, 223, 0, 0.75); transform: scale(1.03); }
+        }
+
+        .floating-brand-title {
+            display: inline-block;
+            animation: gentleFloat 2.8s ease-in-out infinite;
+        }
+
+        .blinking-open-badge {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 0.75rem;
+            border: 1px solid #fef08a;
+            animation: openGlowPulse 1.1s infinite;
+        }
+
         .welcome-banner {
             background: linear-gradient(90deg, #581c87, #be185d, #581c87);
             color: #fef08a;
@@ -78,12 +105,27 @@
 
         .header-bottom-bar {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
+            gap: 10px;
             margin-top: 8px;
             padding-top: 6px;
             border-top: 1px dashed rgba(212, 175, 55, 0.35);
             position: relative;
+        }
+
+        .header-market-shortcut {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #fff;
+            border: 1px solid #fde047;
+            padding: 6px 12px;
+            border-radius: 7px;
+            font-size: 0.8rem;
+            font-weight: 900;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .menu-container { position: relative; display: inline-block; }
@@ -101,16 +143,20 @@
         .btn-matka-market {
             background: linear-gradient(135deg, #2563eb, #7c3aed, #db2777);
             color: #ffffff;
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 900;
-            letter-spacing: 1px;
-            padding: 18px 20px;
+            letter-spacing: 0.8px;
+            padding: 16px 18px;
             border: 2px solid #fde047;
             border-radius: 14px;
             box-shadow: 0 0 22px rgba(124, 58, 237, 0.65);
-            margin-top: 12px;
+            margin-top: 10px;
             margin-bottom: 14px;
             text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .lottery-tabs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
@@ -178,7 +224,7 @@
 
         .start-time { color: var(--secondary); font-weight: bold; width: 90px; text-align: left; }
         .end-time { color: var(--secondary); font-weight: bold; width: 90px; text-align: right; }
-        .result-data { color: #fff; letter-spacing: 1px; text-align: center; flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .result-data { color: #fff; letter-spacing: 1px; text-align: center; flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
 
         .unique-result-badge {
             background: linear-gradient(135deg, #2c1600, #4d2600);
@@ -204,6 +250,44 @@
         .chart-table th, .chart-table td { border: 1px solid var(--secondary); padding: 6px 3px; text-align: center; color: #fff; }
         .chart-table th { background: var(--primary); color: var(--secondary); font-size: 0.72rem; }
 
+        .seven-days-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+            text-align: left;
+        }
+        @media (max-width: 480px) {
+            .seven-days-grid { grid-template-columns: 1fr; }
+        }
+        .day-chat-box {
+            background: #141226;
+            border: 1.5px solid #6366f1;
+            border-radius: 9px;
+            padding: 9px;
+        }
+        .day-chat-box.today-box {
+            border-color: #facc15;
+            background: #231c3d;
+            box-shadow: 0 0 12px rgba(250, 204, 21, 0.25);
+        }
+        .day-chat-title {
+            font-weight: 900;
+            color: #ffd166;
+            font-size: 0.88rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .day-chat-entries {
+            font-size: 0.76rem;
+            color: #e2e8f0;
+            line-height: 1.45;
+            max-height: 110px;
+            overflow-y: auto;
+        }
+
         .admin-nav { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 12px; }
         .admin-nav-btn { padding: 6px 2px; background: #333; border: 1px solid var(--secondary); color: #fff; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 0.56rem; text-align: center; }
         .admin-nav-btn.active { background: var(--secondary); color: #000; }
@@ -222,7 +306,6 @@
 
         .qr-timer-display { font-size: 1.2rem; color: #ff4444; font-weight: bold; font-family: monospace; margin: 8px 0; }
         .auth-switch { font-size: 0.85rem; color: var(--accent); margin-top: 12px; cursor: pointer; text-decoration: underline; display: inline-block; }
-        .corner-whatsapp-btn { position: absolute; top: 15px; right: 15px; background: #25D366; color: #fff; border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
 
         .bot-chat-box { background: #181818; border: 1px solid var(--secondary); border-radius: 8px; padding: 10px; margin-top: 10px; max-height: 180px; overflow-y: auto; text-align: left; font-size: 0.85rem; }
         .bot-msg { background: #2a2a2a; padding: 6px 10px; border-radius: 6px; margin-bottom: 6px; color: var(--accent); }
@@ -534,21 +617,25 @@
     <header id="main-app-header">
         <div class="mata-banner">
             <div class="mata-badge-svg">🪷✨</div>
-            <h1>⭐ GOOD LUCK LAXMI 👍💰</h1>
+            <h1 class="floating-brand-title">⭐ GOOD LUCK LAXMI 👍💰</h1>
         </div>
-        <span class="trust-tagline">"किस्मत और लक अपना है तो आजमाए कौन"</span>
+        <span class="trust-tagline floating-brand-title">"किस्मत और लक अपना है तो आजमाए कौन"</span>
 
         <div class="header-bottom-bar" id="header-menu-bar">
+            <button type="button" class="header-market-shortcut" onclick="openAmarDuniyaPage()">
+                🎲 Matka Market <span class="blinking-open-badge">OPEN</span>
+            </button>
+
             <div class="menu-container">
-                <button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
+                <button type="button" class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
                 <div class="dropdown-menu" id="main-dropdown">
-                    <button class="dropdown-item" onclick="openDeposit()">➕ डिपॉजिट (Deposit)</button>
-                    <button class="dropdown-item" onclick="openWithdraw()">💸 विड्रॉल (Withdraw)</button>
-                    <button class="dropdown-item" onclick="openRates()">📊 Rates (भाव)</button>
-                    <button class="dropdown-item" onclick="openHistory()">📜 History (चार्ट)</button>
-                    <button class="dropdown-item" onclick="openHelp()">💬 Help (मदद)</button>
-                    <button class="dropdown-item" onclick="openProfile()">👤 Profile (प्रोफाइल)</button>
-                    <button class="dropdown-item" onclick="performLogout()" style="color:#ff4444;">🚪 लॉग-आउट (Logout)</button>
+                    <button type="button" class="dropdown-item" onclick="openDeposit()">➕ डिपॉजिट (Deposit)</button>
+                    <button type="button" class="dropdown-item" onclick="openWithdraw()">💸 विड्रॉल (Withdraw)</button>
+                    <button type="button" class="dropdown-item" onclick="openRates()">📊 Rates (भाव)</button>
+                    <button type="button" class="dropdown-item" onclick="openGameChatModal()">💬 Game Chat (7 दिन)</button>
+                    <button type="button" class="dropdown-item" onclick="openHelp()">🤖 AI Help (मदद)</button>
+                    <button type="button" class="dropdown-item" onclick="openProfile()">👤 Profile (प्रोफाइल)</button>
+                    <button type="button" class="dropdown-item" onclick="performLogout()" style="color:#ff4444;">🚪 लॉग-आउट (Logout)</button>
                 </div>
             </div>
         </div>
@@ -557,7 +644,7 @@
     <!-- AUTH SECTION -->
     <div class="container" id="auth-section">
         <div id="form-login">
-            <h3 style="color: var(--secondary); text-align: center; margin-bottom:10px;">🔐 यूज़र लॉगिन 👍</h3>
+            <h3 class="floating-brand-title" style="color: var(--secondary); text-align: center; margin-bottom:10px; width:100%;">🔐 यूज़र लॉगिन 👍</h3>
             <input type="tel" id="login-mobile" placeholder="मोबाइल नंबर या आईडी दर्ज करें" maxlength="15">
 
             <div class="pass-input-wrapper">
@@ -565,10 +652,10 @@
                 <button type="button" class="pass-toggle-btn" onclick="togglePasswordVisibility('login-pass', this)">👁️ देखें</button>
             </div>
 
-            <button class="btn" onclick="performLogin()">लॉगिन करें</button>
+            <button type="button" class="btn" onclick="performLogin()">लॉगिन करें</button>
             <div style="display: flex; justify-content: space-between; margin-top: 10px;">
                 <span class="auth-switch" onclick="switchAuthForm('register')">नया अकाउंट बनाएं (Register)</span>
-                <span class="auth-switch" onclick="switchAuthForm('forgot')">पासवर्ड भूल गए?</span>
+                <span class="auth-switch" onclick="switchAuthForm('forgot')">AI Help / पासवर्ड रिकवर</span>
             </div>
         </div>
 
@@ -583,15 +670,22 @@
                 <button type="button" class="pass-toggle-btn" onclick="togglePasswordVisibility('reg-pass', this)">👁️ देखें</button>
             </div>
 
-            <button class="btn" onclick="performRegister()">अकाउंट बनाएं & ₹20 बोनस पाएं</button>
+            <button type="button" class="btn" onclick="performRegister()">अकाउंट बनाएं & ₹20 बोनस पाएं</button>
             <span class="auth-switch" onclick="switchAuthForm('login')">पहले से अकाउंट है? लॉगिन करें</span>
         </div>
 
         <div id="form-forgot" class="hidden">
-            <button class="corner-whatsapp-btn" onclick="openHelp()">💬 WhatsApp Help</button>
-            <h3 style="color: var(--secondary); text-align: center; margin-bottom:10px;">🔑 पासवर्ड भूल गए?</h3>
-            <div class="notice-box">पासवर्ड पुनः प्राप्त करने के लिए सीधे व्हाट्सएप पर संपर्क करें।</div>
-            <button class="btn" style="background:#25D366; color:#fff;" onclick="openHelp()">💬 व्हाट्सएप पर पासवर्ड प्राप्त करें</button>
+            <h3 style="color: var(--secondary); text-align: center; margin-bottom:10px;">🤖 AI Help & Password Recover</h3>
+            <div class="notice-box">AI सहायक से मदद लें या अपना मोबाइल नंबर डालकर <b>Password Recover</b> दबाएं। एडमिन पैनल में आपकी रिक्वेस्ट लॉक होकर दिख जाएगी और आपके मोबाइल नंबर पर SMS भेजा जाएगा।</div>
+
+            <div class="bot-chat-box" id="login-ai-chat-box">
+                <div class="bot-msg">नमस्ते! मैं AI सहायक हूँ। पासवर्ड भूल गए हैं तो नीचे मोबाइल नंबर डालें और "Password Recover" दबाएं।</div>
+            </div>
+            <input type="text" id="login-ai-prompt" placeholder="AI से सवाल पूछें (जैसे: password kaise milega?)">
+            <button type="button" class="btn" style="background:#0284c7; color:#fff; margin-top:4px;" onclick="askLoginAI()">🤖 AI से पूछें</button>
+
+            <input type="tel" id="recover-mobile-input" placeholder="अपना 10 अंकों का मोबाइल नंबर दर्ज करें" maxlength="10" style="margin-top:12px;">
+            <button type="button" class="btn" style="background:#16a34a; color:#fff;" onclick="submitPasswordRecoverRequest()">📩 Password Recover (Admin SMS रिक्वेस्ट)</button>
             <span class="auth-switch" onclick="switchAuthForm('login')">वापस लॉगिन पर जाएं</span>
         </div>
     </div>
@@ -608,18 +702,18 @@
                 <strong>पॉइंट्स: <span id="wallet-balance" style="color:var(--accent)">0</span> Points</strong>
             </div>
             <div style="display:flex; gap:5px;">
-                <button class="btn" style="width: auto; padding: 6px 10px; margin:0; font-size:0.8rem;" onclick="openDeposit()">+ ऐड मनी</button>
-                <button class="btn" style="width: auto; padding: 6px 10px; margin:0; font-size:0.8rem; background:#28a745; color:#fff;" onclick="openWithdraw()">- विड्रॉल</button>
+                <button type="button" class="btn" style="width: auto; padding: 6px 10px; margin:0; font-size:0.8rem;" onclick="openDeposit()">+ ऐड मनी</button>
+                <button type="button" class="btn" style="width: auto; padding: 6px 10px; margin:0; font-size:0.8rem; background:#28a745; color:#fff;" onclick="openWithdraw()">- विड्रॉल</button>
             </div>
         </div>
 
-        <button class="btn btn-matka-market" onclick="openAmarDuniyaPage()">
-            🔥 MaTka Market 🎲
+        <button type="button" class="btn btn-matka-market" onclick="openAmarDuniyaPage()">
+            🔥 MaTka Market 🎲 <span class="blinking-open-badge">OPEN</span>
         </button>
 
         <div class="lottery-tabs-row">
-            <button class="btn btn-shubh-tab" id="tab-shubh" onclick="switchLottery('shubh')">⭐ शुभ लक्ष्मी (15 मि.) 👍</button>
-            <button class="btn btn-dhan-tab tab-inactive-dim" id="tab-dhan" onclick="switchLottery('dhan')">💰 धन लक्ष्मी (30 मि.) 👍</button>
+            <button type="button" class="btn btn-shubh-tab" id="tab-shubh" onclick="switchLottery('shubh')">⭐ शुभ लक्ष्मी (15 मि.) 👍</button>
+            <button type="button" class="btn btn-dhan-tab tab-inactive-dim" id="tab-dhan" onclick="switchLottery('dhan')">💰 धन लक्ष्मी (30 मि.) 👍</button>
         </div>
 
         <div class="timer-box">
@@ -634,7 +728,7 @@
             </div>
         </div>
 
-        <button class="btn" style="background: linear-gradient(135deg, #d4af37, #800020); color:#fff; margin-bottom: 12px; font-size: 1.02rem; border: 1px solid var(--accent);" onclick="openMyBetsHistory()">
+        <button type="button" class="btn" style="background: linear-gradient(135deg, #d4af37, #800020); color:#fff; margin-bottom: 12px; font-size: 1.02rem; border: 1px solid var(--accent);" onclick="openMyBetsHistory()">
             📝 मेरी बेटिंग हिस्ट्री (शुभ / धन लक्ष्मी)
         </button>
 
@@ -657,7 +751,7 @@
             <div class="result-line-box" id="result-container"></div>
         </div>
 
-        <button class="btn hidden" id="admin-panel-trigger-btn" style="background:#8b0000; color:#fff; margin-top:20px;" onclick="openAdmin()">👑 3-ADMIN कंट्रोल पैनल (शुभ / धन लक्ष्मी)</button>
+        <button type="button" class="btn hidden" id="admin-panel-trigger-btn" style="background:#8b0000; color:#fff; margin-top:20px;" onclick="openAdmin()">👑 3-ADMIN कंट्रोल पैनल (शुभ / धन लक्ष्मी)</button>
     </div>
 
     <!-- ================= AMAR DUNIYA (A. MARKET) EVENING BRAND PAGE ================= -->
@@ -668,20 +762,20 @@
                     <div class="matka-art-badge">🎲👑</div>
                     <div class="a-market-logo">A. market</div>
                     <div>
-                        <div class="amar-title">Amar Duniya</div>
+                        <div class="amar-title floating-brand-title">Amar Duniya</div>
                         <div style="font-size:0.72rem; color:#fde68a;">Evening Premium Matka Hub • 🃏🎯</div>
                     </div>
                 </div>
 
                 <div class="amar-side-right">
                     <div class="menu-container">
-                        <button class="menu-btn" onclick="toggleAmarMenu()">☰ Menu</button>
+                        <button type="button" class="menu-btn" onclick="toggleAmarMenu()">☰ Menu</button>
                         <div class="dropdown-menu" id="amar-dropdown">
-                            <button class="dropdown-item" onclick="openAmarRatesModal()">📊 Rates (भाव)</button>
-                            <button class="dropdown-item" onclick="openAmarGameChartModal()">📈 Game Chart</button>
-                            <button class="dropdown-item" onclick="openAmarHelpAIModal()">🤖 Help AI</button>
-                            <button class="dropdown-item" onclick="openProfile()">👤 Profile</button>
-                            <button class="dropdown-item" onclick="backToGoodLuckHome()" style="color:#7dd3fc;">⬅️ Back</button>
+                            <button type="button" class="dropdown-item" onclick="openAmarRatesModal()">📊 Rates (भाव)</button>
+                            <button type="button" class="dropdown-item" onclick="openAmarGameChartModal()">📈 Game Chart</button>
+                            <button type="button" class="dropdown-item" onclick="openAmarHelpAIModal()">🤖 Help AI</button>
+                            <button type="button" class="dropdown-item" onclick="openProfile()">👤 Profile</button>
+                            <button type="button" class="dropdown-item" onclick="backToGoodLuckHome()" style="color:#7dd3fc;">⬅️ Back</button>
                         </div>
                     </div>
                     <div style="text-align:right;">
@@ -693,23 +787,23 @@
 
             <div class="amar-marquee">
                 <marquee behavior="scroll" direction="left" scrollamount="5">
-                    🔥 Trusted Matka Play App 🔥 सभी मटका बाजार खेलो ऑनलाइन | Fast Payin - Instant Withdraw 💸📲 — खेलो दिल से बेफ़िकर | Customer Service 24/7
+                    🔥 Trusted Matka Play App 🔥 सभी मटका बाजार खेलो ऑनलाइन | Fast Payin - Instant Withdraw 💸📲 — खेलो दिल से बेफ़िकर | AI Customer Service 24/7
                 </marquee>
             </div>
         </div>
 
         <div style="display:grid; grid-template-columns: auto 1fr; gap:8px; margin-bottom:8px;">
-            <button class="btn btn-back-colorful" style="width:auto; padding:8px 16px; margin:0; font-size:0.86rem;" onclick="backToGoodLuckHome()">⬅️ Back</button>
-            <button class="btn hidden" id="amar-admin-btn" style="margin:0; padding:8px 12px; font-size:0.86rem; background:linear-gradient(135deg,#b91c1c,#7f1d1d); color:#fff; border:1px solid #fca5a5;" onclick="openAmarAdminPanel()">👑 Amar Duniya Admin</button>
+            <button type="button" class="btn btn-back-colorful" style="width:auto; padding:8px 16px; margin:0; font-size:0.86rem;" onclick="backToGoodLuckHome()">⬅️ Back</button>
+            <button type="button" class="btn hidden" id="amar-admin-btn" style="margin:0; padding:8px 12px; font-size:0.86rem; background:linear-gradient(135deg,#b91c1c,#7f1d1d); color:#fff; border:1px solid #fca5a5;" onclick="openAmarAdminPanel()">👑 Amar Duniya Admin</button>
         </div>
 
         <div class="amar-action-row">
-            <button class="btn-add-green" onclick="openDeposit()">➕ ADD MONEY</button>
-            <button class="btn-wit-red" onclick="openWithdraw()">💸 WITHDRAW</button>
+            <button type="button" class="btn-add-green" onclick="openDeposit()">➕ ADD MONEY</button>
+            <button type="button" class="btn-wit-red" onclick="openWithdraw()">💸 WITHDRAW</button>
         </div>
 
         <div style="margin-bottom:10px;">
-            <button class="btn" style="margin:0; padding:9px; font-size:0.88rem; background:linear-gradient(135deg,#3730a3,#1e1b4b); color:#fff; border:1px solid #818cf8;" onclick="openAmarMyBidsModal()">
+            <button type="button" class="btn" style="margin:0; padding:9px; font-size:0.88rem; background:linear-gradient(135deg,#3730a3,#1e1b4b); color:#fff; border:1px solid #818cf8;" onclick="openAmarMyBidsModal()">
                 📜 My Bet History
             </button>
         </div>
@@ -718,11 +812,11 @@
         <div class="market-cards-grid" id="amar-markets-grid"></div>
 
         <div class="bottom-nav-bar">
-            <button class="bottom-nav-btn" onclick="openAmarMyBidsModal()"><span class="icon">🏆</span>My Bids</button>
-            <button class="bottom-nav-btn" onclick="openAmarGameChartModal()"><span class="icon">📈</span>Game Chart</button>
-            <button class="bottom-nav-btn" onclick="backToGoodLuckHome()" style="color:#ffd166;"><span class="icon">🏠</span>Home</button>
-            <button class="bottom-nav-btn" onclick="openAmarRatesModal()"><span class="icon">📊</span>Rates</button>
-            <button class="bottom-nav-btn" onclick="openAmarHelpAIModal()"><span class="icon">🤖</span>Help AI</button>
+            <button type="button" class="bottom-nav-btn" onclick="openAmarMyBidsModal()"><span class="icon">🏆</span>My Bids</button>
+            <button type="button" class="bottom-nav-btn" onclick="openAmarGameChartModal()"><span class="icon">📈</span>Game Chart</button>
+            <button type="button" class="bottom-nav-btn" onclick="backToGoodLuckHome()" style="color:#ffd166;"><span class="icon">🏠</span>Home</button>
+            <button type="button" class="bottom-nav-btn" onclick="openAmarRatesModal()"><span class="icon">📊</span>Rates</button>
+            <button type="button" class="bottom-nav-btn" onclick="openAmarHelpAIModal()"><span class="icon">🤖</span>Help AI</button>
         </div>
     </div>
 
@@ -735,17 +829,17 @@
             <div class="big-rate-box"><span class="big-rate-name">🃏 Single Pana</span><span class="big-rate-val">1400</span></div>
             <div class="big-rate-box"><span class="big-rate-name">🃏🃏 Double Pana</span><span class="big-rate-val">2800</span></div>
             <div class="big-rate-box"><span class="big-rate-name">⭐ Triple Pana (333)</span><span class="big-rate-val">6000</span></div>
-            <button class="btn" onclick="closeAmarRatesModal()">बंद करें</button>
+            <button type="button" class="btn" onclick="closeAmarRatesModal()">बंद करें</button>
         </div>
     </div>
 
-    <!-- AMAR DUNIYA GAME CHART MODAL (INLINE EDIT, LINK BOX & SAVE PER GAME) -->
+    <!-- AMAR DUNIYA GAME CHART MODAL -->
     <div class="modal hidden" id="amar-game-chart-modal">
         <div class="modal-content" style="background:#131026; border-color:#5dade2; max-width:650px;">
             <h3 style="color:#ffd166; margin-bottom:6px;">📈 Game Chart (2 Weeks • सोम - शनि)</h3>
             <p style="font-size:0.78rem; color:#cbd5e1; margin-bottom:10px;">हमारे रिकॉर्ड में 2 हफ़्ते (6 दिन प्रति हफ़्ता) का चार्ट उपलब्ध है। अधिक पुराने रिकॉर्ड के लिए नीचे दी गई ऑनलाइन चार्ट लिंक खोलें।</p>
             <div id="amar-all-games-chart-container" style="text-align:left;"></div>
-            <button class="btn" style="margin-top:12px;" onclick="closeAmarGameChartModal()">बंद करें</button>
+            <button type="button" class="btn" style="margin-top:12px;" onclick="closeAmarGameChartModal()">बंद करें</button>
         </div>
     </div>
 
@@ -755,8 +849,8 @@
             <h3 style="color:#ffd166; margin-bottom:8px;">🤖 Help AI (Amar Duniya)</h3>
             <p style="font-size:0.78rem; color:#cbd5e1; margin-bottom:8px;">आपका संदेश सीधे Amar Duniya के एडमिन पैनल में भेजा जाएगा।</p>
             <textarea id="amar-help-msg-input" rows="3" placeholder="यहाँ अपना संदेश या सवाल लिखें..."></textarea>
-            <button class="btn" style="background:#16a34a; color:#fff;" onclick="sendAmarHelpToAdmin()">📤 संदेश एडमिन को भेजें</button>
-            <button class="btn" style="background:#4b5563; color:#fff;" onclick="closeAmarHelpAIModal()">बंद करें</button>
+            <button type="button" class="btn" style="background:#16a34a; color:#fff;" onclick="sendAmarHelpToAdmin()">📤 संदेश एडमिन को भेजें</button>
+            <button type="button" class="btn" style="background:#4b5563; color:#fff;" onclick="closeAmarHelpAIModal()">बंद करें</button>
         </div>
     </div>
 
@@ -774,7 +868,7 @@
                 <div class="dashboard-card" style="grid-column: span 2; padding:10px;" onclick="openAmarBetBoard('Triple Pana')"><div style="font-size:1.2rem; color:#facc15; font-weight:900;">TP</div><h4 style="font-size:0.85rem;">Triple Pana</h4></div>
             </div>
 
-            <button class="btn" style="background:#4b5563; color:#fff;" onclick="closeAmarMarketModes()">बंद करें</button>
+            <button type="button" class="btn" style="background:#4b5563; color:#fff;" onclick="closeAmarMarketModes()">बंद करें</button>
         </div>
     </div>
 
@@ -792,7 +886,7 @@
             <div id="amar-single-grid-box" class="hidden">
                 <p style="font-size:0.8rem; color:#ffd166; text-align:left; margin-top:6px;">हर अंक के सामने Points डालें (Min 10 per bid):</p>
                 <div class="digit-grid-10" id="amar-10-digit-inputs"></div>
-                <button class="btn" style="background:#10b981; color:#fff;" onclick="submitAmarSingleGridBets()">SUBMIT ALL BIDS</button>
+                <button type="button" class="btn" style="background:#10b981; color:#fff;" onclick="submitAmarSingleGridBets()">SUBMIT ALL BIDS</button>
             </div>
 
             <div id="amar-number-pana-box" class="hidden" style="text-align:left;">
@@ -803,7 +897,7 @@
                 <label style="font-size:0.82rem; color:#cbd5e1;">Points (Min 10):</label>
                 <input type="number" id="amar-single-pts-input" value="10" min="10">
 
-                <button class="btn" style="background:#0284c7; color:#fff; padding:9px; font-size:0.9rem;" onclick="addAmarTempBid()">+ ADD BID</button>
+                <button type="button" class="btn" style="background:#0284c7; color:#fff; padding:9px; font-size:0.9rem;" onclick="addAmarTempBid()">+ ADD BID</button>
 
                 <div style="margin-top:10px; max-height:140px; overflow-y:auto;">
                     <table class="bid-table">
@@ -812,10 +906,10 @@
                     </table>
                 </div>
 
-                <button class="btn" style="background:#10b981; color:#fff;" onclick="submitAmarAddedBets()">SUBMIT BIDS</button>
+                <button type="button" class="btn" style="background:#10b981; color:#fff;" onclick="submitAmarAddedBets()">SUBMIT BIDS</button>
             </div>
 
-            <button class="btn" style="background:#4b5563; color:#fff;" onclick="closeAmarBetBoard()">वापस जाएं</button>
+            <button type="button" class="btn" style="background:#4b5563; color:#fff;" onclick="closeAmarBetBoard()">वापस जाएं</button>
         </div>
     </div>
 
@@ -824,7 +918,7 @@
         <div class="modal-content" style="background:#131026; border-color:#f5b041;">
             <h3 style="color:#ffd166; margin-bottom:8px;">📜 My Bet History</h3>
             <div class="result-line-box" id="amar-my-bids-list" style="max-height:300px; text-align:left;"></div>
-            <button class="btn" onclick="closeAmarMyBidsModal()">बंद करें</button>
+            <button type="button" class="btn" onclick="closeAmarMyBidsModal()">बंद करें</button>
         </div>
     </div>
 
@@ -845,7 +939,7 @@
             <div id="amar-admin-help-inbox"></div>
         </div>
 
-        <button class="btn" style="background:#4b5563; color:#fff;" onclick="closeAmarAdminPanel()">वापस Amar Duniya पेज पर जाएं</button>
+        <button type="button" class="btn" style="background:#4b5563; color:#fff;" onclick="closeAmarAdminPanel()">वापस Amar Duniya पेज पर जाएं</button>
     </div>
 
     <!-- ================= ORIGINAL GOOD LUCK LAXMI MODALS ================= -->
@@ -867,8 +961,8 @@
                 <label style="font-size: 0.85rem; color: #aaa; margin-top: 8px; display: block;">POINTS (न्यूनतम 10 Points अनिवार्य):</label>
                 <input type="number" id="board-points" placeholder="कम से कम 10 दर्ज करें" min="10" value="10">
             </div>
-            <button class="btn" onclick="submitBoardBet()">दांव लगाएं (Submit)</button>
-            <button class="btn" style="background:#444; color:#fff;" onclick="closeGameScreen()">वापस जाएं</button>
+            <button type="button" class="btn" onclick="submitBoardBet()">दांव लगाएं (Submit)</button>
+            <button type="button" class="btn" style="background:#444; color:#fff;" onclick="closeGameScreen()">वापस जाएं</button>
         </div>
     </div>
 
@@ -878,10 +972,10 @@
 
         <div class="auto-toggle-box">
             <div>
-                <strong style="color:var(--accent); font-size:0.85rem;">🤖 स्मार्ट ऑटो-रैंडम & लोड शील्ड</strong>
-                <p style="font-size:0.7rem; color:#aaa;" id="auto-status-desc">स्टेटस: चालू (शुभ / धन लक्ष्मी ऑटो मोड)</p>
+                <strong style="color:var(--accent); font-size:0.85rem;">🤖 स्मार्ट ऑटो-रैंडम & 20% मार्जिन शील्ड</strong>
+                <p style="font-size:0.7rem; color:#aaa;" id="auto-status-desc">स्टेटस: चालू (शुभ / धन लक्ष्मी ऑटो मोड • 20% मार्जिन)</p>
             </div>
-            <button class="btn" id="auto-toggle-btn" style="width:auto; padding:6px 12px; margin:0; font-size:0.8rem; background:#ff4444; color:#fff;" onclick="toggleAutoRandomSystem()">🛑 STOP AUTO</button>
+            <button type="button" class="btn" id="auto-toggle-btn" style="width:auto; padding:6px 12px; margin:0; font-size:0.8rem; background:#ff4444; color:#fff;" onclick="toggleAutoRandomSystem()">🛑 STOP AUTO</button>
         </div>
 
         <div class="timer-box" style="margin-bottom:12px; padding:8px;">
@@ -890,13 +984,13 @@
         </div>
 
         <div class="admin-nav">
-            <button class="admin-nav-btn active" id="adm-tab-res" onclick="switchAdminTab('res')">🎯 रिजल्ट्स</button>
-            <button class="admin-nav-btn" id="adm-tab-users" onclick="switchAdminTab('users')">👥 यूज़र्स</button>
-            <button class="admin-nav-btn" id="adm-tab-qr" onclick="switchAdminTab('qr')">💳 QR सेट</button>
-            <button class="admin-nav-btn" id="adm-tab-bids" onclick="switchAdminTab('bids')">📊 दांव</button>
-            <button class="admin-nav-btn" id="adm-tab-dep" onclick="switchAdminTab('dep')">📥 डिपॉजिट</button>
-            <button class="admin-nav-btn" id="adm-tab-wit" onclick="switchAdminTab('wit')">📤 विड्रॉल</button>
-            <button class="admin-nav-btn" id="adm-tab-req" onclick="switchAdminTab('req')" style="background:#800020; color:var(--accent);">🤖 हेल्प</button>
+            <button type="button" class="admin-nav-btn active" id="adm-tab-res" onclick="switchAdminTab('res')">🎯 रिजल्ट्स</button>
+            <button type="button" class="admin-nav-btn" id="adm-tab-users" onclick="switchAdminTab('users')">👥 यूज़र्स</button>
+            <button type="button" class="admin-nav-btn" id="adm-tab-qr" onclick="switchAdminTab('qr')">💳 QR सेट</button>
+            <button type="button" class="admin-nav-btn" id="adm-tab-bids" onclick="switchAdminTab('bids')">📊 दांव</button>
+            <button type="button" class="admin-nav-btn" id="adm-tab-dep" onclick="switchAdminTab('dep')">📥 डिपॉजिट</button>
+            <button type="button" class="admin-nav-btn" id="adm-tab-wit" onclick="switchAdminTab('wit')">📤 विड्रॉल</button>
+            <button type="button" class="admin-nav-btn" id="adm-tab-req" onclick="switchAdminTab('req')" style="background:#800020; color:var(--accent);">🤖 हेल्प</button>
         </div>
 
         <div id="adm-sec-res">
@@ -914,7 +1008,7 @@
                 <label style="font-size:0.85rem; color:var(--secondary); font-weight:bold;">1. ओपन बॉक्स (Step 1 - पहले ओपन डालें):</label>
                 <input type="text" id="admin-open-patti" placeholder="ओपन पत्ती (उदा. 118)" style="margin:5px 0;">
                 <input type="text" id="admin-open-digit" placeholder="ओपन अंक (उदा. 0)" style="margin:5px 0;">
-                <button class="btn" style="background:#28a745; color:#fff; padding:8px; font-size:0.85rem;" onclick="saveAdminOpen()">✅ पहले ओपन सेव करें</button>
+                <button type="button" class="btn" style="background:#28a745; color:#fff; padding:8px; font-size:0.85rem;" onclick="saveAdminOpen()">✅ पहले ओपन सेव करें</button>
             </div>
 
             <div class="admin-input-group">
@@ -923,8 +1017,8 @@
                 <input type="text" id="admin-close-digit" placeholder="क्लोज अंक (उदा. 5)" style="margin:5px 0;">
             </div>
 
-            <button class="btn" style="background:#ff4444; color:#fff;" onclick="updateAdminResult()">🚀 ओपन + क्लोज से जोड़ी बनाएं & पब्लिश करें</button>
-            <button class="btn" style="background:#25D366; color:#fff;" onclick="enableAdminEditMode()">✏️ पुराना रिजल्ट सीधे एडिट करें</button>
+            <button type="button" class="btn" style="background:#ff4444; color:#fff;" onclick="updateAdminResult()">🚀 ओपन + क्लोज से जोड़ी बनाएं & पब्लिश करें</button>
+            <button type="button" class="btn" style="background:#25D366; color:#fff;" onclick="enableAdminEditMode()">✏️ पुराना रिजल्ट सीधे एडिट करें</button>
         </div>
 
         <div id="adm-sec-users" class="hidden">
@@ -955,14 +1049,14 @@
                 <label style="font-size:0.75rem; color:#7ef9ff;">या फोन से दूसरा QR फोटो चुनें:</label>
                 <input type="file" accept="image/*" onchange="handleQRFileUpload('qr2', this)" style="padding:5px; font-size:0.78rem;">
             </div>
-            <button class="btn" style="background:#ff4444; color:#fff;" onclick="saveAllQRSettings()">💾 दोनों UPI व QR अपडेट सेव करें</button>
+            <button type="button" class="btn" style="background:#ff4444; color:#fff;" onclick="saveAllQRSettings()">💾 दोनों UPI व QR अपडेट सेव करें</button>
         </div>
 
         <div id="adm-sec-bids" class="hidden">
             <h4 style="color:var(--secondary); margin-bottom:10px; font-size:0.95rem; text-align:center;">📊 लाइव दांव</h4>
             <div style="display:flex; gap:5px; margin-bottom:10px;">
-                <button class="btn" id="bid-sub-shubh" style="margin:0; padding:8px; font-size:0.8rem;" onclick="switchBidFilter('shubh')">⭐ शुभ लक्ष्मी</button>
-                <button class="btn" id="bid-sub-dhan" style="margin:0; padding:8px; font-size:0.8rem; background:#444; color:#fff;" onclick="switchBidFilter('dhan')">💰 धन लक्ष्मी</button>
+                <button type="button" class="btn" id="bid-sub-shubh" style="margin:0; padding:8px; font-size:0.8rem;" onclick="switchBidFilter('shubh')">⭐ शुभ लक्ष्मी</button>
+                <button type="button" class="btn" id="bid-sub-dhan" style="margin:0; padding:8px; font-size:0.8rem; background:#444; color:#fff;" onclick="switchBidFilter('dhan')">💰 धन लक्ष्मी</button>
             </div>
             <label style="font-size:0.85rem; display:block; text-align:left; margin-top:8px; color:var(--accent);">समय स्लॉट फ़िल्टर चुनें:</label>
             <select id="admin-bid-slot-filter" onchange="renderBidsTable()" style="background:#222; color:var(--accent); font-weight:bold;"></select>
@@ -995,11 +1089,11 @@
         </div>
 
         <div id="adm-sec-req" class="hidden">
-            <h4 style="color:var(--secondary); margin-bottom:10px;">🤖 यूज़र्स की हेल्प रिक्वेस्ट</h4>
+            <h4 style="color:var(--secondary); margin-bottom:10px;">🤖 AI हेल्प व SMS पासवर्ड रिकवरी लॉग</h4>
             <div id="admin-help-requests-list"></div>
         </div>
 
-        <button class="btn" style="background:#555; color:#fff; margin-top:15px;" onclick="closeAdmin()">वापस जाएँ</button>
+        <button type="button" class="btn" style="background:#555; color:#fff; margin-top:15px;" onclick="closeAdmin()">वापस जाएँ</button>
     </div>
 
     <div class="modal hidden" id="deposit-modal">
@@ -1015,14 +1109,14 @@
                 💡 <b>जरूरी सूचना:</b> न्यूनतम डिपॉजिट ₹99 है। डिपॉजिट अप्रूव होते ही आपका ₹20 लॉक्ड बोनस तुरंत मेन वॉलेट में जुड़ जाएगा!
             </div>
             <input type="number" id="dep-amount" placeholder="राशि (₹) दर्ज करें (Min ₹99)" value="99" min="99">
-            <button class="btn" id="direct-upi-pay-btn" style="background:#25D366; color:#fff; margin-bottom:5px;" onclick="handleCopyAndPayApp()">
+            <button type="button" class="btn" id="direct-upi-pay-btn" style="background:#25D366; color:#fff; margin-bottom:5px;" onclick="handleCopyAndPayApp()">
                 📱 UPI ID कॉपी करें & ऐप से भुगतान करें
             </button>
             <input type="text" id="utr-input" placeholder="12-अंकों का UTR नंबर" maxlength="12">
-            <button class="btn" onclick="submitDeposit()">पेमेंट सत्यापित करें</button>
+            <button type="button" class="btn" onclick="submitDeposit()">पेमेंट सत्यापित करें</button>
             <h4 style="color:var(--secondary); font-size:0.85rem; margin-top:12px; text-align:left;">📜 आपकी डिपॉजिट व विड्रॉल हिस्ट्री:</h4>
             <div class="result-line-box" id="user-transaction-history-box" style="max-height:120px; font-size:0.75rem; text-align:left;"></div>
-            <button class="btn" style="background:#444; color:#fff; margin-top:8px;" onclick="closeDeposit()">रद्द करें</button>
+            <button type="button" class="btn" style="background:#444; color:#fff; margin-top:8px;" onclick="closeDeposit()">रद्द करें</button>
         </div>
     </div>
 
@@ -1042,8 +1136,8 @@
                 <input type="text" id="withdraw-ifsc" placeholder="IFSC कोड">
                 <input type="text" id="withdraw-name" placeholder="धारक का नाम">
             </div>
-            <button class="btn" style="background:#28a745; color:#fff;" onclick="submitWithdraw()">विड्रॉल अनुरोध भेजें</button>
-            <button class="btn" style="background:#444; color:#fff;" onclick="closeWithdraw()">रद्द करें</button>
+            <button type="button" class="btn" style="background:#28a745; color:#fff;" onclick="submitWithdraw()">विड्रॉल अनुरोध भेजें</button>
+            <button type="button" class="btn" style="background:#444; color:#fff;" onclick="closeWithdraw()">रद्द करें</button>
         </div>
     </div>
 
@@ -1061,27 +1155,27 @@
                 </div>
                 <input type="text" id="bot-user-input" placeholder="यहाँ अपना सवाल पूछें..." style="margin:5px 0; font-size:0.85rem; padding:8px;">
                 <div style="display:flex; gap:5px;">
-                    <button class="btn" style="margin:0; padding:8px; font-size:0.85rem;" onclick="askHelpBot()">सवाल पूछें</button>
-                    <button class="btn" style="margin:0; padding:8px; font-size:0.85rem; background:#28a745; color:#fff;" onclick="sendRequestToAdmin()">एडमिन को भेजें</button>
+                    <button type="button" class="btn" style="margin:0; padding:8px; font-size:0.85rem;" onclick="askHelpBot()">सवाल पूछें</button>
+                    <button type="button" class="btn" style="margin:0; padding:8px; font-size:0.85rem; background:#28a745; color:#fff;" onclick="sendRequestToAdmin()">एडमिन को भेजें</button>
                 </div>
             </div>
-            <button class="btn" style="margin-top:12px;" onclick="closeRates()">बंद करें</button>
+            <button type="button" class="btn" style="margin-top:12px;" onclick="closeRates()">बंद करें</button>
         </div>
     </div>
 
+    <!-- GAME CHAT MODAL (7 DAYS MON-SUN PER LOTTERY) -->
     <div class="modal hidden" id="history-modal">
-        <div class="modal-content">
-            <h3 style="color: var(--secondary); margin-bottom: 8px;">📜 वीकली पैनल इतिहास</h3>
-            <div class="notice-box">⚠️ यह चार्ट पिछले दिनों का सुरक्षित रिकॉर्ड है।</div>
-            <div style="overflow-x: auto; margin-bottom: 15px;">
-                <table class="chart-table">
-                    <thead><tr><th>तारीख (Date)</th><th>रिकॉर्ड / परिणाम</th></tr></thead>
-                    <tbody id="historical-archive-tbody">
-                        <tr><td colspan="2" style="color:#888;">कोई पिछला रिकॉर्ड नहीं मिला।</td></tr>
-                    </tbody>
-                </table>
+        <div class="modal-content" style="max-width:650px;">
+            <h3 style="color: var(--secondary); margin-bottom: 8px;">💬 Game Chat (7 दिन • सोम से सन्डे)</h3>
+            <div class="notice-box">पहले गेम चुनें (<b>शुभ लक्ष्मी</b> या <b>धन लक्ष्मी</b>), फिर सोम से सन्डे के 7 बॉक्स में अपना दिन का चार्ट देखें। अगले हफ्ते उसी दिन पुराना चार्ट हटकर नया चार्ट जमा होगा।</div>
+
+            <div class="lottery-tabs-row" style="margin-bottom:10px;">
+                <button type="button" class="btn btn-shubh-tab" id="chat-game-shubh-btn" onclick="selectGameChatLottery('shubh')">⭐ शुभ लक्ष्मी Chat</button>
+                <button type="button" class="btn btn-dhan-tab tab-inactive-dim" id="chat-game-dhan-btn" onclick="selectGameChatLottery('dhan')">💰 धन लक्ष्मी Chat</button>
             </div>
-            <button class="btn" onclick="closeHistory()">बंद करें</button>
+
+            <div id="game-chat-seven-days-container" class="seven-days-grid"></div>
+            <button type="button" class="btn" style="margin-top:12px;" onclick="closeHistory()">बंद करें</button>
         </div>
     </div>
 
@@ -1089,7 +1183,7 @@
         <div class="modal-content">
             <h3 style="color: var(--secondary); margin-bottom: 8px;">📝 मेरी बेटिंग इतिहास (शुभ / धन लक्ष्मी)</h3>
             <div class="result-line-box" id="my-bets-container" style="max-height: 280px; text-align: left;"></div>
-            <button class="btn" style="margin-top:12px;" onclick="closeMyBetsHistory()">बंद करें</button>
+            <button type="button" class="btn" style="margin-top:12px;" onclick="closeMyBetsHistory()">बंद करें</button>
         </div>
     </div>
 
@@ -1103,7 +1197,7 @@
                 <p>🆔 <b>अकाउंट आईडी:</b> GLL-88392</p>
                 <p>✅ <b>स्टेटस:</b> सक्रिय</p>
             </div>
-            <button class="btn" style="background:#444; color:#fff; margin-top:5px;" onclick="closeProfile()">बंद करें</button>
+            <button type="button" class="btn" style="background:#444; color:#fff; margin-top:5px;" onclick="closeProfile()">बंद करें</button>
         </div>
     </div>
 
@@ -1121,6 +1215,15 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        const WEEK_DAYS_7 = ["सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि", "सन्डे"];
+        let selectedGameChatType = 'shubh';
+        let weeklyGameChatData = {
+            shubh: { "सोम": [], "मंगल": [], "बुध": [], "गुरु": [], "शुक्र": [], "शनि": [], "सन्डे": [] },
+            dhan: { "सोम": [], "मंगल": [], "बुध": [], "गुरु": [], "शुक्र": [], "शनि": [], "सन्डे": [] }
+        };
+        let recentDrawHistory = { shubh: [], dhan: [] };
+        let lastMidnightResetKey = localStorage.getItem('gll_last_1am_reset_key') || "";
 
         let audioCtx = null;
         function playTickSound() {
@@ -1158,6 +1261,7 @@
             "9": ["199","289","379","388","469","478","559","568","577","667","999","666","117","126","135","144","180","225","234","270","360","450","900","333"]
         };
 
+        const JODI_99_SET = Array.from({ length: 100 }, (_, i) => String(i).padStart(2, '0'));
         const TRIPLE_PANAS = ["000","111","222","333","444","555","666","777","888","999"];
 
         function getPanaType(p) {
@@ -1182,33 +1286,104 @@
             return Array.from(set);
         }
 
+        function getCurrentHindiDayName() {
+            let dayIdx = new Date().getDay();
+            let map = { 0: "सन्डे", 1: "सोम", 2: "मंगल", 3: "बुध", 4: "गुरु", 5: "शुक्र", 6: "शनि" };
+            return map[dayIdx] || "शुक्र";
+        }
+
+        function recordIntoWeeklyGameChat(lotteryType, entryText) {
+            let dayName = getCurrentHindiDayName();
+            let todayKey = getTodayDateKey();
+            let timeLabel = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (!weeklyGameChatData[lotteryType]) weeklyGameChatData[lotteryType] = {};
+            if (!Array.isArray(weeklyGameChatData[lotteryType][dayName])) weeklyGameChatData[lotteryType][dayName] = [];
+
+            let existing = weeklyGameChatData[lotteryType][dayName];
+            if (existing.length > 0 && existing[0].dateKey !== todayKey) {
+                existing = [];
+            }
+            existing.unshift({ dateKey: todayKey, time: timeLabel, text: entryText });
+            weeklyGameChatData[lotteryType][dayName] = existing.slice(0, 25);
+            db.ref('weeklyGameChatData').set(weeklyGameChatData);
+        }
+
         function getLowLoadPatti(lotteryType, slotTimeStr, stageType) {
             let allPattis = getAllMappedPattisByType("Single Pana");
             if (allPattis.length === 0) allPattis = ["123", "134", "145", "156", "167"];
             let todayKey = getTodayDateKey();
             let betsList = (lotteryType === 'shubh' ? shubhBets : dhanBets) || [];
             let digitLoads = [0,0,0,0,0,0,0,0,0,0];
+            let totalBetAmt = 0;
 
             betsList.forEach(b => {
                 let bDate = b.dateKey || todayKey;
                 if (bDate === todayKey && b.slotTime === slotTimeStr) {
+                    let pts = Number(b.points) || 0;
+                    totalBetAmt += pts;
                     let numStr = String(b.number);
                     if (b.gameMode === 'Single Digit' && b.gameType === stageType) {
                         let d = parseInt(numStr);
-                        if (!isNaN(d)) digitLoads[d] += Number(b.points) * 10;
+                        if (!isNaN(d)) digitLoads[d] += pts * 10;
                     } else if (b.gameMode.includes('Pana') && b.gameType === stageType) {
                         let sumD = numStr.split('').reduce((a,c)=>Number(a)+Number(c),0) % 10;
-                        digitLoads[sumD] += Number(b.points) * 5;
+                        digitLoads[sumD] += pts * 5;
                     }
                 }
             });
 
+            let maxAllowedPayout = totalBetAmt * 0.80;
+            let recentList = recentDrawHistory[lotteryType] || [];
             let sortedDigits = [0,1,2,3,4,5,6,7,8,9].sort((a,b) => digitLoads[a] - digitLoads[b]);
-            let safeDigits = sortedDigits.slice(0, 4);
-            let chosenDigit = String(safeDigits[Math.floor(Math.random() * safeDigits.length)]);
-            let digitPool = (USER_DIGIT_PANA_MAP[chosenDigit] || []).filter(p => getPanaType(p) === "Single Pana");
-            if (digitPool.length > 0) return digitPool[Math.floor(Math.random() * digitPool.length)];
-            return allPattis[Math.floor(Math.random() * allPattis.length)];
+            let safeDigits = sortedDigits.filter(d => totalBetAmt === 0 || (digitLoads[d] <= maxAllowedPayout));
+            if (safeDigits.length === 0) safeDigits = sortedDigits.slice(0, 3);
+
+            let filteredDigits = safeDigits.filter(d => !recentList.includes(String(d)));
+            let poolDigits = filteredDigits.length > 0 ? filteredDigits : safeDigits;
+            let chosenDigit = String(poolDigits[Math.floor(Math.random() * poolDigits.length)]);
+
+            let digitPool = (USER_DIGIT_PANA_MAP[chosenDigit] || []).filter(p => getPanaType(p) === "Single Pana" && !recentList.includes(p));
+            if (digitPool.length === 0) digitPool = (USER_DIGIT_PANA_MAP[chosenDigit] || []).filter(p => getPanaType(p) === "Single Pana");
+
+            let chosenPatti = digitPool.length > 0
+                ? digitPool[Math.floor(Math.random() * digitPool.length)]
+                : allPattis[Math.floor(Math.random() * allPattis.length)];
+
+            recentList.unshift(chosenDigit, chosenPatti);
+            recentDrawHistory[lotteryType] = recentList.slice(0, 8);
+            return chosenPatti;
+        }
+
+        function pickSafeJodiFrom99(lotteryType, slotTimeStr, fallbackOpenDigit, fallbackCloseDigit) {
+            let todayKey = getTodayDateKey();
+            let betsList = (lotteryType === 'shubh' ? shubhBets : dhanBets) || [];
+            let jodiLoads = {};
+            let totalJodiPts = 0;
+
+            betsList.forEach(b => {
+                let bDate = b.dateKey || todayKey;
+                if (bDate === todayKey && b.slotTime === slotTimeStr && b.gameMode === 'Jodi Digit') {
+                    let pts = Number(b.points) || 0;
+                    totalJodiPts += pts;
+                    let jNum = String(b.number).padStart(2, '0');
+                    jodiLoads[jNum] = (jodiLoads[jNum] || 0) + (pts * 100);
+                }
+            });
+
+            if (totalJodiPts <= 0) {
+                return `${fallbackOpenDigit}${fallbackCloseDigit}`;
+            }
+
+            let maxAllowedPayout = totalJodiPts * 0.80;
+            let recentList = recentDrawHistory[lotteryType] || [];
+            let candidates = JODI_99_SET.filter(j => (jodiLoads[j] || 0) <= maxAllowedPayout && !recentList.includes(j));
+            if (candidates.length === 0) {
+                candidates = JODI_99_SET.slice().sort((a,b) => (jodiLoads[a] || 0) - (jodiLoads[b] || 0)).slice(0, 15);
+            }
+            let picked = candidates[Math.floor(Math.random() * candidates.length)];
+            recentList.unshift(picked);
+            recentDrawHistory[lotteryType] = recentList.slice(0, 8);
+            return picked;
         }
 
         const AMAR_MARKETS_CONFIG = [
@@ -1306,12 +1481,43 @@
             { start: "07:30 PM", display: "—", end: "08:00 PM", stage: "pending", adminLocked: false }
         ];
 
-        let shubhSlotData = defaultShubhSlots;
-        let dhanSlotData = defaultDhanSlots;
+        let shubhSlotData = JSON.parse(JSON.stringify(defaultShubhSlots));
+        let dhanSlotData = JSON.parse(JSON.stringify(defaultDhanSlots));
 
         function getTodayDateKey() {
             let d = new Date();
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function checkAndPerform1AMDailyReset() {
+            let now = new Date();
+            let currentMins = now.getHours() * 60 + now.getMinutes();
+            let oneAMMins = 60; // 01:00 AM
+            let todayKey = getTodayDateKey();
+            let resetTag = `${todayKey}_1AM`;
+
+            if (currentMins >= oneAMMins && lastMidnightResetKey !== resetTag) {
+                lastMidnightResetKey = resetTag;
+                localStorage.setItem('gll_last_1am_reset_key', resetTag);
+
+                db.ref('activeDateKey').once('value').then(snap => {
+                    let savedDate = snap.val();
+                    if (savedDate && savedDate !== todayKey) {
+                        db.ref(`archives/${savedDate}/shubhSlots`).set(shubhSlotData);
+                        db.ref(`archives/${savedDate}/dhanSlots`).set(dhanSlotData);
+                    }
+                    shubhSlotData = JSON.parse(JSON.stringify(defaultShubhSlots));
+                    dhanSlotData = JSON.parse(JSON.stringify(defaultDhanSlots));
+                    amarMarketResults = {};
+                    db.ref('shubhSlots').set(shubhSlotData);
+                    db.ref('dhanSlots').set(dhanSlotData);
+                    db.ref('amarMarketResults').set({});
+                    db.ref('activeDateKey').set(todayKey);
+                    renderResults();
+                    updateLiveSpotlightBanner();
+                    renderAmarMarketsGrid();
+                });
+            }
         }
 
         function timeStrToMins(timeStr, allowPostMidnight = false) {
@@ -1351,6 +1557,63 @@
                 curAdjusted, openM, closeM, openDeclared, lockedForOpen, lockedForClose,
                 jodiAllowed: (!lockedForOpen && !openDeclared)
             };
+        }
+
+        // ================= GAME CHAT (7 DAYS MON-SUN) =================
+        function openGameChatModal() {
+            selectGameChatLottery(currentType || 'shubh');
+            document.getElementById('history-modal').classList.remove('hidden');
+        }
+
+        function closeHistory() {
+            document.getElementById('history-modal').classList.add('hidden');
+        }
+
+        function selectGameChatLottery(type) {
+            selectedGameChatType = type;
+            const shubhBtn = document.getElementById('chat-game-shubh-btn');
+            const dhanBtn = document.getElementById('chat-game-dhan-btn');
+            if (type === 'shubh') {
+                shubhBtn.classList.remove('tab-inactive-dim');
+                dhanBtn.classList.add('tab-inactive-dim');
+            } else {
+                dhanBtn.classList.remove('tab-inactive-dim');
+                shubhBtn.classList.add('tab-inactive-dim');
+            }
+            renderSevenDayBoxes(type);
+        }
+
+        function renderSevenDayBoxes(type) {
+            const boxWrap = document.getElementById('game-chat-seven-days-container');
+            if (!boxWrap) return;
+            boxWrap.innerHTML = '';
+
+            let todayHindiDay = getCurrentHindiDayName();
+            let todayKey = getTodayDateKey();
+            let gameChat = (weeklyGameChatData && weeklyGameChatData[type]) || {};
+
+            WEEK_DAYS_7.forEach(dayName => {
+                let rawList = Array.isArray(gameChat[dayName]) ? gameChat[dayName] : [];
+                let validItems = rawList.filter(item => item && item.text);
+                let isToday = (dayName === todayHindiDay);
+
+                let listHtml = validItems.length === 0
+                    ? `<div style="color:#94a3b8; font-style:italic;">इस दिन का चार्ट खाली है।</div>`
+                    : validItems.map(it => {
+                        let tag = it.dateKey === todayKey ? `<span style="color:#4ade80;">[आज]</span>` : `<span style="color:#94a3b8;">[${it.dateKey || ''}]</span>`;
+                        return `<div style="margin-bottom:4px; border-bottom:1px dashed #334155; padding-bottom:2px;">${tag} <b>${it.time || ''}</b>: ${it.text}</div>`;
+                    }).join('');
+
+                boxWrap.innerHTML += `
+                    <div class="day-chat-box ${isToday ? 'today-box' : ''}">
+                        <div class="day-chat-title">
+                            <span>📅 ${dayName}</span>
+                            ${isToday ? `<span class="blinking-open-badge" style="font-size:0.65rem; padding:1px 6px;">आज का दिन</span>` : ''}
+                        </div>
+                        <div class="day-chat-entries">${listHtml}</div>
+                    </div>
+                `;
+            });
         }
 
         // ================= AMAR DUNIYA PAGE, BACK & GAME CHART =================
@@ -1470,8 +1733,8 @@
                             <div class="chart-week-grid">${w2Inputs}</div>
 
                             <div style="display:flex; gap:8px; margin-top:10px;">
-                                <button class="chart-save-btn" style="flex:1;" onclick="saveInlineGameChart('${m.id}')">💾 Save (${m.name})</button>
-                                <button class="chart-edit-btn" style="background:#4b5563;" onclick="toggleInlineGameChartEdit('${m.id}')">✕ बंद</button>
+                                <button type="button" class="chart-save-btn" style="flex:1;" onclick="saveInlineGameChart('${m.id}')">💾 Save (${m.name})</button>
+                                <button type="button" class="chart-edit-btn" style="background:#4b5563;" onclick="toggleInlineGameChartEdit('${m.id}')">✕ बंद</button>
                             </div>
                         </div>
                     `;
@@ -1483,7 +1746,7 @@
                             <b style="color:#ffd166; font-size:0.95rem;">${m.name} Chat</b>
                             <div style="display:flex; gap:8px; align-items:center;">
                                 <a href="${linkToUse}" target="_blank" rel="noopener noreferrer" style="color:#38bdf8; font-size:0.78rem; font-weight:bold; text-decoration:underline;">🔗 ऑनलाइन चार्ट लिंक</a>
-                                ${isAdmin ? `<button class="chart-edit-btn" onclick="toggleInlineGameChartEdit('${m.id}')">✏️ Edit</button>` : ''}
+                                ${isAdmin ? `<button type="button" class="chart-edit-btn" onclick="toggleInlineGameChartEdit('${m.id}')">✏️ Edit</button>` : ''}
                             </div>
                         </div>
 
@@ -1517,15 +1780,19 @@
                 let resText = `${openPart}_${jodiPart}_${closePart}`;
                 let openFlag = isAmarMarketOpenNow(m);
 
+                let statusBadgeHtml = !openFlag
+                    ? `<span class="status-closed">Market Closed</span>`
+                    : (state.lockedForOpen
+                        ? `<span class="status-open">Locked / Live</span>`
+                        : `<span class="blinking-open-badge">OPEN • Market Open</span>`);
+
                 grid.innerHTML += `
                     <div class="market-card">
                         <div class="market-card-time">${m.openTime} - ${m.closeTime}</div>
                         <div class="market-card-name">${m.name}</div>
                         <div class="market-card-res">${resText}</div>
-                        <div class="market-card-status ${openFlag ? 'status-open' : 'status-closed'}">
-                            ${openFlag ? (state.lockedForOpen ? 'Locked / Live' : 'Market Open') : 'Market Closed'}
-                        </div>
-                        <button class="${openFlag ? 'btn-play-game' : 'btn-closed-game'}" ${openFlag ? `onclick="openAmarMarketModes('${m.id}')"` : 'disabled'}>
+                        <div class="market-card-status">${statusBadgeHtml}</div>
+                        <button type="button" class="${openFlag ? 'btn-play-game' : 'btn-closed-game'}" ${openFlag ? `onclick="openAmarMarketModes('${m.id}')"` : 'disabled'}>
                             ${openFlag ? '▶ Play Game' : '🎮 Closed Game'}
                         </button>
                     </div>
@@ -1695,7 +1962,7 @@
                 tb.innerHTML += `
                     <tr>
                         <td><b>${b.number}</b></td><td>${b.points}</td><td>${b.session}</td>
-                        <td><button style="background:#dc2626; color:#fff; border:none; padding:2px 6px; border-radius:4px; cursor:pointer;" onclick="removeAmarTempBid(${idx})">✕</button></td>
+                        <td><button type="button" style="background:#dc2626; color:#fff; border:none; padding:2px 6px; border-radius:4px; cursor:pointer;" onclick="removeAmarTempBid(${idx})">✕</button></td>
                     </tr>
                 `;
             });
@@ -1855,7 +2122,7 @@
                         <div style="font-size:0.84rem; color:#7ef9ff; font-weight:bold; margin-bottom:4px;">1️⃣ पहले Open डालें (पत्ती + ओपन अंक):</div>
                         <input type="text" id="ws-open-patti" placeholder="Open Pana (उदा. 118)" maxlength="3" value="${resObj.openPatti || ''}">
                         <input type="text" id="ws-open-digit" placeholder="Open Digit (उदा. 0)" maxlength="1" value="${resObj.openDigit || ''}">
-                        <button class="btn" style="background:#0284c7; color:#fff; padding:8px; font-size:0.85rem;" onclick="saveAmarGameOpenStep()">✅ Open Result सेव करें</button>
+                        <button type="button" class="btn" style="background:#0284c7; color:#fff; padding:8px; font-size:0.85rem;" onclick="saveAmarGameOpenStep()">✅ Open Result सेव करें</button>
                     </div>
 
                     <div style="background:#120f24; padding:8px; border-radius:8px; border:1px solid #4ade80; margin-bottom:10px;">
@@ -1863,7 +2130,7 @@
                         <input type="text" id="ws-close-patti" placeholder="Close Pana (उदा. 122)" maxlength="3" value="${resObj.closePatti || ''}">
                         <input type="text" id="ws-close-digit" placeholder="Close Digit (उदा. 5)" maxlength="1" value="${resObj.closeDigit || ''}">
                         <div style="font-size:0.8rem; color:#ffd166; margin:4px 0;">🔢 बनने वाली Jodi (Open अंक + Close अंक): <b id="ws-jodi-preview">${autoJodiPreview}</b></div>
-                        <button class="btn" style="background:#16a34a; color:#fff; padding:9px; font-size:0.9rem;" onclick="saveAmarGameCloseAndPayStep()">🚀 Close + Jodi सेव करें व विनर्स पेमेंट करें</button>
+                        <button type="button" class="btn" style="background:#16a34a; color:#fff; padding:9px; font-size:0.9rem;" onclick="saveAmarGameCloseAndPayStep()">🚀 Close + Jodi सेव करें व विनर्स पेमेंट करें</button>
                     </div>
 
                     <div style="background:#10101c; padding:8px; border-radius:8px; border:1px solid #f59e0b; margin-bottom:10px;">
@@ -2023,11 +2290,13 @@
                 let savedDate = snap.val();
                 if (!savedDate) {
                     db.ref('activeDateKey').set(todayKey);
-                } else if (savedDate !== todayKey) {
+                } else if (savedDate !== todayKey && new Date().getHours() >= 1) {
                     db.ref(`archives/${savedDate}/shubhSlots`).set(shubhSlotData);
                     db.ref(`archives/${savedDate}/dhanSlots`).set(dhanSlotData);
-                    db.ref('shubhSlots').set(defaultShubhSlots);
-                    db.ref('dhanSlots').set(defaultDhanSlots);
+                    shubhSlotData = JSON.parse(JSON.stringify(defaultShubhSlots));
+                    dhanSlotData = JSON.parse(JSON.stringify(defaultDhanSlots));
+                    db.ref('shubhSlots').set(shubhSlotData);
+                    db.ref('dhanSlots').set(dhanSlotData);
                     db.ref('activeDateKey').set(todayKey);
                 }
             });
@@ -2058,6 +2327,7 @@
                     slotsList[index].display = `<span class='unique-result-badge'>${openStr}</span>`;
                     slotsList[index].stage = "open_declared";
                     slotsList[index].openDeclaredAt = Date.now();
+                    recordIntoWeeklyGameChat(lotteryType, `${slot.start} OPEN: ${openStr}`);
                     updated = true;
                 }
 
@@ -2069,12 +2339,13 @@
 
                     let closePatti = slot.preSetClose || getLowLoadPatti(lotteryType, slotTimeStr, 'CLOSE');
                     let closeDigit = String(Number(closePatti.split('').reduce((a,b)=>Number(a)+Number(b),0)) % 10);
-                    let jodiVal = slot.preSetJodi || (opDigit + closeDigit);
+                    let jodiVal = slot.preSetJodi || pickSafeJodiFrom99(lotteryType, slotTimeStr, opDigit, closeDigit);
 
                     let finalResultStr = `${opPatti}-${jodiVal}-${closePatti}`;
                     slotsList[index].display = `<span class='unique-result-badge'>${finalResultStr}</span>`;
                     slotsList[index].stage = "closed_declared";
                     slotsList[index].closedDeclaredAt = Date.now();
+                    recordIntoWeeklyGameChat(lotteryType, `${slot.start}-${slot.end} FINAL: ${finalResultStr}`);
                     updated = true;
                     checkAndPayoutWinners(lotteryType, index, finalResultStr);
                 }
@@ -2178,6 +2449,20 @@
 
             db.ref('userBetHistory').on('value', (snap) => {
                 userBetHistory = snap.exists() ? snap.val() : {};
+            });
+
+            db.ref('weeklyGameChatData').on('value', (snap) => {
+                if (snap.exists()) {
+                    weeklyGameChatData = snap.val();
+                    if (!document.getElementById('history-modal').classList.contains('hidden')) {
+                        renderSevenDayBoxes(selectedGameChatType);
+                    }
+                }
+            });
+
+            db.ref('helpRequests').on('value', (snap) => {
+                if (snap.exists()) helpRequests = snap.val();
+                if (!document.getElementById('admin-section').classList.contains('hidden')) renderAdminHelpRequests();
             });
 
             db.ref('shubhSlots').on('value', (snap) => {
@@ -2302,6 +2587,7 @@
             }
             applySessionState();
             initializeFirebaseListeners();
+            checkAndPerform1AMDailyReset();
             startRealTimeSystem();
 
             if (activeUserPhone) {
@@ -2385,10 +2671,52 @@
             location.reload();
         }
 
+        function askLoginAI() {
+            const inp = document.getElementById('login-ai-prompt');
+            const box = document.getElementById('login-ai-chat-box');
+            const q = inp.value.trim();
+            if (!q) return;
+            box.innerHTML += `<div class="user-msg">${q}</div>`;
+
+            let ql = q.toLowerCase();
+            let reply = "मैं AI सहायक हूँ। पासवर्ड भूल गए हैं तो नीचे अपना मोबाइल नंबर लिखकर 'Password Recover' दबाएं—एडमिन पैनल में रिक्वेस्ट लॉक हो जाएगी और आपके नंबर पर SMS भेजा जाएगा।";
+            if (ql.includes('password') || ql.includes('पासवर्ड') || ql.includes('bhul') || ql.includes('भूल')) {
+                reply = "पासवर्ड रिकवर करने के लिए नीचे अपना 10 अंकों का मोबाइल नंबर डालें और 'Password Recover' बटन दबाएं। एडमिन को रिक्वेस्ट दिखते ही आपके मोबाइल पर SMS भेज दिया जाएगा।";
+            } else if (ql.includes('login') || ql.includes('लॉगिन')) {
+                reply = "लॉगिन के लिए अपना रजिस्टर्ड मोबाइल नंबर/आईडी और पासवर्ड डालें। यदि अकाउंट लॉक है तो Password Recover से एडमिन को सूचित करें।";
+            }
+
+            setTimeout(() => {
+                box.innerHTML += `<div class="bot-msg">${reply}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 200);
+            inp.value = "";
+        }
+
+        function submitPasswordRecoverRequest() {
+            const mob = document.getElementById('recover-mobile-input').value.trim();
+            if (!mob || mob.length < 10) {
+                alert('कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें!');
+                return;
+            }
+            const reqEntry = {
+                id: Date.now(),
+                user: mob,
+                type: 'PASSWORD_RECOVER_SMS',
+                locked: true,
+                smsStatus: 'PENDING_SMS',
+                message: `🔐 PASSWORD RECOVER [LOCKED]: मोबाइल ${mob} ने पासवर्ड रिकवरी SMS की मांग की है।`,
+                status: 'pending',
+                time: new Date().toLocaleString()
+            };
+            helpRequests.unshift(reqEntry);
+            db.ref('helpRequests').set(helpRequests);
+            document.getElementById('recover-mobile-input').value = '';
+            alert(`✅ Password Recover रिक्वेस्ट लॉक हो गई है! एडमिन पैनल में मोबाइल ${mob} दिख रहा है और आपके नंबर पर SMS भेजा जाएगा।`);
+        }
+
         function openHelp() {
-            const adminWhatsAppNo = "917385568691";
-            const message = encodeURIComponent("Hello Customer Support 24/7, I need help.");
-            window.open(`https://wa.me/${adminWhatsAppNo}?text=${message}`, '_blank');
+            openRates();
         }
 
         function askHelpBot() {
@@ -2397,11 +2725,13 @@
             const history = document.getElementById('bot-chat-history');
             if (!q) return;
             history.innerHTML += `<div class="user-msg">${input.value}</div>`;
-            let botReply = "क्षमा करें, मैं समझा नहीं। आप 'भाव', 'डिपॉजिट' या 'टाइम' के बारे में पूछ सकते हैं।";
+            let botReply = "क्षमा करें, मैं समझा नहीं। आप 'भाव', 'डिपॉजिट', 'पासवर्ड' या 'टाइम' के बारे में पूछ सकते हैं।";
             if (q.includes('भाव') || q.includes('rate') || q.includes('जीत')) {
                 botReply = "जीत के भाव: सिंगल अंक 10 के 100, जोड़ी 10 के 1000, सिंगल पत्ती 10 के 1500, डबल पत्ती 10 के 3000, ट्रिपल पत्ती 10 के 7000!";
             } else if (q.includes('डिपॉजिट') || q.includes('add') || q.includes('paisa')) {
                 botReply = "न्यूनतम डिपॉजिट ₹99 है। QR कोड स्कैन करके 12 अंकों का UTR नंबर डालें।";
+            } else if (q.includes('password') || q.includes('पासवर्ड')) {
+                botReply = "पासवर्ड रिकवर करने के लिए एडमिन को रिक्वेस्ट भेजें, आपके मोबाइल नंबर पर SMS भेजा जाएगा।";
             }
             setTimeout(() => {
                 history.innerHTML += `<div class="bot-msg">${botReply}</div>`;
@@ -2414,7 +2744,7 @@
             const input = document.getElementById('bot-user-input');
             const msg = input.value.trim();
             if (!msg) { alert('कृपया अपनी समस्या लिखें!'); return; }
-            helpRequests.unshift({ id: Date.now(), user: activeUserPhone, message: msg, status: 'pending' });
+            helpRequests.unshift({ id: Date.now(), user: activeUserPhone || "Guest", message: msg, status: 'pending' });
             db.ref('helpRequests').set(helpRequests);
             alert('आपकी रिक्वेस्ट एडमिन के पास भेज दी गई है!');
             input.value = "";
@@ -2657,6 +2987,8 @@
             if (!currentData) return;
 
             let isAdminLoggedIn = activeUserPhone && usersDB[activeUserPhone] && usersDB[activeUserPhone].isSuperAdmin;
+            let now = new Date();
+            let currentMins = now.getHours() * 60 + now.getMinutes();
 
             currentData.forEach((item, index) => {
                 if (item.type === 'lunch') {
@@ -2669,11 +3001,15 @@
                         </div>
                     `;
                 } else {
-                    let editBtnHtml = (isAdminLoggedIn && item.display !== "—") ? `<button class="chart-edit-btn" onclick="quickEditSlotResult(${index})">✏️ Edit</button>` : '';
+                    let sMins = timeStrToMins(item.start);
+                    let eMins = timeStrToMins(item.end);
+                    let isSlotOpenNow = currentMins >= sMins && currentMins <= eMins && item.stage !== 'closed_declared';
+                    let openBlinkTag = isSlotOpenNow ? `<span class="blinking-open-badge">OPEN</span>` : '';
+                    let editBtnHtml = (isAdminLoggedIn && item.display !== "—") ? `<button type="button" class="chart-edit-btn" onclick="quickEditSlotResult(${index})">✏️ Edit</button>` : '';
                     container.innerHTML += `
                         <div class="result-row">
                             <span class="start-time">${item.start}</span>
-                            <span class="result-data">${item.display} ${editBtnHtml}</span>
+                            <span class="result-data">${openBlinkTag} ${item.display} ${editBtnHtml}</span>
                             <span class="end-time">${item.end}</span>
                         </div>
                     `;
@@ -2689,6 +3025,7 @@
                 currentData[index].display = `<span class='unique-result-badge'>${newVal.trim()}</span>`;
                 currentData[index].stage = "closed_declared";
                 currentData[index].closedDeclaredAt = Date.now();
+                recordIntoWeeklyGameChat(currentType, `${slot.start}-${slot.end} RESULT: ${newVal.trim()}`);
                 if (currentType === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
                 else db.ref('dhanSlots').set(dhanSlotData);
                 renderResults();
@@ -2759,7 +3096,7 @@
             if (!btn || !desc) return;
             if (isAutoRandomActive) {
                 btn.innerText = "🛑 STOP AUTO"; btn.style.background = "#ff4444";
-                desc.innerText = "स्टेटस: चालू (शुभ / धन लक्ष्मी ऑटो मोड)";
+                desc.innerText = "स्टेटस: चालू (शुभ / धन लक्ष्मी ऑटो मोड • 20% मार्जिन)";
             } else {
                 btn.innerText = "▶️ START AUTO"; btn.style.background = "#28a745";
                 desc.innerText = "स्टेटस: बंद (Manual Mode Active)";
@@ -2817,8 +3154,10 @@
                 let limitMins = timeStrToMins("08:00 PM");
                 let currentMins = now.getHours() * 60 + now.getMinutes();
 
+                checkAndPerform1AMDailyReset();
                 checkAndTriggerAutoResults();
                 updateLiveSpotlightBanner();
+                renderResults();
 
                 if (!document.getElementById('amar-duniya-section').classList.contains('hidden')) {
                     renderAmarMarketsGrid();
@@ -2842,9 +3181,11 @@
                 let timerStr = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
 
                 const timerEl = document.getElementById('countdown');
+                let isOnShubhOrDhanHome = !document.getElementById('main-section').classList.contains('hidden');
+
                 if (diffSecs <= 120 && diffSecs > 0) {
                     timerEl.classList.add('red-lock');
-                    playTickSound();
+                    if (isOnShubhOrDhanHome) playTickSound();
                 } else {
                     timerEl.classList.remove('red-lock');
                 }
@@ -2879,6 +3220,7 @@
             currentData[index].stage = "open_declared";
             currentData[index].openDeclaredAt = Date.now();
 
+            recordIntoWeeklyGameChat(gameSelector, `${currentData[index].start} OPEN: ${openStr}`);
             if (gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
             else db.ref('dhanSlots').set(dhanSlotData);
 
@@ -2918,6 +3260,7 @@
             currentData[index].stage = "closed_declared";
             currentData[index].closedDeclaredAt = Date.now();
 
+            recordIntoWeeklyGameChat(gameSelector, `${currentData[index].start}-${currentData[index].end} FINAL: ${finalResultStr}`);
             if (gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
             else db.ref('dhanSlots').set(dhanSlotData);
 
@@ -2948,6 +3291,7 @@
                 currentData[idx].display = `<span class='unique-result-badge'>${currentVal.trim()}</span>`;
                 currentData[idx].stage = "closed_declared";
                 currentData[idx].closedDeclaredAt = Date.now();
+                recordIntoWeeklyGameChat(gameSelector, `${currentData[idx].start}-${currentData[idx].end} EDITED: ${currentVal.trim()}`);
                 if (gameSelector === 'shubh') db.ref('shubhSlots').set(shubhSlotData);
                 else db.ref('dhanSlots').set(dhanSlotData);
                 renderResults();
@@ -3116,8 +3460,8 @@
                         <p>🔑 <b>पासवर्ड:</b> <span style="color:var(--accent);">${u.pass}</span></p>
                         <p>💰 <b>पॉइंट्स:</b> ${userWallets[phone] || 0} | 🎁 <b>लॉक्ड बोनस:</b> ${userLockedBonuses[phone] || 0}</p>
                         <div style="display:flex; gap:5px; margin-top:8px;">
-                            <button class="btn" style="padding:4px; font-size:0.7rem; background:${u.isLocked ? '#28a745' : '#ff9800'}; color:#fff; margin:0;" onclick="toggleLockUser('${phone}')">${u.isLocked ? 'Unlock' : 'Lock'}</button>
-                            ${!u.isSuperAdmin ? `<button class="btn" style="padding:4px; font-size:0.7rem; background:#ff4444; color:#fff; margin:0;" onclick="deleteUser('${phone}')">Delete</button>` : ''}
+                            <button type="button" class="btn" style="padding:4px; font-size:0.7rem; background:${u.isLocked ? '#28a745' : '#ff9800'}; color:#fff; margin:0;" onclick="toggleLockUser('${phone}')">${u.isLocked ? 'Unlock' : 'Lock'}</button>
+                            ${!u.isSuperAdmin ? `<button type="button" class="btn" style="padding:4px; font-size:0.7rem; background:#ff4444; color:#fff; margin:0;" onclick="deleteUser('${phone}')">Delete</button>` : ''}
                         </div>
                     </div>
                 `;
@@ -3143,22 +3487,51 @@
             if (!container) return;
             container.innerHTML = '';
             if (!helpRequests || helpRequests.length === 0) {
-                container.innerHTML = '<p style="font-size:0.80rem; color:#888;">कोई हेल्प रिक्वेस्ट नहीं है।</p>';
+                container.innerHTML = '<p style="font-size:0.80rem; color:#888;">कोई हेल्प या पासवर्ड रिक्वेस्ट नहीं है।</p>';
                 return;
             }
             helpRequests.forEach((req, idx) => {
+                let isRecover = req.type === 'PASSWORD_RECOVER_SMS';
+                let userPassInfo = usersDB[req.user] ? ` | मौजूदा पासवर्ड: <b style="color:#4ade80;">${usersDB[req.user].pass}</b>` : '';
                 container.innerHTML += `
-                    <div class="req-card">
-                        <p>👤 <b>यूज़र:</b> ${req.user}</p>
-                        <p>💬 <b>समस्या:</b> ${req.message}</p>
-                        ${req.status === 'pending' ? `<button class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#28a745; color:#fff;" onclick="resolveHelpReq(${idx})">Mark Resolved</button>` : ''}
+                    <div class="req-card" style="${isRecover ? 'border-color:#facc15;' : ''}">
+                        <p>📱 <b>मोबाइल / यूज़र:</b> <span style="color:#ffd166;">${req.user}</span>${userPassInfo}</p>
+                        <p>💬 <b>विवरण:</b> ${req.message}</p>
+                        <p style="font-size:0.75rem; color:#94a3b8;">समय: ${req.time || '-'} | स्टेटस: <b>${req.status.toUpperCase()}</b></p>
+                        <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+                            ${isRecover && req.status === 'pending' ? `<button type="button" class="btn" style="width:auto; padding:5px 10px; font-size:0.75rem; margin:0; background:#0284c7; color:#fff;" onclick="sendAdminPasswordSMS(${idx})">📲 SMS भेजा (Unlock & Send)</button>` : ''}
+                            ${req.status === 'pending' ? `<button type="button" class="btn" style="width:auto; padding:5px 10px; font-size:0.75rem; margin:0; background:#28a745; color:#fff;" onclick="resolveHelpReq(${idx})">Mark Resolved</button>` : ''}
+                        </div>
                     </div>
                 `;
             });
         }
 
+        function sendAdminPasswordSMS(idx) {
+            let req = helpRequests[idx];
+            if (!req) return;
+            let userPass = (usersDB[req.user] && usersDB[req.user].pass) ? usersDB[req.user].pass : "नया पासवर्ड सेट करें";
+            let smsBody = `Good Luck Laxmi / Amar Duniya: आपका पासवर्ड ${userPass} है।`;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(smsBody).catch(() => {});
+            }
+
+            helpRequests[idx].status = 'sms_sent';
+            helpRequests[idx].locked = false;
+            helpRequests[idx].smsStatus = 'SENT';
+            db.ref('helpRequests').set(helpRequests);
+            renderAdminHelpRequests();
+
+            let openSmsApp = confirm(`📲 मोबाइल नंबर ${req.user} के लिए SMS तैयार है:\n"${smsBody}"\n\nक्या फोन का SMS ऐप खोलना है?`);
+            if (openSmsApp) {
+                window.location.href = `sms:${req.user}?body=${encodeURIComponent(smsBody)}`;
+            }
+        }
+
         function resolveHelpReq(idx) {
             helpRequests[idx].status = 'resolved';
+            helpRequests[idx].locked = false;
             db.ref('helpRequests').set(helpRequests);
             renderAdminHelpRequests();
         }
@@ -3176,26 +3549,6 @@
         function openRates() { document.getElementById('rates-modal').classList.remove('hidden'); }
         function closeRates() { document.getElementById('rates-modal').classList.add('hidden'); }
 
-        function openHistory() {
-            const tbody = document.getElementById('historical-archive-tbody');
-            tbody.innerHTML = `<tr><td colspan="2" style="color:#aaa;">पुराना डेटा लोड हो रहा है...</td></tr>`;
-            db.ref('archives').once('value').then(snap => {
-                tbody.innerHTML = '';
-                if (!snap.exists()) {
-                    tbody.innerHTML = `<tr><td colspan="2" style="color:#888;">अभी तक कोई पुराना आर्काइव डेटा मौजूद नहीं है।</td></tr>`;
-                } else {
-                    let archives = snap.val();
-                    Object.keys(archives).sort().reverse().forEach(dateKey => {
-                        let dayData = archives[dateKey];
-                        let shubhSummary = (dayData.shubhSlots || []).map(s => (s.type !== 'lunch' && s.display !== '—') ? `${s.start}:${s.display}` : '').filter(Boolean).join(', ');
-                        tbody.innerHTML += `<tr><td style="color:var(--secondary); font-weight:bold;">${dateKey}</td><td style="font-size:0.75rem; text-align:left; color:#fff;">शुभ: ${shubhSummary || 'कोई रिकॉर्ड नहीं'}</td></tr>`;
-                    });
-                }
-            });
-            document.getElementById('history-modal').classList.remove('hidden');
-        }
-
-        function closeHistory() { document.getElementById('history-modal').classList.add('hidden'); }
         function openProfile() { document.getElementById('profile-modal').classList.remove('hidden'); }
         function closeProfile() { document.getElementById('profile-modal').classList.add('hidden'); }
 
@@ -3221,6 +3574,7 @@
             document.getElementById(`adm-tab-${tab}`).classList.add('active');
             document.getElementById(`adm-sec-${tab}`).classList.remove('hidden');
             if (tab === 'bids') populateAdminBidSlots();
+            if (tab === 'req') renderAdminHelpRequests();
         }
 
         function switchBidFilter(filter) {
@@ -3382,7 +3736,7 @@
                             <p>💵 <b>राशि:</b> ₹${req.amount}</p>
                             <p>🔢 <b>UTR:</b> ${req.utr}</p>
                             <p>📌 <b>स्टेटस:</b> <span class="badge ${req.status === 'pending' ? 'badge-pending' : 'badge-approved'}">${req.status.toUpperCase()}</span></p>
-                            ${req.status === 'pending' ? `<button class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#28a745; color:#fff;" onclick="approveDeposit(${idx})">Approve & Unlock ₹20 Bonus</button>` : ''}
+                            ${req.status === 'pending' ? `<button type="button" class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#28a745; color:#fff;" onclick="approveDeposit(${idx})">Approve & Unlock ₹20 Bonus</button>` : ''}
                         </div>
                     `;
                 });
@@ -3401,7 +3755,7 @@
                             <p>💸 <b>राशि:</b> ₹${req.amount}</p>
                             <p>🏦 <b>विवरण:</b> ${req.details}</p>
                             <p>📌 <b>स्टेटस:</b> <span class="badge ${req.status === 'pending' ? 'badge-pending' : 'badge-approved'}">${req.status.toUpperCase()}</span></p>
-                            ${req.status === 'pending' ? `<button class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#00a8ff; color:#fff;" onclick="completeWithdraw(${idx})">Payment Done (OK)</button>` : ''}
+                            ${req.status === 'pending' ? `<button type="button" class="btn" style="padding:4px 8px; font-size:0.75rem; margin-top:5px; background:#00a8ff; color:#fff;" onclick="completeWithdraw(${idx})">Payment Done (OK)</button>` : ''}
                         </div>
                     `;
                 });
